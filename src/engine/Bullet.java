@@ -5,4 +5,5 @@ public class Bullet {
 	double y;
 	double width;
 	double height;
+	double angle;
 }
