@@ -43,12 +43,12 @@ public class GameEngine {
 					}
 					
 					// Angle tank before moving
-					if(currInput.a == true) { angleTank(currTanks[y].id, false); }
-					if(currInput.d == true) { angleTank(currTanks[y].id, true); }
+					if(currInput.a == true) { angleTank(currTanks[y], false); }
+					if(currInput.d == true) { angleTank(currTanks[y], true); }
 					
 					//Move with new angle
-					if(currInput.w == true) { moveTank(currTanks[y].id, true); }
-					if(currInput.s == true) { moveTank(currTanks[y].id, false); }
+					if(currInput.w == true) { moveTank(currTanks[y], true); }
+					if(currInput.s == true) { moveTank(currTanks[y], false); }
 					
 					
 				}
@@ -64,39 +64,11 @@ public class GameEngine {
 	
 	private void updateBulletLocation(Bullet bullet) {
 		
-		double x = 0;
-		double y = 0;
-		double angle = 0;
 		double degreeAngle = Math.toDegrees(bullet.angle);
 		
-		// Use pythagoras to work out changes in x and y given bullets angle and movement distance
-		if(degreeAngle < 90) {
-			angle = degreeAngle;
-			x = 1;
-			y = 1; 
-			
-		} else if (degreeAngle < 180) {
-			angle = degreeAngle - 90;
-			x = 1;
-			y = -1;
-		
-		} else if (degreeAngle < 270) {
-			angle = degreeAngle - 180;
-			x = -1;
-			y = -1;
-			
-		} else {
-			angle = degreeAngle - 270;
-			x = -1;
-			y = 1;
-			
-		}
-		
-		x = x * Math.sin( Math.toRadians(angle) ) * BULLET_MOVEMENT_DISTANCE; 
-		y = y * Math.cos( Math.toRadians(angle) ) * BULLET_MOVEMENT_DISTANCE;
-		
-		bullet.x += x;
-		bullet.y += y;
+		// Use Pythagoras to work out changes in x and y given bullets angle and movement distance
+		bullet.x += Math.sin( Math.toRadians(degreeAngle) ) * BULLET_MOVEMENT_DISTANCE; 
+		bullet.y += Math.cos( Math.toRadians(degreeAngle) ) * BULLET_MOVEMENT_DISTANCE;
 		
 		checkDamage(bullet);
 		
@@ -135,15 +107,20 @@ public class GameEngine {
 	}
 
 	// true: clockwise, false: counterclockwise
-	private void angleTank(int id, Boolean direction) {
-		// TODO Auto-generated method stub
-		
+	private void angleTank(Tank currTank, Boolean angle ) {
+		if (angle) { currTank.bodyAngle += Math.toRadians(10); }
+		else { currTank.bodyAngle -= Math.toRadians(10); }
 	}
 
 	// true: forward, false: backward
-	private void moveTank(int id, Boolean angle) {
-		// TODO Auto-generated method stub
-		
+	private void moveTank(Tank currTank, Boolean direction) {
+		if(direction) {
+			currTank.x += Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE; 
+			currTank.y += Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
+		} else {
+			currTank.x -= Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE; 
+			currTank.y -= Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
+		}
 	}
 
 	public Tank[] getTanks() {
