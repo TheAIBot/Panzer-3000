@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import connector.ClientConnector;
 
 public class GameEngine {
-	ServerConnector serverConnector;
-	ClientConnector clientConnector;
+	ServerConnector connection;
 	ArrayList<Tank> tanks;
 	ArrayList<Bullet> bullets;
+	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
 	public static final double TANK_WIDTH = 0.005;
 	public static final double TANK_HEIGHT = 0.005;
@@ -31,16 +31,22 @@ public class GameEngine {
 	 
 	public void startGame(int tankCount) {
 		
-		serverConnector = new ServerConnector();
-		clientConnector = new ClientConnector();
-		
 		initializeTanks(tankCount);
+		connection = new ServerConnector();
+		connection.initializeServerConnection(4);	
 		
-		while(true) {
-			
-			update(serverConnector.reciveUserInputs());
+		//The server will send the initial information first, such that the clients have something to display:
+		
+		connection.sendUpdates(tanks, bullets);
+		
+		//Then the main loop can begin:
+		
+		while(true) { //Game loop			
+			Input[] userInputs = connection.reciveUserInputs();
+			update(userInputs);
+			connection.sendUpdates(tanks, bullets);
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000/FPS); 
 			} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 	}

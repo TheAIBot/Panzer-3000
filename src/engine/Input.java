@@ -16,4 +16,8 @@ public class Input {
 		this.id = id;
 	}
 	
+	public Input() {
+		
+	}
+	
 }

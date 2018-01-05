@@ -65,7 +65,7 @@ public class ServerConnector implements Runnable {
 		//System.out.println("All connections established");
 	}
 	
-	public void sendUpdates(Tank[] tanks, List<Bullet> bullets) {
+	public void sendUpdates(List<Tank> tanks, List<Bullet> bullets) {
 		updateSpace.put(tanks, bullets);	
 	}
 	

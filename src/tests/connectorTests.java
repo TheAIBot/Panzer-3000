@@ -31,7 +31,7 @@ public class connectorTests {
 			new Thread(clients[i]).start();
 		}
 		//As it runs on different threads, and essentially a deadlock will be reached if this doesn't work,
-		//it will instead be checked that after 10 seconds, all connections are established.
+		//it will instead be checked that after 1 second (2 might be better), all connections are established.
 		Thread.sleep(1000);
 		assertEquals(numOfClients, server.numConnectedClients);
 		
@@ -78,7 +78,7 @@ public class connectorTests {
 		for (int i = 0; i < clients.length; i++) {
 			ClientConnector client = clients[i];
 			Input input = new Input(false, false, false, false, false, 0, 0, client.connectionId);
-			client.sendUserInputs(input);
+			client.sendUserInput(input);
 		}		
 		
 		Input[] inputs = server.reciveUserInputs();

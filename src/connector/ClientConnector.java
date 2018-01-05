@@ -47,8 +47,16 @@ public class ClientConnector implements Runnable{
 	}	
 	
 	
-	public Tank[] unpackTanks(Object[] updateTuple) {
-		return (Tank[]) updateTuple[0];
+	public List<Tank> unpackTanks(Object[] updateTuple) {
+
+		List<Tank> unpackedTanks = new ArrayList<Tank>();
+		List<Object>  jsonTanks = (List<Object>) updateTuple[1];
+		for (int i = 0; i < jsonTanks.size(); i++) {
+			JsonElement tankJSonElement = new Gson().toJsonTree(jsonTanks.get(i));
+			JsonObject tankJSonObject = tankJSonElement.getAsJsonObject();
+			unpackedTanks.add(new Gson().fromJson(tankJSonObject, Tank.class));
+		}
+		return unpackedTanks;
 	}
 	
 	public List<Bullet> unpackBullets(Object[] updateTuple) {
@@ -63,7 +71,7 @@ public class ClientConnector implements Runnable{
 	}
 	
 	
-	public void sendUserInputs(Input inputs) {
+	public void sendUserInput(Input inputs) {
 		privateServerConnections.put(inputs);		
 	}
 
