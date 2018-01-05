@@ -41,6 +41,7 @@ public class GameEngine {
 		
 		while(true) { //Game loop			
 			Input[] userInputs = connection.reciveUserInputs();
+			Log.message(userInputs[0].toString());
 			Log.message("Received inputs from clients");
 			update(userInputs);
 			Log.message("Updated game");

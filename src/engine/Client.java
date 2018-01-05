@@ -37,6 +37,7 @@ public class Client {
 
 			//Create a new Input
 			Input userInput = menu.getInput();
+			Log.message(userInput.toString());
 			
 			//finally send the inputs to the server.			
 			connection.sendUserInput(userInput);

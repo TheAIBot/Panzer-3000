@@ -4,6 +4,8 @@ package graphics.Menu;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Stack;
@@ -16,7 +18,7 @@ import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
 import graphics.Menu.Pages.SuperPage;
 
-public class MenuController implements PageRequestsListener, KeyListener {
+public class MenuController implements PageRequestsListener, KeyListener, MouseListener {
 	private final JFrame mainMenu;
 	private final GamePage MAIN_PAGE = new GamePage(this);
 	private SuperPage currentPage;
@@ -38,6 +40,7 @@ public class MenuController implements PageRequestsListener, KeyListener {
 	        }
 		});
 		mainMenu.addKeyListener(this);
+		mainMenu.addMouseListener(this);
 	}
 	
 	public void showWindow()
@@ -154,5 +157,31 @@ public class MenuController implements PageRequestsListener, KeyListener {
 	public Input getInput()
 	{
 		return input;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {	
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			input.click = true;
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			input.click = false;
+		}
 	}
 }

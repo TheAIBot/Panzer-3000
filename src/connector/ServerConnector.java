@@ -34,6 +34,7 @@ public class ServerConnector implements Runnable {
 		repository.addGate("tcp://localhost:9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
+		
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
@@ -74,7 +75,7 @@ public class ServerConnector implements Runnable {
 	public Input[] reciveUserInputs() {
 		//Removes everything from the update space. Thus, when the clients ask for the updates, 
 		//they will have to wait until the server makes an update based on the current  input.
-		updateSpace.getAll(new FormalField(ArrayList.class), new FormalField(ArrayList.class)); 
+		updateSpace.getAll(new FormalField(Tank[].class), new FormalField(Bullet[].class)); 
 		
 		Input[] recievedInputs = new Input[numClients];
 		for (int i = 0; i < numClients; i++) {
