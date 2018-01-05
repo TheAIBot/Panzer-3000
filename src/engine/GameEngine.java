@@ -4,14 +4,15 @@ import connector.ServerConnector;
 
 import java.awt.Polygon;
 import java.awt.geom.Area;
+import java.util.ArrayList;
 
 import connector.ClientConnector;
 
 public class GameEngine {
 	ServerConnector serverConnector;
 	ClientConnector clientConnector;
-	Tank[] tanks;
-	Bullet[] bullets;
+	ArrayList<Tank> tanks;
+	ArrayList<Bullet> bullets;
 	public static final int TANK_COUNT = 2;
 	public static final double TANK_WIDTH = 0.005;
 	public static final double TANK_HEIGHT = 0.005;
@@ -49,10 +50,9 @@ public class GameEngine {
 			
 			double xNew = Math.random() % BOARD_MAX_X;
 			double yNew = Math.random() % BOARD_MAX_Y;
-			Tank newTank = new Tank(xNew, yNew, TANK_WIDTH, TANK_HEIGHT, 
-			0, 0, i);
+			Tank newTank = new Tank(xNew, yNew, TANK_WIDTH, TANK_HEIGHT, 0, 0, i);
 			
-			tanks[i] = newTank;
+			tanks.add(newTank);
 		}
 		
 	}
@@ -60,32 +60,32 @@ public class GameEngine {
 
 	public void update(Input[] inputs) {
 		
-		Tank[] currTanks = getTanks();
-		Bullet[] currBullets = getBullets();
+		ArrayList<Tank> currTanks = getTanks();
+		ArrayList<Bullet> currBullets = getBullets();
 
 		
 		for(int x = 0; x < inputs.length; x++) {
 			Input currInput = inputs[x];
 			
 			//Deal with tank related inputs
-			for(int y = 0; x < currTanks.length; x++) {
-				if(currTanks[y].id == currInput.id) {
+			for(int y = 0; x < currTanks.size(); x++) {
+				if(currTanks.get(y).id == currInput.id) {
 
 					//Update gun angle before shooting or moving
-					updateGunAngle(currTanks[y], currInput.x, currInput.y);
+					updateGunAngle(currTanks.get(y), currInput.x, currInput.y);
 					
 					//Create bullet
 					if(currInput.click == true) {
-						createBullet(currTanks[y]);
+						createBullet(currTanks.get(y));
 					}
 					
 					// Angle tank before moving
-					if(currInput.a == true) { angleTank(currTanks[y], false); }
-					if(currInput.d == true) { angleTank(currTanks[y], true); }
+					if(currInput.a == true) { angleTank(currTanks.get(y), false); }
+					if(currInput.d == true) { angleTank(currTanks.get(y), true); }
 					
 					//Move with new angle
-					if(currInput.w == true) { moveTank(currTanks[y], true); }
-					if(currInput.s == true) { moveTank(currTanks[y], false); }
+					if(currInput.w == true) { moveTank(currTanks.get(y), true); }
+					if(currInput.s == true) { moveTank(currTanks.get(y), false); }
 					
 					
 				}
@@ -94,7 +94,7 @@ public class GameEngine {
 		
 		//Update the locations of the bullets and decide if any hit
 		for (int x = 0; x < inputs.length; x++) {
-			updateBulletLocation(currBullets[x]);
+			updateBulletLocation(currBullets.get(x));
 		}
 		
 	}
@@ -113,13 +113,13 @@ public class GameEngine {
 		
 		Polygon bulletPolygon = bullet.getBulletRectangle();
 		
-		for(Tank tank : tanks) { 
-			Polygon tankPolygon = tank.getTankRectangle();
+		for(int i = 0; i < tanks.size(); i++) { 
+			Polygon tankPolygon = tanks.get(i).getTankRectangle();
 		
 			if (intersects(bulletPolygon, tankPolygon)) {
-				tank.takeDamage(Bullet.BULLET_DAMAGE);
-				if (tank.health == 0 ) {
-					
+				tanks.get(i).takeDamage(Bullet.BULLET_DAMAGE);
+				if (tanks.get(i).health == 0 ) {
+					tanks.remove(i);
 				}
 			}
 		}
@@ -158,8 +158,7 @@ public class GameEngine {
 
 		Bullet newBullet = new Bullet(currTank.x, currTank.y, BULLET_WIDTH, 
 				BULLET_HEIGHT, currTank.gunAngle);
-		int bulletListSize = bullets.length;
-		bullets[bulletListSize] = newBullet;
+		bullets.add(newBullet);
 
 	}
 
@@ -180,11 +179,11 @@ public class GameEngine {
 		}
 	}
 
-	public Tank[] getTanks() {
+	public ArrayList<Tank> getTanks() {
 		return tanks;		
 	}
 	
-	public Bullet[] getBullets() {
+	public ArrayList<Bullet> getBullets() {
 		return bullets;	
 	}
 	
