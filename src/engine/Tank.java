@@ -35,6 +35,13 @@ public class Tank {
 		}
 	}
 	
+	public int getId() {
+		return id;
+	}
+	
+	public int getHealth() {
+		return health;
+	}
 	
 	// Calculations for Polygon shape
 	

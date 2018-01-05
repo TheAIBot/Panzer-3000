@@ -22,6 +22,7 @@ public class GameEngine {
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.001;
 	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
+	public static final double TANK_ROTATION_ANGLE = Math.toRadians(10); 
 	
 
 	public static void main(String[] args) {
@@ -34,7 +35,7 @@ public class GameEngine {
 		serverConnector = new ServerConnector();
 		clientConnector = new ClientConnector();
 		
-		initializeTanks(tankCount);
+		initializeTanksBullets(tankCount);
 		
 		while(true) {
 			
@@ -45,7 +46,11 @@ public class GameEngine {
 		}
 	}
 	
-	private void initializeTanks(int tankCount) {
+	public void initializeTanksBullets(int tankCount) {
+		
+		bullets = new ArrayList<Bullet>();
+		tanks = new ArrayList<Tank>();
+		
 		for(int i = 0; i < tankCount; i++) {
 			
 			double xNew = Math.random() % BOARD_MAX_X;
@@ -153,6 +158,10 @@ public class GameEngine {
 		double x = pointerX - currTank.x;
 		double y = pointerY - currTank.y;
 		
+		if (x == 0 && y == 0) {
+			return;
+		}
+		
 		double radianAngle = Math.atan(Math.abs(x/y));
 		
 		if (x > 0 && y < 0) {
@@ -163,7 +172,7 @@ public class GameEngine {
 			radianAngle = Math.toRadians(360) - radianAngle;
 		}
 		
-		currTank.gunAngle = radianAngle;
+		currTank.gunAngle = Math.toRadians(Math.toDegrees(radianAngle)%360);
 	}
 
 	private void createBullet(Tank currTank) {
@@ -176,8 +185,15 @@ public class GameEngine {
 
 	// true: clockwise, false: counterclockwise
 	private void angleTank(Tank currTank, Boolean angle ) {
-		if (angle) { currTank.bodyAngle += Math.toRadians(10); }
-		else { currTank.bodyAngle -= Math.toRadians(10); }
+		if (angle) { 
+			currTank.bodyAngle += TANK_ROTATION_ANGLE;
+			currTank.bodyAngle = currTank.bodyAngle % Math.toRadians(360);
+		} else { 
+			currTank.bodyAngle -= TANK_ROTATION_ANGLE;
+			if (currTank.bodyAngle < 0) {
+				currTank.bodyAngle = Math.toRadians(360) + currTank.bodyAngle;
+			}
+		}
 	}
 
 	// true: forward, false: backward
