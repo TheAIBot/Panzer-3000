@@ -93,23 +93,34 @@ public class GameEngine {
 		}
 		
 		//Update the locations of the bullets and decide if any hit
-		for (int x = 0; x < inputs.length; x++) {
-			updateBulletLocation(currBullets.get(x));
+		for (int x = 0; x < bullets.size(); x++) {
+			
+			//if the bullet has left the map, delete it
+			if (!updateBulletLocation(currBullets.get(x))) {
+				bullets.remove(x);
+			}
 		}
 		
 	}
 	
-	private void updateBulletLocation(Bullet bullet) {
+	// returns false if bullet must be deleted
+	private Boolean updateBulletLocation(Bullet bullet) {
 		
 		// Work out changes in x and y given bullets angle and movement distance
 		bullet.x += Math.sin( bullet.angle ) * BULLET_MOVEMENT_DISTANCE; 
 		bullet.y += Math.cos( bullet.angle ) * BULLET_MOVEMENT_DISTANCE;
 		
-		checkDamage(bullet);
+		//check if bullet has left map yet
+		if ((0 < bullet.x && bullet.x < BOARD_MAX_X) && (0 < bullet.y && bullet.y < BOARD_MAX_Y)) {
+			return !checkDamage(bullet);
+		} else {
+			return false;
+		}
 		
 	}
 
-	private void checkDamage(Bullet bullet) {
+	//returns true if bullet hits
+	private Boolean checkDamage(Bullet bullet) {
 		
 		Polygon bulletPolygon = bullet.getBulletRectangle();
 		
@@ -121,9 +132,10 @@ public class GameEngine {
 				if (tanks.get(i).health == 0 ) {
 					tanks.remove(i);
 				}
+				return true;
 			}
 		}
-		
+		return false;
 	}
 
 	private boolean intersects(Polygon bulletPolygon, Polygon tankPolygon) {
@@ -170,12 +182,27 @@ public class GameEngine {
 
 	// true: forward, false: backward
 	private void moveTank(Tank currTank, Boolean direction) {
+		double x = Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
+		double y = Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
 		if(direction) {
-			currTank.x += Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE; 
-			currTank.y += Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
+			double possibleX = currTank.x + x; 
+			double possibleY = currTank.y + y;
+			if (possibleX < BOARD_MAX_X) {
+				currTank.x += x; 
+			}
+			if (possibleY < BOARD_MAX_Y) {
+				currTank.y += y;
+			}
 		} else {
-			currTank.x -= Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE; 
-			currTank.y -= Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE;
+			double possibleX = currTank.x - x; 
+			double possibleY = currTank.y - y;
+
+			if (possibleX > 0) {
+				currTank.x -= x; 
+			}
+			if (possibleY > 0) {
+				currTank.y -= y;
+			}
 		}
 	}
 
