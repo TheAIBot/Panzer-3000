@@ -48,5 +48,9 @@ public class ClientConnector {
 	
 
 	//sendUserInputs(Input inputs);
+<<<<<<< HEAD
 	//recieveUpdates();
+=======
+	//recieveUpdates(); 
+>>>>>>> master
 }
