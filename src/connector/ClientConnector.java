@@ -2,12 +2,11 @@ package connector;
 
 import java.util.*;
 
-//import org.jspace.*;
+import org.jspace.*;
 
 import engine.*;
 
 public class ClientConnector {
-/*
 	RemoteSpace privateServerConnections;
 	RemoteSpace updateSpace;
 	int 		connectionId;
@@ -49,6 +48,5 @@ public class ClientConnector {
 	
 
 	//sendUserInputs(Input inputs);
-	//recieveUpdates(); 
-	*/
+	//recieveUpdates();
 }

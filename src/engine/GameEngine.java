@@ -1,6 +1,10 @@
 package engine;
 
 import connector.ServerConnector;
+
+import java.awt.Polygon;
+import java.awt.geom.Area;
+
 import connector.ClientConnector;
 
 public class GameEngine {
@@ -97,7 +101,7 @@ public class GameEngine {
 	
 	private void updateBulletLocation(Bullet bullet) {
 		
-		// Use Pythagoras to work out changes in x and y given bullets angle and movement distance
+		// Work out changes in x and y given bullets angle and movement distance
 		bullet.x += Math.sin( bullet.angle ) * BULLET_MOVEMENT_DISTANCE; 
 		bullet.y += Math.cos( bullet.angle ) * BULLET_MOVEMENT_DISTANCE;
 		
@@ -106,10 +110,30 @@ public class GameEngine {
 	}
 
 	private void checkDamage(Bullet bullet) {
-		// TODO Auto-generated method stub
 		
+		Polygon bulletPolygon = bullet.getBulletRectangle();
+		
+		for(Tank tank : tanks) { 
+			Polygon tankPolygon = tank.getTankRectangle();
+		
+			if (intersects(bulletPolygon, tankPolygon)) {
+				tank.takeDamage(Bullet.BULLET_DAMAGE);
+				if (tank.health == 0 ) {
+					
+				}
+			}
+		}
 		
 	}
+
+	private boolean intersects(Polygon bulletPolygon, Polygon tankPolygon) {
+		Area bulletArea = new Area(bulletPolygon);
+		Area tankArea = new Area(tankPolygon);
+		
+		bulletArea.intersect(tankArea);
+		return 	!bulletArea.isEmpty();
+	}
+
 
 	private void updateGunAngle(Tank currTank, double pointerX, double pointerY) {
 		// TODO Auto-generated method stub
@@ -157,15 +181,11 @@ public class GameEngine {
 	}
 
 	public Tank[] getTanks() {
-		
-		return tanks;
-		
+		return tanks;		
 	}
 	
 	public Bullet[] getBullets() {
-		
-		return bullets;
-	
+		return bullets;	
 	}
 	
 }
