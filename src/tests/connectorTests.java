@@ -2,6 +2,7 @@ package tests;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class connectorTests {
 		}
 		//As it runs on different threads, and essentially a deadlock will be reached if this doesn't work,
 		//it will instead be checked that after 1 second (2 might be better), all connections are established.
-		Thread.sleep(1000);
+		Thread.sleep(1500);
 		assertEquals(numOfClients, server.numConnectedClients);
 		
 	}
@@ -61,10 +62,10 @@ public class connectorTests {
 			ArrayList<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
 			
 			double acceptedMarginOfError = 0.01;
-			assertEquals(1, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
-			assertEquals(2, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
-			assertEquals(1, recievedBullets.get(0).height, acceptedMarginOfError);
-			assertEquals(2, recievedBullets.get(1).height, acceptedMarginOfError);
+			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
+			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
+			assertEquals(bullets.get(0).height, recievedBullets.get(0).height, acceptedMarginOfError);
+			assertEquals(bullets.get(1).height, recievedBullets.get(1).height, acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}
@@ -84,7 +85,13 @@ public class connectorTests {
 		Input[] inputs = server.reciveUserInputs();
 		assertEquals(clients.length, inputs.length);
 		for (int i = 0; i < clients.length; i++) {
-			assertEquals(clients[i].connectionId, inputs[i].id);
+			boolean idExists = false;
+			for (Input input : inputs) {
+				if (clients[i].connectionId == input.id) {
+					idExists = true;
+				}
+			}
+			assertTrue(idExists);
 		}
 		
 		
