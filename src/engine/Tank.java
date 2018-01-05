@@ -11,8 +11,11 @@ public class Tank {
 	public double bodyAngle;
 	public double gunAngle;
 	int id;
-	public final double GUN_WIDTH = 0.2;
-	public final double GUN_HEIGHT = 0.02;
+	int health;
+	
+	public static final double GUN_WIDTH = 0.2;
+	public static final double GUN_HEIGHT = 0.02;
+	public static final int TANK_HEALTH = 100;
 	
 	public Tank(double xNew, double yNew, double bodyWidthNew, double bodyHeightNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
@@ -23,7 +26,19 @@ public class Tank {
 		bodyAngle = bodyAngleNew;
 		gunAngle = gunAngleNew;
 		id = idNew;
+		health = TANK_HEALTH;
 	}
+	
+	public void takeDamage(int damage) {
+		if (damage > health) {
+			health = 0;
+		} else {
+			health -= damage;
+		}
+	}
+	
+	
+	// Calculations for Polygon shape
 	
 	public static final double SCALAR = 10000;
 	
