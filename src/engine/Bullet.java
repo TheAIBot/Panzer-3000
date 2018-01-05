@@ -7,7 +7,7 @@ public class Bullet {
 	public double height;
 	public double angle;
 	
-	Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
+	public Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
 		x = xNew;
 		y = yNew;
 		width = widthNew;

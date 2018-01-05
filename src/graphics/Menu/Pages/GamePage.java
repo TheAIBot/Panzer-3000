@@ -14,7 +14,7 @@ public class GamePage extends SuperPage {
 		super(listener);
 	}
 	
-	public static JPanel GetGraphicsPanel()
+	public static GraphicsPanel GetGraphicsPanel()
 	{
 		return graphicsPanel;
 	}
@@ -22,7 +22,7 @@ public class GamePage extends SuperPage {
 	@Override
 	public JPanel createPage() {
 		page.add(graphicsPanel, createConstraint(0, 0, 1, 1, GridBagConstraints.CENTER, false, GridBagConstraints.BOTH));
-		return page;
+		return graphicsPanel;
 	}
 	
 	private GridBagConstraints createConstraint(int gridX, int gridY, int gridWidth, int gridHeight, int anchor, boolean extraSpace, int fill) {

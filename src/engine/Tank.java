@@ -12,7 +12,7 @@ public class Tank {
 	public double gunAngle;
 	int id;
 	
-	Tank(double xNew, double yNew, double bodyWidthNew, double bodyHeightNew, 
+	public Tank(double xNew, double yNew, double bodyWidthNew, double bodyHeightNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
 		x = xNew;
 		y = yNew;
@@ -39,8 +39,8 @@ public class Tank {
 		final Point bottomRight = rotateMoveScale( bodyWidth  / 2,  bodyHeight / 2, xScalar, yScalar);
 		
 		//put corners into a polygon
-		int[] xPoints =  {topLeft.x, topRight.x, bottomLeft.x, bottomRight.x};
-		int[] yPoints =  {topLeft.y, topRight.y, bottomLeft.y, bottomRight.y};	
+		int[] xPoints =  {topLeft.x, topRight.x, bottomRight.x, bottomLeft.x};
+		int[] yPoints =  {topLeft.y, topRight.y, bottomRight.y, bottomLeft.y};	
 		return new Polygon(xPoints, yPoints, 4);
 	}
 	
