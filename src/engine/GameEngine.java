@@ -6,12 +6,13 @@ import java.awt.Polygon;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 
+import Logger.Log;
 import connector.ClientConnector;
 
 public class GameEngine {
 	ServerConnector connection;
-	ArrayList<Tank> tanks;
-	ArrayList<Bullet> bullets;
+	ArrayList<Tank> tanks = new ArrayList<Tank>();
+	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
 	public static final double TANK_WIDTH = 0.005;
@@ -22,29 +23,30 @@ public class GameEngine {
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.001;
 	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
-	
-
-	public static void main(String[] args) {
-		new GameEngine().startGame(TANK_COUNT);
-	}
 	 
 	 
 	public void startGame(int tankCount) {
-		
+		Log.message("Starting server");
 		initializeTanks(tankCount);
 		connection = new ServerConnector();
-		connection.initializeServerConnection(4);	
+		connection.initializeServerConnection(1);
+		Log.message("Clients connected");
 		
 		//The server will send the initial information first, such that the clients have something to display:
 		
 		connection.sendUpdates(tanks, bullets);
+		Log.message("Sent first update");
 		
 		//Then the main loop can begin:
 		
 		while(true) { //Game loop			
 			Input[] userInputs = connection.reciveUserInputs();
+			Log.message("Received inputs from clients");
 			update(userInputs);
+			Log.message("Updated game");
 			connection.sendUpdates(tanks, bullets);
+			Log.message("Sent game state update");
+			
 			try {
 				Thread.sleep(1000/FPS); 
 			} catch (InterruptedException e) { e.printStackTrace(); }
@@ -54,8 +56,8 @@ public class GameEngine {
 	private void initializeTanks(int tankCount) {
 		for(int i = 0; i < tankCount; i++) {
 			
-			double xNew = Math.random() % BOARD_MAX_X;
-			double yNew = Math.random() % BOARD_MAX_Y;
+			double xNew = Math.random();
+			double yNew = Math.random();
 			Tank newTank = new Tank(xNew, yNew, TANK_WIDTH, TANK_HEIGHT, 0, 0, i);
 			
 			tanks.add(newTank);

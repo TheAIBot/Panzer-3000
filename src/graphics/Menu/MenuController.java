@@ -2,6 +2,8 @@ package graphics.Menu;
 
 
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Stack;
@@ -9,15 +11,17 @@ import java.util.Stack;
 import javax.swing.JFrame;
 
 import Logger.Log;
+import engine.Input;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
 import graphics.Menu.Pages.SuperPage;
 
-public class MenuController implements PageRequestsListener {
+public class MenuController implements PageRequestsListener, KeyListener {
 	private final JFrame mainMenu;
 	private final GamePage MAIN_PAGE = new GamePage(this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
+	private final Input input = new Input();
 	
 	public MenuController(String windowName, int startWidth, int startHeight)
 	{
@@ -33,6 +37,7 @@ public class MenuController implements PageRequestsListener {
 	            //AudioManager.closeBackgroundMusic();
 	        }
 		});
+		mainMenu.addKeyListener(this);
 	}
 	
 	public void showWindow()
@@ -102,5 +107,52 @@ public class MenuController implements PageRequestsListener {
 	@Override
 	public void showScreen() {
 		mainMenu.setVisible(true);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyChar()) {
+		case 'w':
+			input.w = true;
+			break;
+		case 'a':
+			input.a = true;
+			break;
+		case 's':
+			input.s = true;
+			break;
+		case 'd':
+			input.d = true;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		switch (e.getKeyChar()) {
+		case 'w':
+			input.w = false;
+			break;
+		case 'a':
+			input.a = false;
+			break;
+		case 's':
+			input.s = false;
+			break;
+		case 'd':
+			input.d = false;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+	
+	public Input getInput()
+	{
+		return input;
 	}
 }

@@ -43,10 +43,10 @@ public class connectorTests {
 		testSetupInitialClientServerConnection();
 		
 		//Creating an unique test input.
-		Tank[] tanks = new Tank[2];
-		List<Bullet> bullets = new ArrayList<Bullet>();
-		tanks[0] = new Tank(0, 0, 0, 1, 0, 0, 0);
-		tanks[1] = new Tank(0, 0, 0, 2, 0, 0, 0);
+		ArrayList<Tank> tanks = new ArrayList<Tank>();
+		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+		tanks.add(new Tank(0, 0, 0, 1, 0, 0, 0));
+		tanks.add(new Tank(0, 0, 0, 2, 0, 0, 0));
 		bullets.add(new Bullet(0, 0, 0, 1, 0));
 		bullets.add(new Bullet(0, 0, 0, 2, 0));
 		
@@ -55,14 +55,14 @@ public class connectorTests {
 		
 		//Now all the clients should be able to get the updates.
 		
-		for (int i = 0; i < tanks.length; i++) {
+		for (int i = 0; i < tanks.size(); i++) {
 			Object[] updateTuple = clients[i].recieveUpdates();
-			Tank[] recievedTanks = clients[i].unpackTanks(updateTuple);
-			List<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
+			ArrayList<Tank> recievedTanks = clients[i].unpackTanks(updateTuple);
+			ArrayList<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
 			
 			double acceptedMarginOfError = 0.01;
-			assertEquals(1, recievedTanks[0].bodyHeight, acceptedMarginOfError);
-			assertEquals(2, recievedTanks[1].bodyHeight, acceptedMarginOfError);
+			assertEquals(1, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
+			assertEquals(2, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
 			assertEquals(1, recievedBullets.get(0).height, acceptedMarginOfError);
 			assertEquals(2, recievedBullets.get(1).height, acceptedMarginOfError);
 		}		

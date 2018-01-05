@@ -47,10 +47,10 @@ public class ClientConnector implements Runnable{
 	}	
 	
 	
-	public List<Tank> unpackTanks(Object[] updateTuple) {
+	public ArrayList<Tank> unpackTanks(Object[] updateTuple) {
 
-		List<Tank> unpackedTanks = new ArrayList<Tank>();
-		List<Object>  jsonTanks = (List<Object>) updateTuple[1];
+		ArrayList<Tank> unpackedTanks = new ArrayList<Tank>();
+		ArrayList<Object>  jsonTanks = (ArrayList<Object>) updateTuple[1];
 		for (int i = 0; i < jsonTanks.size(); i++) {
 			JsonElement tankJSonElement = new Gson().toJsonTree(jsonTanks.get(i));
 			JsonObject tankJSonObject = tankJSonElement.getAsJsonObject();
@@ -59,9 +59,9 @@ public class ClientConnector implements Runnable{
 		return unpackedTanks;
 	}
 	
-	public List<Bullet> unpackBullets(Object[] updateTuple) {
-		List<Bullet> unpackedBullets = new ArrayList<Bullet>();
-		List<Object>  jsonBullets = (List<Object>) updateTuple[1];
+	public ArrayList<Bullet> unpackBullets(Object[] updateTuple) {
+		ArrayList<Bullet> unpackedBullets = new ArrayList<Bullet>();
+		ArrayList<Object>  jsonBullets = (ArrayList<Object>) updateTuple[1];
 		for (int i = 0; i < jsonBullets.size(); i++) {
 			JsonElement bulletJSonElement = new Gson().toJsonTree(jsonBullets.get(i));
 			JsonObject bulletJSonObject = bulletJSonElement.getAsJsonObject();

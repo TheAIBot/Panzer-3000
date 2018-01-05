@@ -45,15 +45,14 @@ public class ServerConnector implements Runnable {
 		}
 		
 		//And waits for all clients to connect:
-		
-		for (double id = 0; id < clientSpaces.length; id++) {
+		for (int id = 0; id < clientSpaces.length; id++) {
 			try {
 				//FormalField field1 = new FormalField(String.class);
 				ActualField field1 = new ActualField("connected");
 				FormalField field2 = new FormalField(Double.class);
 				//ActualField field2 = new ActualField(id);
 				
-				clientSpaces[(int) id].get(field1, field2);
+				clientSpaces[id].get(field1, field2);
 				numConnectedClients++;
 				//System.out.println("cake");
 			} catch (InterruptedException e) {
@@ -65,7 +64,7 @@ public class ServerConnector implements Runnable {
 		//System.out.println("All connections established");
 	}
 	
-	public void sendUpdates(List<Tank> tanks, List<Bullet> bullets) {
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) {
 		updateSpace.put(tanks, bullets);	
 	}
 	
