@@ -1,23 +1,34 @@
 package engine;
 
+import connector.ServerConnector;
+import connector.ClientConnector;
+
 public class GameEngine {
-	//startGame(int tankCount);
-	//update(Input[] inputs);
-	//Tank[] getTanks();
-	//Bullet[] getBullets();
-	 public static final double BOARD_MAX_X = 1;
-	 public static final double BOARD_MAX_Y = 1;
-	 public static final double TANK_MOVEMENT_DISTANCE = 0.001;
-	 public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
+	ServerConnector serverConnector;
+	ClientConnector clientConnector;
+	public static final int TANK_COUNT = 2;
+	public static final double BOARD_MAX_X = 1;
+	public static final double BOARD_MAX_Y = 1;
+	public static final double TANK_MOVEMENT_DISTANCE = 0.001;
+	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
 	
-	
+
+	public static void main(String[] args) {
+		new GameEngine().startGame(TANK_COUNT);
+	}
+	 
+	 
 	public void startGame(int tankCount) {
 		
-		//TODO: initialize connector
+		serverConnector = new ServerConnector();
+		clientConnector = new ClientConnector();
+		
 		while(true) {
 			
-			// TODO: GET ALL INPUTS
-			update(null);
+			update(serverConnector.reciveUserInputs());
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 	}
 	
