@@ -64,11 +64,9 @@ public class GameEngine {
 	
 	private void updateBulletLocation(Bullet bullet) {
 		
-		double degreeAngle = Math.toDegrees(bullet.angle);
-		
 		// Use Pythagoras to work out changes in x and y given bullets angle and movement distance
-		bullet.x += Math.sin( Math.toRadians(degreeAngle) ) * BULLET_MOVEMENT_DISTANCE; 
-		bullet.y += Math.cos( Math.toRadians(degreeAngle) ) * BULLET_MOVEMENT_DISTANCE;
+		bullet.x += Math.sin( bullet.angle ) * BULLET_MOVEMENT_DISTANCE; 
+		bullet.y += Math.cos( bullet.angle ) * BULLET_MOVEMENT_DISTANCE;
 		
 		checkDamage(bullet);
 		
@@ -76,6 +74,7 @@ public class GameEngine {
 
 	private void checkDamage(Bullet bullet) {
 		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -87,12 +86,12 @@ public class GameEngine {
 		
 		double radianAngle = Math.atan(Math.abs(x/y));
 		
-		if (x > 1 && y < 1) {
-			radianAngle += Math.toRadians(90);
-		} else if (x < 1 && y < 1) {
+		if (x > 0 && y < 0) {
+			radianAngle = Math.toRadians(180) - radianAngle;
+		} else if (x < 0 && y < 0) {
 			radianAngle += Math.toRadians(180);
-		} else if (x < 1 && y > 1) {
-			radianAngle += Math.toRadians(270);
+		} else if (x < 0 && y > 0) {
+			radianAngle = Math.toRadians(360) - radianAngle;
 		}
 		
 		currTank.gunAngle = radianAngle;
