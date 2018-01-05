@@ -1,8 +1,13 @@
 package graphics.Menu.Pages;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import graphics.GraphicsPanel;
@@ -21,27 +26,10 @@ public class GamePage extends SuperPage {
 
 	@Override
 	public JPanel createPage() {
-		page.add(graphicsPanel, createConstraint(0, 0, 1, 1, GridBagConstraints.CENTER, false, GridBagConstraints.BOTH));
-		return graphicsPanel;
-	}
-	
-	private GridBagConstraints createConstraint(int gridX, int gridY, int gridWidth, int gridHeight, int anchor, boolean extraSpace, int fill) {
-		GridBagConstraints contraint = new GridBagConstraints();
-		contraint.gridx = gridX;
-		contraint.gridy = gridY;
-		if (!extraSpace) {
-			contraint.weightx = 0;
-			contraint.weighty = 0;
-		} else {
-			contraint.weightx = 1;
-			contraint.weighty = 1;
-		}
-		contraint.fill = fill;
-		contraint.insets = new Insets(5, 5, 5, 5);
-		contraint.gridwidth = gridWidth;
-		contraint.gridheight = gridHeight;
-		contraint.anchor = anchor;
-		return contraint;
+		page.setLayout(new GridBagLayout());
+		page.add(graphicsPanel);
+		
+		return page;
 	}
 
 	@Override

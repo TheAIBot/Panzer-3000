@@ -11,6 +11,8 @@ public class Tank {
 	public double bodyAngle;
 	public double gunAngle;
 	int id;
+	public final double GUN_WIDTH = 0.2;
+	public final double GUN_HEIGHT = 0.02;
 	
 	public Tank(double xNew, double yNew, double bodyWidthNew, double bodyHeightNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
@@ -33,10 +35,10 @@ public class Tank {
 	public Polygon getTankRectangle(double xScalar, double yScalar)
 	{
 		//create the tank corners
-		final Point topLeft     = rotateMoveScale(-bodyWidth  / 2, -bodyHeight / 2, xScalar, yScalar);
-		final Point topRight    = rotateMoveScale( bodyWidth  / 2, -bodyHeight / 2, xScalar, yScalar);
-		final Point bottomLeft  = rotateMoveScale(-bodyWidth  / 2,  bodyHeight / 2, xScalar, yScalar);
-		final Point bottomRight = rotateMoveScale( bodyWidth  / 2,  bodyHeight / 2, xScalar, yScalar);
+		final Point topLeft     = rotateMoveScale(-bodyWidth  / 2, -bodyHeight / 2, bodyAngle, xScalar, yScalar);
+		final Point topRight    = rotateMoveScale( bodyWidth  / 2, -bodyHeight / 2, bodyAngle, xScalar, yScalar);
+		final Point bottomLeft  = rotateMoveScale(-bodyWidth  / 2,  bodyHeight / 2, bodyAngle, xScalar, yScalar);
+		final Point bottomRight = rotateMoveScale( bodyWidth  / 2,  bodyHeight / 2, bodyAngle, xScalar, yScalar);
 		
 		//put corners into a polygon
 		int[] xPoints =  {topLeft.x, topRight.x, bottomRight.x, bottomLeft.x};
@@ -44,11 +46,25 @@ public class Tank {
 		return new Polygon(xPoints, yPoints, 4);
 	}
 	
-	private Point rotateMoveScale(final double cornerX, final double cornerY, final double xScalar, final double yScalar)
+	public Polygon getGunRectangle(double xScalar, double yScalar)
+	{
+		//create gun corners
+		final Point topLeft     = rotateMoveScale(-GUN_WIDTH * 0.1 / 2, -GUN_HEIGHT / 2, gunAngle, xScalar, yScalar);
+		final Point topRight    = rotateMoveScale( GUN_WIDTH * 1   / 2, -GUN_HEIGHT / 2, gunAngle, xScalar, yScalar);
+		final Point bottomLeft  = rotateMoveScale(-GUN_WIDTH * 0.1 / 2,  GUN_HEIGHT / 2, gunAngle, xScalar, yScalar);
+		final Point bottomRight = rotateMoveScale( GUN_WIDTH * 1   / 2,  GUN_HEIGHT / 2, gunAngle, xScalar, yScalar);
+		
+		//put corners into a polygon
+		int[] xPoints =  {topLeft.x, topRight.x, bottomRight.x, bottomLeft.x};
+		int[] yPoints =  {topLeft.y, topRight.y, bottomRight.y, bottomLeft.y};	
+		return new Polygon(xPoints, yPoints, 4);
+	}
+	
+	private Point rotateMoveScale(final double cornerX, final double cornerY, final double angle, final double xScalar, final double yScalar)
 	{
 		//rotates the point around (0, 0)
-		final double rotatedX = rotateX(cornerX, cornerY, bodyAngle);
-		final double rotatexY = rotateY(cornerX, cornerY, bodyAngle);
+		final double rotatedX = rotateX(cornerX, cornerY, angle);
+		final double rotatexY = rotateY(cornerX, cornerY, angle);
 		
 		//moves the point to the tank
 		final double movedX = rotatedX + x;

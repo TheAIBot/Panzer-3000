@@ -41,7 +41,7 @@ public class MenuController implements PageRequestsListener {
 		mainMenu.add(MAIN_PAGE.getPage());
 		currentPage = MAIN_PAGE;
 		currentPage.startPage();
-		mainMenu.setVisible(true);	
+		mainMenu.setVisible(true);
 	}
 
 	@Override

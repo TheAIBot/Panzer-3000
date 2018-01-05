@@ -17,10 +17,10 @@ public class ClientConnector {
 	
 	public void connectToServer() {
 		try {
-			updateSpace		= new RemoteSpace("tcp://127.0.0.1:9001/updateSpace?keep");
+			updateSpace		= new RemoteSpace("tcp://localhost:9001/updateSpace?keep");
 			Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
 			connectionId   	= (int) tuple[0];
-			privateServerConnections = new RemoteSpace("tcp://127.0.0.1:9001/clientSpace" + connectionId + "?keep");
+			privateServerConnections = new RemoteSpace("tcp://localhost:9001/clientSpace" + connectionId + "?keep");
 			privateServerConnections.put("connected", 0.0);
 			System.out.println("Client connected");
 		} catch (Exception e) {

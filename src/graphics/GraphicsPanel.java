@@ -1,6 +1,7 @@
 package graphics;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -16,6 +17,10 @@ public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank> tanks = new ArrayList<Tank>();
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
+	public GraphicsPanel() {
+		setBackground(Color.WHITE);
+	}
+	
 
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -23,6 +28,12 @@ public class GraphicsPanel extends JPanel {
 		
 		drawTanks(g);
 		drawBullets(g);
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		int min = Math.min(this.getParent().getWidth(), this.getParent().getHeight());
+	    return new Dimension(min, min);
 	}
 	
 	private void drawTanks(Graphics g)
@@ -46,7 +57,8 @@ public class GraphicsPanel extends JPanel {
 	
 	private void drawTankGun(Tank tank, Graphics g)
 	{
-		
+		Polygon gunBody = tank.getGunRectangle(this.getWidth(), this.getHeight());
+		g.fillPolygon(gunBody);
 	}
 	
 	private void drawBullets(Graphics g)
@@ -59,7 +71,7 @@ public class GraphicsPanel extends JPanel {
 	
 	private void drawBullet(Bullet bullet, Graphics g)
 	{
-		g.drawOval((int)(bullet.x - bullet.width / 2), (int)(bullet.y- bullet.height / 2), (int)bullet.width, (int)bullet.height);
+		//g.drawOval((int)(bullet.x - bullet.width / 2), (int)(bullet.y- bullet.height / 2), (int)bullet.width, (int)bullet.height);
 	}
 	
 	public void setTanks(ArrayList<Tank> tanks)
