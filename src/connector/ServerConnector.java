@@ -2,11 +2,11 @@ package connector;
 
 import java.util.*;
 
-import org.jspace.*;
+//import org.jspace.*;
 
 import engine.*;
 public class ServerConnector {
-	
+	/*
 	SpaceRepository 	repository;
 	SequentialSpace[] 	clientSpaces;
 	SequentialSpace		updateSpace;
@@ -77,6 +77,5 @@ public class ServerConnector {
 	
 	//sendUpdates(Tank[] tanks, Bullet[] bullets); //Sends information to all the clients, about tanks, bullets and the likes.
 	//Inputs recieveUserInputs();
-	
-
+	*/
 }

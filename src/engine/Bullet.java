@@ -1,14 +1,13 @@
 package engine;
 
 public class Bullet {
-	double x;
-	double y;
-	double width;
-	double height;
-	double angle;
+	public double x;
+	public double y;
+	public double width;
+	public double height;
+	public double angle;
 	
-	Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
-
+	public Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
 		x = xNew;
 		y = yNew;
 		width = widthNew;
