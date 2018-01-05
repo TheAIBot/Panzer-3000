@@ -38,7 +38,7 @@ public class ClientConnector implements Runnable{
 	public Object[] recieveUpdates() {
 		try {
 			//TODO ask if reading puts a lock on the space.
-			Object[] tuple = updateSpace.query(new FormalField(List.class), new FormalField(List.class));
+			Object[] tuple = updateSpace.query(new FormalField(ArrayList.class), new FormalField(ArrayList.class));
 			return tuple;
 		} catch (InterruptedException e) {
 			e.printStackTrace();

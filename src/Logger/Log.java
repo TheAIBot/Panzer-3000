@@ -5,6 +5,10 @@ public class Log {
 			System.out.println(message);
 		}
 		
+		public static void message(int message) {
+			System.out.println("" + message);
+		}
+		
 		public static void exception(Exception e)
 		{
 			System.out.println(e.getMessage());
