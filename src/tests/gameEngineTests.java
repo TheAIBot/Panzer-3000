@@ -1,10 +1,9 @@
 package tests;
 
+import engine.Bullet;
 import engine.GameEngine;
 import engine.Input;
 import engine.Tank;
-
-import java.util.ArrayList;
 
 import org.junit.*;
 
@@ -58,7 +57,7 @@ public class gameEngineTests {
 				x = tank.x - tank.y;
 				y = 0;
 			}
-			Input newInput = new Input(false, false, false,  false, false, tank.x - tank.y, 0, tank.getId());
+			Input newInput = new Input(false, false, false,  false, false, x, y, tank.getId());
 			
 			inputs[0] = newInput;
 			gameEngine.update(inputs);
@@ -129,6 +128,24 @@ public class gameEngineTests {
 		}
 	}
 	
+	
+	public void bulletTest() {
+		Input inputs[] = new Input[1];
+		
+		// Pointer is at the right of screen, in line with tank
+		for(Tank tank : gameEngine.getTanks()) {
+			Input newInput = new Input(false, false, false,  false, true, tank.x, tank.y, tank.getId());
+			inputs[0] = newInput;
+			gameEngine.update(inputs);
+			Bullet newBullet = gameEngine.getBullets().get(gameEngine.getBullets().size() - 1);
+			org.junit.Assert.assertTrue(newBullet.angle == tank.gunAngle);
+			org.junit.Assert.assertTrue(newBullet.x == tank.x);
+			org.junit.Assert.assertTrue(newBullet.y == tank.y);
+			org.junit.Assert.assertTrue(newBullet.width == GameEngine.BULLET_WIDTH);
+			org.junit.Assert.assertTrue(newBullet.height == GameEngine.BULLET_HEIGHT);
+		}
+
+	}
 	
 	public void tankBasicTest(Tank tank, double bodyAngle, double gunAngle) {
 		org.junit.Assert.assertTrue(tank.x < GameEngine.BOARD_MAX_X);
