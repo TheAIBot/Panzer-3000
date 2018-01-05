@@ -1,8 +1,8 @@
 package engine;
 
 public class Bullet {
-	double x;
-	double y;
-	double width;
-	double height;
+	public double x;
+	public double y;
+	public double width;
+	public double height;
 }

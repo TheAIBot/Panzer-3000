@@ -1,11 +1,11 @@
 package engine;
 
 public class Tank {
-	double x;
-	double y;
-	double bodyWidth;
-	double bodyHeight;
-	double bodyAngle;
-	double gunAngle;
-	int id;
+	public double x;
+	public double y;
+	public double bodyWidth;
+	public double bodyHeight;
+	public double bodyAngle;
+	public double gunAngle;
+	public int id;
 }
