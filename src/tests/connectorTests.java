@@ -2,6 +2,7 @@ package tests;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class connectorTests {
 		}
 		//As it runs on different threads, and essentially a deadlock will be reached if this doesn't work,
 		//it will instead be checked that after 1 second (2 might be better), all connections are established.
-		Thread.sleep(1000);
+		Thread.sleep(1500);
 		assertEquals(numOfClients, server.numConnectedClients);
 		
 	}
@@ -43,10 +44,10 @@ public class connectorTests {
 		testSetupInitialClientServerConnection();
 		
 		//Creating an unique test input.
-		Tank[] tanks = new Tank[2];
+		List<Tank> tanks = new ArrayList<Tank>();
 		List<Bullet> bullets = new ArrayList<Bullet>();
-		tanks[0] = new Tank(0, 0, 0, 1, 0, 0, 0);
-		tanks[1] = new Tank(0, 0, 0, 2, 0, 0, 0);
+		tanks.add(new Tank(0, 0, 0, 1, 0, 0, 0));
+		tanks.add(new Tank(0, 0, 0, 2, 0, 0, 0));
 		bullets.add(new Bullet(0, 0, 0, 1, 0));
 		bullets.add(new Bullet(0, 0, 0, 2, 0));
 		
@@ -55,16 +56,16 @@ public class connectorTests {
 		
 		//Now all the clients should be able to get the updates.
 		
-		for (int i = 0; i < tanks.length; i++) {
+		for (int i = 0; i < tanks.size(); i++) {
 			Object[] updateTuple = clients[i].recieveUpdates();
-			Tank[] recievedTanks = clients[i].unpackTanks(updateTuple);
+			List<Tank> recievedTanks = clients[i].unpackTanks(updateTuple);
 			List<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
 			
 			double acceptedMarginOfError = 0.01;
-			assertEquals(1, recievedTanks[0].bodyHeight, acceptedMarginOfError);
-			assertEquals(2, recievedTanks[1].bodyHeight, acceptedMarginOfError);
-			assertEquals(1, recievedBullets.get(0).height, acceptedMarginOfError);
-			assertEquals(2, recievedBullets.get(1).height, acceptedMarginOfError);
+			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
+			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
+			assertEquals(bullets.get(0).height, recievedBullets.get(0).height, acceptedMarginOfError);
+			assertEquals(bullets.get(1).height, recievedBullets.get(1).height, acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}
@@ -84,7 +85,13 @@ public class connectorTests {
 		Input[] inputs = server.reciveUserInputs();
 		assertEquals(clients.length, inputs.length);
 		for (int i = 0; i < clients.length; i++) {
-			assertEquals(clients[i].connectionId, inputs[i].id);
+			boolean idExists = false;
+			for (Input input : inputs) {
+				if (clients[i].connectionId == input.id) {
+					idExists = true;
+				}
+			}
+			assertTrue(idExists);
 		}
 		
 		

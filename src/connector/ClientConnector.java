@@ -38,7 +38,7 @@ public class ClientConnector implements Runnable{
 	public Object[] recieveUpdates() {
 		try {
 			//TODO ask if reading puts a lock on the space.
-			Object[] tuple = updateSpace.query(new FormalField(Tank[].class), new FormalField(List.class));
+			Object[] tuple = updateSpace.query(new FormalField(List.class), new FormalField(List.class));
 			return tuple;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class ClientConnector implements Runnable{
 	public List<Tank> unpackTanks(Object[] updateTuple) {
 
 		List<Tank> unpackedTanks = new ArrayList<Tank>();
-		List<Object>  jsonTanks = (List<Object>) updateTuple[1];
+		List<Object>  jsonTanks = (List<Object>) updateTuple[0];
 		for (int i = 0; i < jsonTanks.size(); i++) {
 			JsonElement tankJSonElement = new Gson().toJsonTree(jsonTanks.get(i));
 			JsonObject tankJSonObject = tankJSonElement.getAsJsonObject();
