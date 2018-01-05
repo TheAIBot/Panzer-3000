@@ -6,7 +6,13 @@ import connector.ClientConnector;
 public class GameEngine {
 	ServerConnector serverConnector;
 	ClientConnector clientConnector;
+	Tank[] tanks;
+	Bullet[] bullets;
 	public static final int TANK_COUNT = 2;
+	public static final double TANK_WIDTH = 0.005;
+	public static final double TANK_HEIGHT = 0.005;
+	public static final double BULLET_WIDTH = 0.001;
+	public static final double BULLET_HEIGHT = 0.001;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.001;
@@ -23,6 +29,8 @@ public class GameEngine {
 		serverConnector = new ServerConnector();
 		clientConnector = new ClientConnector();
 		
+		initializeTanks(tankCount);
+		
 		while(true) {
 			
 			update(serverConnector.reciveUserInputs());
@@ -32,6 +40,20 @@ public class GameEngine {
 		}
 	}
 	
+	private void initializeTanks(int tankCount) {
+		for(int i = 0; i < tankCount; i++) {
+			
+			double xNew = Math.random() % BOARD_MAX_X;
+			double yNew = Math.random() % BOARD_MAX_Y;
+			Tank newTank = new Tank(xNew, yNew, TANK_WIDTH, TANK_HEIGHT, 
+			0, 0, i);
+			
+			tanks[i] = newTank;
+		}
+		
+	}
+
+
 	public void update(Input[] inputs) {
 		
 		Tank[] currTanks = getTanks();
@@ -110,10 +132,11 @@ public class GameEngine {
 
 	private void createBullet(Tank currTank) {
 
-		Bullet newBullet = new Bullet();
-		newBullet.x = currTank.x;
-		newBullet.y = currTank.y;
-		newBullet.angle = currTank.gunAngle;
+		Bullet newBullet = new Bullet(currTank.x, currTank.y, BULLET_WIDTH, 
+				BULLET_HEIGHT, currTank.gunAngle);
+		int bulletListSize = bullets.length;
+		bullets[bulletListSize] = newBullet;
+
 	}
 
 	// true: clockwise, false: counterclockwise
@@ -134,16 +157,14 @@ public class GameEngine {
 	}
 
 	public Tank[] getTanks() {
-		//TODO: talk to connector
 		
-		return null;
+		return tanks;
 		
 	}
 	
 	public Bullet[] getBullets() {
-		//TODO: talk to connector
 		
-		return null;
+		return bullets;
 	
 	}
 	
