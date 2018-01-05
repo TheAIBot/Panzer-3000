@@ -14,6 +14,8 @@ public class ClienterStarter {
 	 GraphicsPanel panel = GamePage.GetGraphicsPanel();
 	 ArrayList<Tank> tanks = new ArrayList<Tank>();
 	 tanks.add(new Tank(0.5, 0.5, 0.1, 0.2, 60 * (Math.PI / 180d), 0, 0));
+	 tanks.add(new Tank(0.2, 0.5, 0.1, 0.2, 110 * (Math.PI / 180d), 0, 0));
+	 tanks.add(new Tank(0.5, 0.2, 0.1, 0.2, 30 * (Math.PI / 180d), 0, 0));
 	 panel.setTanks(tanks);
 	}
 }
