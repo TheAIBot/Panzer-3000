@@ -30,6 +30,8 @@ public class gameEngineTests {
 	
 	@Test
 	public void gunAngleTest() {
+		gameEngine = new GameEngine();
+		gameEngine.initializeTanksBullets(TEST_TANK_COUNT);
 		Input inputs[] = new Input[1];
 		
 		// Pointer is at the right of screen, in line with tank
@@ -67,6 +69,8 @@ public class gameEngineTests {
 	
 	@Test
 	public void moveTest() {
+		gameEngine = new GameEngine();
+		gameEngine.initializeTanksBullets(TEST_TANK_COUNT);
 		Input inputs[] = new Input[1];
 		
 		for(Tank tank : gameEngine.getTanks()) {
@@ -99,6 +103,8 @@ public class gameEngineTests {
 	
 	@Test
 	public void bodyAngleTest() {
+		gameEngine = new GameEngine();
+		gameEngine.initializeTanksBullets(TEST_TANK_COUNT);
 		Input inputs[] = new Input[1];
 		
 		for(Tank tank : gameEngine.getTanks()) {
@@ -106,12 +112,15 @@ public class gameEngineTests {
 			double tankGunAngle = tank.gunAngle;
 			Input newInput = new Input(false, true, false,  false, false, tank.x, tank.y, tank.getId());
 			inputs[0] = newInput;
+			System.out.println(tank.getId() + "Input: " + inputs[0].id);
 			gameEngine.update(inputs);
 			Double newAngle = (tankBodyAngle + GameEngine.TANK_ROTATION_ANGLE) % Math.toRadians(360);
 			if (newAngle < 0) {
 				newAngle = Math.toRadians(360) + newAngle;
 			}
+			System.out.println("Starting test");
 			tankBasicTest(tank, newAngle, tankGunAngle);
+			System.out.println("finishing test");
 		}
 		
 		for(Tank tank : gameEngine.getTanks()) {
@@ -128,8 +137,10 @@ public class gameEngineTests {
 		}
 	}
 	
-	
+	@Test
 	public void bulletTest() {
+		gameEngine = new GameEngine();
+		gameEngine.initializeTanksBullets(TEST_TANK_COUNT);
 		Input inputs[] = new Input[1];
 		
 		// Pointer is at the right of screen, in line with tank
@@ -154,6 +165,7 @@ public class gameEngineTests {
 		org.junit.Assert.assertTrue(tank.y > 0);
 		org.junit.Assert.assertTrue(tank.bodyWidth == GameEngine.TANK_WIDTH);
 		org.junit.Assert.assertTrue(tank.bodyHeight == GameEngine.TANK_HEIGHT);
+		System.out.println("Tank body angle: " + Math.toDegrees(tank.bodyAngle));
 		org.junit.Assert.assertTrue(tank.bodyAngle == bodyAngle);
 		org.junit.Assert.assertTrue(tank.gunAngle == gunAngle);
 		org.junit.Assert.assertTrue(tank.getId() < TEST_TANK_COUNT);
