@@ -11,6 +11,7 @@ import org.junit.*;
 import connector.ClientConnector;
 import connector.ServerConnector;
 import engine.Bullet;
+import engine.Input;
 import engine.Tank;
 
 public class connectorTests {
@@ -44,14 +45,10 @@ public class connectorTests {
 		//Creating an unique test input.
 		Tank[] tanks = new Tank[2];
 		List<Bullet> bullets = new ArrayList<Bullet>();
-		tanks[0] = new Tank();
-		tanks[1] = new Tank();
-		bullets.add(new Bullet());
-		bullets.add(new Bullet());
-		tanks[0].bodyHeight = 1;
-		tanks[1].bodyHeight = 2;
-		bullets.get(0).height = 1;
-		bullets.get(1).height = 2;
+		tanks[0] = new Tank(0, 0, 0, 1, 0, 0, 0);
+		tanks[1] = new Tank(0, 0, 0, 2, 0, 0, 0);
+		bullets.add(new Bullet(0, 0, 0, 1, 0));
+		bullets.add(new Bullet(0, 0, 0, 2, 0));
 		
 		
 		server.sendUpdates(tanks, bullets);
@@ -70,6 +67,28 @@ public class connectorTests {
 			assertEquals(2, recievedBullets.get(1).height, acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
+	}
+	
+
+	@Test
+	public void testSendAndRecieveUserInputs() throws InterruptedException {
+		testSetupInitialClientServerConnection();
+		
+		
+		for (int i = 0; i < clients.length; i++) {
+			ClientConnector client = clients[i];
+			Input input = new Input(false, false, false, false, false, 0, 0, client.connectionId);
+			client.sendUserInputs(input);
+		}		
+		
+		Input[] inputs = server.reciveUserInputs();
+		assertEquals(clients.length, inputs.length);
+		for (int i = 0; i < clients.length; i++) {
+			assertEquals(clients[i].connectionId, inputs[i].id);
+		}
+		
+		
+		
 	}
 
 }

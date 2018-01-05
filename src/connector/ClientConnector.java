@@ -13,9 +13,9 @@ import engine.*;
 
 public class ClientConnector implements Runnable{
 
-	RemoteSpace privateServerConnections;
-	RemoteSpace updateSpace;
-	int 		connectionId;
+	public RemoteSpace 	privateServerConnections;
+	public RemoteSpace 	updateSpace;
+	public int 			connectionId;
 	
 	public static void main(String[] args) {
 		new ClientConnector().connectToServer();
