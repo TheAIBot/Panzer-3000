@@ -26,31 +26,35 @@ public class GameEngine {
 	 
 	 
 	public void startGame(int tankCount) {
-		Log.message("Starting server");
-		initializeTanks(tankCount);
-		connection = new ServerConnector();
-		connection.initializeServerConnection(1);
-		Log.message("Clients connected");
-		
-		//The server will send the initial information first, such that the clients have something to display:
-		
-		connection.sendUpdates(tanks, bullets);
-		Log.message("Sent first update");
-		
-		//Then the main loop can begin:
-		
-		while(true) { //Game loop			
-			Input[] userInputs = connection.reciveUserInputs();
-			Log.message(userInputs[0].toString());
-			Log.message("Received inputs from clients");
-			update(userInputs);
-			Log.message("Updated game");
-			connection.sendUpdates(tanks, bullets);
-			Log.message("Sent game state update");
+		try {
+			Log.message("Starting server");
+			initializeTanks(tankCount);
+			connection = new ServerConnector();
+			connection.initializeServerConnection(1);
+			Log.message("Clients connected");
 			
-			try {
-				Thread.sleep(1000/FPS); 
-			} catch (InterruptedException e) { e.printStackTrace(); }
+			//The server will send the initial information first, such that the clients have something to display:
+			
+			connection.sendUpdates(tanks, bullets);
+			Log.message("Sent first update");
+			
+			Thread.sleep(2000);
+			
+			//Then the main loop can begin:
+			
+			while(true) { //Game loop			
+				Input[] userInputs = connection.reciveUserInputs();
+				Log.message(userInputs[0].toString());
+				Log.message("Received inputs from clients");
+				update(userInputs);
+				Log.message("Updated game");
+				connection.sendUpdates(tanks, bullets);
+				Log.message("Sent game state update");
+				
+				Thread.sleep(1000 / FPS);
+			}	
+		} catch (Exception e) {
+			Log.exception(e);
 		}
 	}
 	
