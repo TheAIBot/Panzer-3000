@@ -64,8 +64,8 @@ public class connectorTests {
 			double acceptedMarginOfError = 0.01;
 			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
 			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
-			assertEquals(bullets.get(0).height, recievedBullets.get(0).height, acceptedMarginOfError);
-			assertEquals(bullets.get(1).height, recievedBullets.get(1).height, acceptedMarginOfError);
+			assertEquals(bullets.get(0).height  , recievedBullets.get(0).height  , acceptedMarginOfError);
+			assertEquals(bullets.get(1).height  , recievedBullets.get(1).height  , acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}

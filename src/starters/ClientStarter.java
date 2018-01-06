@@ -8,7 +8,7 @@ import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 
-public class ClienterStarter {
+public class ClientStarter {
 	public static void main(String[] args) {
 		new Client().startGame();
 		/*

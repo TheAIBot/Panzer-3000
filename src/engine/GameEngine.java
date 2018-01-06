@@ -31,13 +31,24 @@ public class GameEngine {
 		connection = new ServerConnector();
 		connection.initializeServerConnection(1);
 		Log.message("Clients connected");
-		
 		//The server will send the initial information first, such that the clients have something to display:
-		
+
+		bullets.add(new Bullet(0, 0, 0, 0, 0));
 		connection.sendUpdates(tanks, bullets);
 		Log.message("Sent first update");
 		
 		//Then the main loop can begin:
+		/*
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
+		
 		
 		while(true) { //Game loop			
 			Input[] userInputs = connection.reciveUserInputs();

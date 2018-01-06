@@ -17,15 +17,16 @@ public class Client {
 		connection.connectToServer();
 		Log.message("Client connected");
 		
+		
 		MenuController menu = new MenuController("Panzer", 500, 500);
-		menu.showWindow();
+		//menu.showWindow();
 		GraphicsPanel panel = GamePage.GetGraphicsPanel();
 		Log.message("Created gui");
 		
 		while (true) {
 			
 			//The call is blocking, so it won't continue before the update is given
-			Object[] updatedObjects = connection.recieveUpdates(); 
+			Object[] updatedObjects 	= connection.recieveUpdates(); 
 			ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 			ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
 			Log.message("Received tanks and bullet updates");
@@ -40,7 +41,7 @@ public class Client {
 			
 			//finally send the inputs to the server.			
 			connection.sendUserInput(userInput);
-			Log.message("Sent uder input");
+			Log.message("Sent user input");
 		}
 	}
 }
