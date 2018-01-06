@@ -13,16 +13,18 @@ public class Tank {
 	int id;
 	int health;
 	
+	public static final double TANK_WIDTH = 0.2;
+	public static final double TANK_HEIGHT = 0.2;
 	public static final double GUN_WIDTH = 0.2;
 	public static final double GUN_HEIGHT = 0.02;
 	public static final int TANK_HEALTH = 100;
 	
-	public Tank(double xNew, double yNew, double bodyWidthNew, double bodyHeightNew, 
+	public Tank(double xNew, double yNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
 		x = xNew;
 		y = yNew;
-		bodyWidth = bodyWidthNew;
-		bodyHeight = bodyHeightNew;
+		bodyWidth = TANK_WIDTH;
+		bodyHeight = TANK_HEIGHT;
 		bodyAngle = bodyAngleNew;
 		gunAngle = gunAngleNew;
 		id = idNew;

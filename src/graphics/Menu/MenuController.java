@@ -2,10 +2,12 @@ package graphics.Menu;
 
 
 import java.awt.Dimension;
+import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Stack;
@@ -18,9 +20,9 @@ import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
 import graphics.Menu.Pages.SuperPage;
 
-public class MenuController implements PageRequestsListener, KeyListener, MouseListener {
+public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
 	private final JFrame mainMenu;
-	private final GamePage MAIN_PAGE = new GamePage(this);
+	private final GamePage MAIN_PAGE = new GamePage(this, this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();
@@ -183,5 +185,15 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			input.click = false;
 		}
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		input.x = (double)e.getX() / e.getComponent().getWidth();
+		input.y = (double)e.getY() / e.getComponent().getHeight();
 	}
 }

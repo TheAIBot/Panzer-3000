@@ -8,15 +8,17 @@ import java.awt.Insets;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import graphics.GraphicsPanel;
+import graphics.Menu.MenuController;
 
 public class GamePage extends SuperPage {
 	private static final GraphicsPanel graphicsPanel = new GraphicsPanel();
 
-	public GamePage(PageRequestsListener listener) {
-		super(listener);
+	public GamePage(MenuController control, PageRequestsListener listener) {
+		super(control, listener);
 	}
 	
 	public static GraphicsPanel GetGraphicsPanel()
@@ -25,7 +27,8 @@ public class GamePage extends SuperPage {
 	}
 
 	@Override
-	public JPanel createPage() {
+	public JPanel createPage(MenuController control) {
+		page.addMouseMotionListener(control);
 		page.setLayout(new GridBagLayout());
 		page.add(graphicsPanel);
 		
