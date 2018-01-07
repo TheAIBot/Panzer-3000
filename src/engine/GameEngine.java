@@ -92,6 +92,10 @@ public class GameEngine {
 			final Tank tank = tanks.get(i);
 			final Input currInput = inputs[i];
 			
+			if (!tank.isAlive()) {
+				continue;
+			}
+			
 			//Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);
 			
@@ -108,6 +112,10 @@ public class GameEngine {
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
 			final Input currInput = inputs[i];
+			
+			if (!tank.isAlive()) {
+				continue;
+			}
 			
 			tank.timeBeforeShoot--;
 			if(currInput.click == true && tank.canShoot()) {
@@ -147,16 +155,14 @@ public class GameEngine {
 	private Boolean checkDamage(Bullet bullet) {
 		final Point2D.Double bulletPos = new Point2D.Double(bullet.x * Tank.SCALAR, bullet.y * Tank.SCALAR);
 		
-		final Iterator<Tank> tankIterator = tanks.iterator();
-		while (tankIterator.hasNext()) {
-			final Tank tank = tankIterator.next();
+		for (Tank tank : tanks) {
+			if (!tank.isAlive()) {
+				continue;
+			}
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(bulletPos)) {
 				tank.takeDamage(Bullet.BULLET_DAMAGE);
-				if (tank.health == 0) {
-					tankIterator.remove();
-				}
 				return true;
 			}
 		}

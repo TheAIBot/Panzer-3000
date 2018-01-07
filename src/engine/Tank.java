@@ -122,4 +122,9 @@ public class Tank {
 		
 		return new Point2D.Double(startX,  startY);
 	}
+
+	public boolean isAlive()
+	{
+		return health > 0;
+	}
 }

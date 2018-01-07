@@ -41,11 +41,17 @@ public class GraphicsPanel extends JPanel {
 	{
 		g.setColor(Color.GREEN);
 		for (Tank tank : tanks) {
+			if (!tank.isAlive()) {
+				continue;
+			}
 			drawTankBody(tank, g);
 		}
 		
 		g.setColor(Color.BLACK);
 		for (Tank tank : tanks) {
+			if (!tank.isAlive()) {
+				continue;
+			}
 			drawTankGun(tank, g);
 		}
 	}
