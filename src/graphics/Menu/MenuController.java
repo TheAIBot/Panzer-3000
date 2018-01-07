@@ -2,7 +2,6 @@ package graphics.Menu;
 
 
 import java.awt.Dimension;
-import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -189,7 +188,7 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		final int thisWidth = mainMenu.getWidth();
+		final int thisWidth = currentPage.getPage().getWidth();
 		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
 		int k = (thisWidth - eWidth) / 2;
 		input.x = ((double)e.getX() - k) / eWidth;
@@ -198,7 +197,7 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		final int thisWidth = mainMenu.getWidth();
+		final int thisWidth = currentPage.getPage().getWidth();
 		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
 		int k = (thisWidth - eWidth) / 2;
 		input.x = ((double)e.getX() - k) / eWidth;
