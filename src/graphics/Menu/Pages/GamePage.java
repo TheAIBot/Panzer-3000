@@ -1,14 +1,7 @@
 package graphics.Menu.Pages;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import graphics.GraphicsPanel;

@@ -3,13 +3,11 @@ package engine;
 import connector.ServerConnector;
 
 import java.awt.Polygon;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import Logger.Log;
-import connector.ClientConnector;
 
 public class GameEngine {
 	ServerConnector connection;

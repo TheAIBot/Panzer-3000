@@ -2,7 +2,6 @@ package graphics.Menu.Pages;
 
 import java.awt.Dimension;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Logger.Log;
