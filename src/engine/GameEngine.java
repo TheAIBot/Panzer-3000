@@ -16,8 +16,6 @@ public class GameEngine {
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
-	public static final double BULLET_WIDTH = 0.01;
-	public static final double BULLET_HEIGHT = 0.01;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
@@ -111,8 +109,9 @@ public class GameEngine {
 			final Tank tank = tanks.get(i);
 			final Input currInput = inputs[i];
 			
-			if(currInput.click == true) {
-				createBullet(tank);
+			tank.timeBeforeShoot--;
+			if(currInput.click == true && tank.canShoot()) {
+				bullets.add(tank.shoot());
 			}
 		}
 		
@@ -120,6 +119,11 @@ public class GameEngine {
 		final Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			final Bullet bullet = bulletIterator.next();
+			
+			bullet.timeAlive--;
+			if (!bullet.stillAlive()) {
+				bulletIterator.remove();
+			}
 			
 			if (!updateBulletLocation(bullet)) {
 				bulletIterator.remove();
@@ -141,7 +145,7 @@ public class GameEngine {
 	
 	//returns true if bullet hits
 	private Boolean checkDamage(Bullet bullet) {
-		final Point2D.Double bulletPos = new Point2D.Double(bullet.x, bullet.y);
+		final Point2D.Double bulletPos = new Point2D.Double(bullet.x * Tank.SCALAR, bullet.y * Tank.SCALAR);
 		
 		final Iterator<Tank> tankIterator = tanks.iterator();
 		while (tankIterator.hasNext()) {
@@ -165,11 +169,6 @@ public class GameEngine {
 		final double y = pointerY - currTank.y;
 		
 		currTank.gunAngle = Math.atan2(y, x);
-	}
-
-	private void createBullet(Tank currTank) {
-		final Point2D.Double bulletStartPos = currTank.getBulletStartPos();
-		bullets.add(new Bullet(bulletStartPos.x, bulletStartPos.y, BULLET_WIDTH, BULLET_HEIGHT, currTank.gunAngle));
 	}
 
 	// true: clockwise, false: counterclockwise

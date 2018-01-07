@@ -11,9 +11,13 @@ public class Bullet {
 	public double width;
 	public double height;
 	public double angle;
+	public int timeAlive;
 	
+	public static final double BULLET_WIDTH = 0.01;
+	public static final double BULLET_HEIGHT = 0.01;
 	public static final int BULLET_DAMAGE = 10;
 	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
+	public static final int BULLET_TIME_ALIVE = 170;
 	
 	public Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
 		x = xNew;
@@ -23,6 +27,7 @@ public class Bullet {
 		width = widthNew;
 		height = heightNew;
 		angle = angleNew;
+		timeAlive = BULLET_TIME_ALIVE;
 	}
 	
 	public void move()
@@ -44,5 +49,10 @@ public class Bullet {
 	public Line2D.Double getPath()
 	{
 		return new Line2D.Double(oldX, oldY, x, y);
+	}
+	
+	public boolean stillAlive()
+	{
+		return timeAlive != 0;
 	}
 }

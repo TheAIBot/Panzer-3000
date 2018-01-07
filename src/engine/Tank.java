@@ -13,6 +13,7 @@ public class Tank {
 	public double gunAngle;
 	int id;
 	int health;
+	public int timeBeforeShoot = 0;
 	
 	public static final double TANK_WIDTH = 0.05;
 	public static final double TANK_HEIGHT = 0.05;
@@ -20,6 +21,7 @@ public class Tank {
 	public static final double GUN_HEIGHT = 0.005;
 	public static final int TANK_HEALTH = 100;
 	public static final double SCALAR = 10000;
+	public static final int TIME_BETWEEN_SHOTS = 10;
 	
 	public Tank(double xNew, double yNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
@@ -40,15 +42,6 @@ public class Tank {
 			health -= damage;
 		}
 	}
-	
-	public Point2D.Double getBulletStartPos()
-	{
-		final double startX = x + Math.cos(gunAngle) * Tank.GUN_WIDTH * 0.6;
-		final double startY = y + Math.sin(gunAngle) * Tank.GUN_WIDTH * 0.6;
-		
-		return new Point2D.Double(startX,  startY);
-	}
-	
 	
 	public Polygon getTankRectangle()
 	{
@@ -108,5 +101,25 @@ public class Tank {
 	private double rotateY(double x, double y, double angle)
 	{
 		return x * Math.sin(angle) + y * Math.cos(angle);
+	}
+
+	public boolean canShoot()
+	{
+		return timeBeforeShoot <= 0;
+	}
+	
+	public Bullet shoot()
+	{
+		timeBeforeShoot = TIME_BETWEEN_SHOTS;
+		final Point2D.Double bulletStartPos = getBulletStartPos();
+		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_WIDTH, Bullet.BULLET_HEIGHT, gunAngle);
+	}
+	
+	private Point2D.Double getBulletStartPos()
+	{
+		final double startX = x + Math.cos(gunAngle) * Tank.GUN_WIDTH * 0.6;
+		final double startY = y + Math.sin(gunAngle) * Tank.GUN_WIDTH * 0.6;
+		
+		return new Point2D.Double(startX,  startY);
 	}
 }
