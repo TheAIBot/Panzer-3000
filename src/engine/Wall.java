@@ -1,5 +1,6 @@
 package engine;
 
+import java.awt.Polygon;
 import java.awt.geom.Line2D;
 
 public class Wall {
@@ -28,5 +29,11 @@ public class Wall {
 	{
 		return x < pX && pX < x + width &&
 			   y < pY && pY < y + height;
+	}
+	
+	public boolean collidesWith(Tank tank)
+	{
+		final Polygon tankBox = tank.getTankRectangle();
+		return tankBox.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
 	}
 }

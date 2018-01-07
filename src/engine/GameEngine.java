@@ -28,8 +28,8 @@ public class GameEngine {
 	public void startGame(int tankCount) {
 		try {
 			Log.message("Starting server");
-			initializeTanks(tankCount);
 			initializeWalls();
+			initializeTanks(tankCount);
 			connection = new ServerConnector();
 			connection.initializeServerConnection(1);
 			Log.message("Clients connected");
@@ -61,10 +61,14 @@ public class GameEngine {
 	
 	private void initializeTanks(int tankCount) {
 		for(int i = 0; i < tankCount; i++) {
+			Tank newTank;
 			
-			double xNew = Math.random();
-			double yNew = Math.random();
-			Tank newTank = new Tank(xNew, yNew, 0, 0, i);
+			do {
+				final double xNew = Math.random();
+				final double yNew = Math.random();
+				newTank = new Tank(xNew, yNew, 0, 0, i);
+				//tank shouldn't spawn inside a wall
+			} while (isTankInsideAnyWall(newTank));
 			
 			tanks.add(newTank);
 		}
@@ -134,9 +138,6 @@ public class GameEngine {
 			return false;
 		}
 		
-		// Work out changes in x and y given bullets angle and movement distance
-
-		
 		return !checkDamage(bullet);
 	}
 	
@@ -147,7 +148,7 @@ public class GameEngine {
 		final Iterator<Tank> tankIterator = tanks.iterator();
 		while (tankIterator.hasNext()) {
 			final Tank tank = tankIterator.next();
-			final Polygon tankPolygon =tank.getTankRectangle();
+			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(bulletPos)) {
 				tank.takeDamage(Bullet.BULLET_DAMAGE);
@@ -175,21 +176,37 @@ public class GameEngine {
 
 	// true: clockwise, false: counterclockwise
 	private void angleTank(Tank currTank, boolean angle ) {
-		currTank.bodyAngle += angle ? Math.toRadians(2) : -Math.toRadians(2);
+		final double angleAddition = angle ? Math.toRadians(2) : -Math.toRadians(2);
+		
+		currTank.bodyAngle += angleAddition;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.bodyAngle -= angleAddition;
+		}
 	}
 
 	// true: forward, false: backward
 	private void moveTank(Tank currTank, Boolean direction) {
 		final double x = Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
 		final double y = Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
-		final double possibleX = currTank.x + x; 
-		final double possibleY = currTank.y + y;
-		if (0 < possibleX && possibleX < BOARD_MAX_X) {
-			currTank.x += x; 
+		currTank.x += x;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.x -= x;
 		}
-		if (0 < possibleY && possibleY < BOARD_MAX_Y) {
-			currTank.y += y;
+		
+		currTank.y += y;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.y -= y;
 		}
+	}
+	
+	private boolean isTankInsideAnyWall(Tank tank)
+	{
+		for (Wall wall : walls) {
+			if (wall.collidesWith(tank)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ArrayList<Tank> getTanks() {
