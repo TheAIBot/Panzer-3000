@@ -29,7 +29,7 @@ public class ClientConnector implements Runnable{
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
-		return updateSpace.get(new ActualField(connectionId), new FormalField(ArrayList.class), new FormalField(ArrayList.class));
+		return updateSpace.get(new ActualField(connectionId), new FormalField(ArrayList.class), new FormalField(ArrayList.class), new FormalField(ArrayList.class));
 	}	
 	
 	
@@ -39,6 +39,10 @@ public class ClientConnector implements Runnable{
 	
 	public ArrayList<Bullet> unpackBullets(Object[] updateTuple) {
 		return unpackType(updateTuple[2], Bullet.class);
+	}
+	
+	public ArrayList<Wall> unpackWalls(Object[] updateTupe) {
+		return unpackType(updateTupe[3], Wall.class);
 	}
 	
 	@SuppressWarnings("unchecked")

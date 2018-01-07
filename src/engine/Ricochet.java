@@ -10,6 +10,7 @@ public class Ricochet {
 	{
 		final int angle = (int) Math.toDegrees(bullet.angle);
 		final Line2D.Double bulletPath = bullet.getPath();
+		boolean returnValue = true;
 		
 		for (int i = 0; i < walls.size(); i++) {
 			final Wall wall = walls.get(i);
@@ -38,11 +39,11 @@ public class Ricochet {
 			final Point2D.Double nextPos = bullet.getNextPosition();
 			if (!isOutsideGame(bullet.x, bullet.y) ||
 				!isOutsideGame(nextPos.x, nextPos.y)) {
-				return false;
+				returnValue = false;
 			}
 		}
 		
-		return true;
+		return returnValue;
 	}
 	
 	private static boolean isOutsideGame(double x, double y)

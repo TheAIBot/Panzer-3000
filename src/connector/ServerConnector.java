@@ -50,9 +50,9 @@ public class ServerConnector implements Runnable {
 		//Now communication is up and running.
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException {
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
 		for (int i = 0; i < numClients; i++) {
-			updateSpace.put(i, tanks, bullets);
+			updateSpace.put(i, tanks, bullets, walls);
 		}
 	}
 	

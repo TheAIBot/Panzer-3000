@@ -12,10 +12,12 @@ import javax.swing.JPanel;
 
 import engine.Bullet;
 import engine.Tank;
+import engine.Wall;
 
 public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank> tanks = new ArrayList<Tank>();
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private ArrayList<Wall> walls = new ArrayList<Wall>();
 	
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
@@ -28,6 +30,7 @@ public class GraphicsPanel extends JPanel {
 		
 		drawTanks(g);
 		drawBullets(g);
+		drawWalls(g);
 	}
 	
 	@Override
@@ -79,6 +82,24 @@ public class GraphicsPanel extends JPanel {
 		g.fillOval(x, y, width, height);
 	}
 	
+	private void drawWalls(Graphics g)
+	{
+		g.setColor(Color.GRAY);
+		for (Wall wall : walls) {
+			drawWall(wall, g);
+		}
+	}
+	
+	private void drawWall(Wall wall, Graphics g)
+	{
+		final int x = (int)((wall.x) * this.getWidth());
+		final int y = (int)((wall.y) * this.getHeight());
+		final int width = (int)(wall.width * this.getWidth());
+		final int height = (int)(wall.height * this.getHeight());
+		
+		g.fillRect(x, y, width, height);
+	}
+	
 	public void setTanks(ArrayList<Tank> tanks)
 	{
 		this.tanks = tanks;
@@ -87,6 +108,11 @@ public class GraphicsPanel extends JPanel {
 	public void setBullets(ArrayList<Bullet> bullets)
 	{
 		this.bullets = bullets;
+	}
+	
+	public void setWalls(ArrayList<Wall> walls)
+	{
+		this.walls = walls;
 	}
 	
 }

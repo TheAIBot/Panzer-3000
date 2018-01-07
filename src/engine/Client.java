@@ -29,11 +29,13 @@ public class Client {
 				Object[] updatedObjects = connection.recieveUpdates(); 
 				ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 				ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
+				ArrayList<Wall> walls       = connection.unpackWalls(updatedObjects);
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
+				panel.setWalls(walls);
 				panel.repaint();
 
 				//Create a new Input
