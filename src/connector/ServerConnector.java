@@ -9,8 +9,8 @@ import engine.*;
 public class ServerConnector implements Runnable {
 	
 	public SpaceRepository 	repository;
-	SequentialSpace[] 	clientSpaces;
 	SequentialSpace		updateSpace;
+	SequentialSpace[] 	clientSpaces;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
@@ -58,10 +58,6 @@ public class ServerConnector implements Runnable {
 	
 	
 	public Input[] reciveUserInputs() throws InterruptedException {
-		//Removes everything from the update space. Thus, when the clients ask for the updates, 
-		//they will have to wait until the server makes an update based on the current  input.
-		//updateSpace.getAll(new FormalField(ArrayList.class), new FormalField(ArrayList.class)); 
-		//Log.message("UpdateSpace: " + updateSpace.size());
 		Input[] recievedInputs = new Input[numClients];
 		for (int i = 0; i < numClients; i++) {
 			//Log.message("Input count: " + clientSpaces[i].size());

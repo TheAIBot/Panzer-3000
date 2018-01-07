@@ -58,8 +58,9 @@ public class ClientConnector implements Runnable{
 	}
 	
 	
-	public void sendUserInput(Input inputs) {
-		privateServerConnections.put(inputs);		
+	public void sendUserInput(Input input) {
+		input.id = connectionId;
+		privateServerConnections.put(input);		
 	}
 
 	@Override

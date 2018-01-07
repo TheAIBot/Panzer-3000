@@ -27,7 +27,7 @@ public class GameEngine {
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(1);
+			connection.initializeServerConnection(tankCount);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
