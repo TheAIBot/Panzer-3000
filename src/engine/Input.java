@@ -16,8 +16,22 @@ public class Input {
 		this.id = id;
 	}
 	
-	public Input() {
+	public Input() {	
+	}
+	
+	public String toString()
+	{
+		StringBuilder b = new StringBuilder();
+		b.append(w ? "w" : " ");
+		b.append(a ? "a" : " ");
+		b.append(s ? "s" : " ");
+		b.append(d ? "d" : " ");
+		b.append(click? "click": "     ");
+		b.append(x);
+		b.append(" ");
+		b.append(y);
 		
+		return b.toString();
 	}
 	
 }

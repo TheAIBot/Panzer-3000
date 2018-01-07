@@ -14,6 +14,7 @@ import connector.ServerConnector;
 import engine.Bullet;
 import engine.Input;
 import engine.Tank;
+import engine.Wall;
 
 public class connectorTests {
 	ServerConnector server;
@@ -46,13 +47,13 @@ public class connectorTests {
 		//Creating an unique test input.
 		ArrayList<Tank> tanks = new ArrayList<Tank>();
 		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-		tanks.add(new Tank(0, 0, 0, 1, 0, 0, 0));
-		tanks.add(new Tank(0, 0, 0, 2, 0, 0, 0));
+		tanks.add(new Tank(0, 0, 0, 0, 0));
+		tanks.add(new Tank(0, 0, 0, 0, 0));
 		bullets.add(new Bullet(0, 0, 0, 1, 0));
 		bullets.add(new Bullet(0, 0, 0, 2, 0));
 		
 		
-		server.sendUpdates(tanks, bullets);
+		server.sendUpdates(tanks, bullets, new ArrayList<Wall>());
 		
 		//Now all the clients should be able to get the updates.
 		

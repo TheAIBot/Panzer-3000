@@ -2,70 +2,49 @@ package engine;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 
 public class Bullet {
 	public double x;
 	public double y;
+	public double oldX;
+	public double oldY;
 	public double width;
 	public double height;
 	public double angle;
 	
 	public static final int BULLET_DAMAGE = 10;
+	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
 	
 	public Bullet(double xNew, double yNew, double widthNew, double heightNew, double angleNew) {
 		x = xNew;
 		y = yNew;
+		oldX = x;
+		oldY = y;
 		width = widthNew;
 		height = heightNew;
 		angle = angleNew;
 	}
 	
-
-	public static final double SCALAR = 10000;
-	
-	public Polygon getBulletRectangle()
+	public void move()
 	{
-		return getBulletRectangle(Tank.SCALAR, Tank.SCALAR);
+		oldX = x;
+		oldY = y;
+		final Point2D.Double nextPos = getNextPosition();
+		x = nextPos.x; 
+		y = nextPos.y;
 	}
 	
-	public Polygon getBulletRectangle(double xScalar, double yScalar)
+	public Point2D.Double getNextPosition()
 	{
-		//create the tank corners
-		final Point topLeft     = rotateMoveScale(-width  / 2, -height / 2, xScalar, yScalar);
-		final Point topRight    = rotateMoveScale( width  / 2, -height / 2, xScalar, yScalar);
-		final Point bottomLeft  = rotateMoveScale(-width  / 2,  height / 2, xScalar, yScalar);
-		final Point bottomRight = rotateMoveScale( width  / 2,  height / 2, xScalar, yScalar);
-		
-		//put corners into a polygon
-		int[] xPoints =  {topLeft.x, topRight.x, bottomRight.x, bottomLeft.x};
-		int[] yPoints =  {topLeft.y, topRight.y, bottomRight.y, bottomLeft.y};	
-		return new Polygon(xPoints, yPoints, 4);
+		final double newX = x + Math.cos(angle) * BULLET_MOVEMENT_DISTANCE; 
+		final double newY = y + Math.sin(angle) * BULLET_MOVEMENT_DISTANCE;
+		return new Point2D.Double(newX, newY);
 	}
 	
-	private Point rotateMoveScale(final double cornerX, final double cornerY, final double xScalar, final double yScalar)
+	public Line2D.Double getPath()
 	{
-		//rotates the point around (0, 0)
-		final double rotatedX = rotateX(cornerX, cornerY, angle);
-		final double rotatexY = rotateY(cornerX, cornerY, angle);
-		
-		//moves the point to the tank
-		final double movedX = rotatedX + x;
-		final double movedY = rotatexY + y;
-		
-		//scale point
-		final int scaledX = (int)(movedX * xScalar);
-		final int scaledY = (int)(movedY * yScalar);
-		
-		return new Point(scaledX, scaledY);
-	}
-	
-	private double rotateX(double x, double y, double angle)
-	{
-		return x * Math.cos(angle) - y * Math.sin(angle);
-	}
-	
-	private double rotateY(double x, double y, double angle)
-	{
-		return x * Math.sin(angle) + y * Math.cos(angle);
+		return new Line2D.Double(oldX, oldY, x, y);
 	}
 }

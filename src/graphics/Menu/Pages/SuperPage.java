@@ -1,17 +1,22 @@
 package graphics.Menu.Pages;
 
 import java.awt.Dimension;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Logger.Log;
+import graphics.Menu.MenuController;
 
 public abstract class SuperPage {
 	protected JPanel page;
 	protected SuperPage previousPage;
+	private final MenuController controller;
 	private PageRequestsListener listener;
 	
-	public SuperPage(PageRequestsListener listener)
+	public SuperPage(MenuController control, PageRequestsListener listener)
 	{
+		this.controller = control;
 		this.listener = listener;
 	}
 	
@@ -21,10 +26,12 @@ public abstract class SuperPage {
 			return page;
 		}
 		page = new JPanel();
-		return createPage();
+		page.addKeyListener(controller);
+		page.addMouseListener(controller);
+		return createPage(controller);
 	}
 	
-	public abstract JPanel createPage();
+	public abstract JPanel createPage(MenuController control);
 	
 	public abstract void startPage();
 	

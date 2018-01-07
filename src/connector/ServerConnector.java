@@ -18,12 +18,8 @@ public class ServerConnector implements Runnable {
 	public int numClients;
 	public int numConnectedClients;
 	
-	public static void main(String[] args) {
-		new ServerConnector().initializeServerConnection(1);
-	}
 	
-	
-	public void initializeServerConnection(int numClients) {
+	public void initializeServerConnection(int numClients) throws InterruptedException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		
@@ -33,6 +29,7 @@ public class ServerConnector implements Runnable {
 		
 		repository.addGate("tcp://localhost:9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
+		
 		
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
@@ -46,43 +43,32 @@ public class ServerConnector implements Runnable {
 		}
 		
 		//And waits for all clients to connect:
-		for (int id = 0; id < clientSpaces.length; id++) {
-			try {
-				//FormalField field1 = new FormalField(String.class);
-				ActualField field1 = new ActualField("connected");
-				FormalField field2 = new FormalField(Double.class);
-				//ActualField field2 = new ActualField(id);
-				
-				clientSpaces[id].get(field1, field2);
+		for (int id = 0; id < clientSpaces.length; id++) {				
+				clientSpaces[id].get(new ActualField("connected"), new FormalField(Double.class));
 				numConnectedClients++;
-				//System.out.println("cake");
-			} catch (InterruptedException e) {
-				e.printStackTrace(); 
-			}
 		}
-		//Now communication is up and running.		
-		
-		//System.out.println("All connections established");
+		//Now communication is up and running.
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) {
-		updateSpace.put(tanks, bullets);
-		Log.message(updateSpace.size());
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
+		for (int i = 0; i < numClients; i++) {
+			updateSpace.put(i, tanks, bullets, walls);
+		}
 	}
 	
 	
-	public Input[] reciveUserInputs() {
+	public Input[] reciveUserInputs() throws InterruptedException {
 		//Removes everything from the update space. Thus, when the clients ask for the updates, 
 		//they will have to wait until the server makes an update based on the current  input.
-		updateSpace.getAll(new FormalField(ArrayList.class), new FormalField(ArrayList.class)); 
-		
+		//updateSpace.getAll(new FormalField(ArrayList.class), new FormalField(ArrayList.class)); 
+		//Log.message("UpdateSpace: " + updateSpace.size());
 		Input[] recievedInputs = new Input[numClients];
 		for (int i = 0; i < numClients; i++) {
-			Object[] tuple;
-			try {
-				tuple = clientSpaces[i].get(new FormalField(Input.class));
-				recievedInputs[i] = (Input) tuple[0];
-			} catch (InterruptedException e) {e.printStackTrace();}
+			//Log.message("Input count: " + clientSpaces[i].size());
+			final Object[] tuple = clientSpaces[i].get(new FormalField(Input.class));
+			//Log.message("Input count: " + clientSpaces[i].size());
+			final Input input = (Input) tuple[0];
+			recievedInputs[input.id] = input;
 		}
 		
 		return recievedInputs;
@@ -90,7 +76,11 @@ public class ServerConnector implements Runnable {
 
 	@Override
 	public void run() {
-		initializeServerConnection(numClients);
+		try {
+			initializeServerConnection(numClients);	
+		} catch (Exception e) {
+			Log.exception(e);
+		}
 	}
 	
 	/*
