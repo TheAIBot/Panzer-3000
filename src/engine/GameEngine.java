@@ -15,6 +15,7 @@ public class GameEngine {
 	ServerConnector connection;
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
 	public static final double BULLET_WIDTH = 0.01;
@@ -22,13 +23,13 @@ public class GameEngine {
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
-	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
 	 
 	 
 	public void startGame(int tankCount) {
 		try {
 			Log.message("Starting server");
 			initializeTanks(tankCount);
+			initializeWalls();
 			connection = new ServerConnector();
 			connection.initializeServerConnection(1);
 			Log.message("Clients connected");
@@ -67,7 +68,18 @@ public class GameEngine {
 			
 			tanks.add(newTank);
 		}
-		
+	}
+	
+	private void initializeWalls()
+	{
+		//top wall
+		walls.add(new Wall( 0, -1, 1, 1));
+		//left wall
+		walls.add(new Wall(-1,  0, 1, 1));
+		//bottom wall
+		walls.add(new Wall( 0,  1, 1, 1));
+		//right wall
+		walls.add(new Wall( 1,  0, 1, 1));
 	}
 
 
@@ -111,21 +123,19 @@ public class GameEngine {
 	
 	// returns false if bullet must be deleted
 	private Boolean updateBulletLocation(Bullet bullet) {
+		bullet.move();
 		
-		// Work out changes in x and y given bullets angle and movement distance
-		bullet.x += Math.cos(bullet.angle) * BULLET_MOVEMENT_DISTANCE; 
-		bullet.y += Math.sin(bullet.angle) * BULLET_MOVEMENT_DISTANCE;
-		
-		//check if bullet has left map yet
-		if ((0 < bullet.x && bullet.x < BOARD_MAX_X) && 
-			(0 < bullet.y && bullet.y < BOARD_MAX_Y)) {
-			return !checkDamage(bullet);
-		} else {
+		final boolean isBulletDead = Ricochet.simpleBounce(bullet, walls);
+		if (isBulletDead) {
 			return false;
 		}
 		
-	}
+		// Work out changes in x and y given bullets angle and movement distance
 
+		
+		return !checkDamage(bullet);
+	}
+	
 	//returns true if bullet hits
 	private Boolean checkDamage(Bullet bullet) {
 		final Point2D.Double bulletPos = new Point2D.Double(bullet.x, bullet.y);
