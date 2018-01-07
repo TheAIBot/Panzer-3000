@@ -71,7 +71,12 @@ public class GraphicsPanel extends JPanel {
 	
 	private void drawBullet(Bullet bullet, Graphics g)
 	{
-		//g.drawOval((int)(bullet.x - bullet.width / 2), (int)(bullet.y- bullet.height / 2), (int)bullet.width, (int)bullet.height);
+		final int x = (int)((bullet.x - bullet.width / 2) * this.getWidth());
+		final int y = (int)((bullet.y - bullet.height / 2) * this.getHeight());
+		final int width = (int)(bullet.width * this.getWidth());
+		final int height = (int)(bullet.height * this.getHeight());
+		
+		g.fillOval(x, y, width, height);
 	}
 	
 	public void setTanks(ArrayList<Tank> tanks)

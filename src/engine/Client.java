@@ -29,7 +29,7 @@ public class Client {
 				Object[] updatedObjects = connection.recieveUpdates(); 
 				ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 				ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
-				Log.message("Received tanks and bullet updates");
+				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
 				panel.setTanks(tanks);
@@ -38,11 +38,11 @@ public class Client {
 
 				//Create a new Input
 				Input userInput = menu.getInput();
-				Log.message(userInput.toString());
+				//Log.message(userInput.toString());
 				
 				//finally send the inputs to the server.			
 				connection.sendUserInput(userInput);
-				Log.message("Sent user input");
+				//Log.message("Sent user input");
 			}	
 		} catch (Exception e) {
 			Log.exception(e);

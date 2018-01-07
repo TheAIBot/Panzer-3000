@@ -17,11 +17,11 @@ public class GameEngine {
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
-	public static final double BULLET_WIDTH = 0.001;
-	public static final double BULLET_HEIGHT = 0.001;
+	public static final double BULLET_WIDTH = 0.01;
+	public static final double BULLET_HEIGHT = 0.01;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
-	public static final double TANK_MOVEMENT_DISTANCE = 0.001;
+	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
 	 
 	 
@@ -44,12 +44,12 @@ public class GameEngine {
 			
 			while(true) { //Game loop			
 				Input[] userInputs = connection.reciveUserInputs();
-				Log.message(userInputs[0].toString());
-				Log.message("Received inputs from clients");
+				//Log.message(userInputs[0].toString());
+				//Log.message("Received inputs from clients");
 				update(userInputs);
-				Log.message("Updated game");
+				//Log.message("Updated game");
 				connection.sendUpdates(tanks, bullets);
-				Log.message("Sent game state update");
+				//Log.message("Sent game state update");
 				
 				Thread.sleep(1000 / FPS);
 			}	
@@ -79,11 +79,6 @@ public class GameEngine {
 			//Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);
 			
-			//Create bullet
-			if(currInput.click == true) {
-				createBullet(tank);
-			}
-			
 			// Angle tank before moving
 			if(currInput.a == true) { angleTank(tank, false); }
 			if(currInput.d == true) { angleTank(tank, true); }
@@ -91,6 +86,16 @@ public class GameEngine {
 			//Move with new angle
 			if(currInput.w == true) { moveTank(tank, true); }
 			if(currInput.s == true) { moveTank(tank, false); }
+		}
+		
+		//Create bullet
+		for (int i = 0; i < tanks.size(); i++) {
+			final Tank tank = tanks.get(i);
+			final Input currInput = inputs[i];
+			
+			if(currInput.click == true) {
+				createBullet(tank);
+			}
 		}
 		
 		//Update the locations of the bullets and decide if any hit
@@ -108,8 +113,8 @@ public class GameEngine {
 	private Boolean updateBulletLocation(Bullet bullet) {
 		
 		// Work out changes in x and y given bullets angle and movement distance
-		bullet.x += Math.sin( bullet.angle ) * BULLET_MOVEMENT_DISTANCE; 
-		bullet.y += Math.cos( bullet.angle ) * BULLET_MOVEMENT_DISTANCE;
+		bullet.x += Math.cos(bullet.angle) * BULLET_MOVEMENT_DISTANCE; 
+		bullet.y += Math.sin(bullet.angle) * BULLET_MOVEMENT_DISTANCE;
 		
 		//check if bullet has left map yet
 		if ((0 < bullet.x && bullet.x < BOARD_MAX_X) && 
@@ -143,31 +148,15 @@ public class GameEngine {
 
 
 	private void updateGunAngle(Tank currTank, double pointerX, double pointerY) {
-		// TODO Auto-generated method stub
+		final double x = pointerX - currTank.x;
+		final double y = pointerY - currTank.y;
 		
-		double x = pointerX - currTank.x;
-		double y = pointerY - currTank.y;
-		
-		double radianAngle = Math.atan2(y, x);
-		/*
-		if (x > 0 && y < 0) {
-			radianAngle = Math.toRadians(180) - radianAngle;
-		} else if (x < 0 && y < 0) {
-			radianAngle += Math.toRadians(180);
-		} else if (x < 0 && y > 0) {
-			radianAngle = Math.toRadians(360) - radianAngle;
-		}
-		*/
-		
-		currTank.gunAngle = radianAngle;
+		currTank.gunAngle = Math.atan2(y, x);
 	}
 
 	private void createBullet(Tank currTank) {
-
-		Bullet newBullet = new Bullet(currTank.x, currTank.y, BULLET_WIDTH, 
-				BULLET_HEIGHT, currTank.gunAngle);
-		bullets.add(newBullet);
-
+		final Point2D.Double bulletStartPos = currTank.getBulletStartPos();
+		bullets.add(new Bullet(bulletStartPos.x, bulletStartPos.y, BULLET_WIDTH, BULLET_HEIGHT, currTank.gunAngle));
 	}
 
 	// true: clockwise, false: counterclockwise

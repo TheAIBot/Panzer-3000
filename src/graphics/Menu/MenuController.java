@@ -174,7 +174,7 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {	
+	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			input.click = true;
 		}
@@ -189,11 +189,19 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		final int thisWidth = mainMenu.getWidth();
+		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
+		int k = (thisWidth - eWidth) / 2;
+		input.x = ((double)e.getX() - k) / eWidth;
+		input.y = (double)e.getY() / e.getComponent().getHeight();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		input.x = (double)e.getX() / e.getComponent().getWidth();
+		final int thisWidth = mainMenu.getWidth();
+		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
+		int k = (thisWidth - eWidth) / 2;
+		input.x = ((double)e.getX() - k) / eWidth;
 		input.y = (double)e.getY() / e.getComponent().getHeight();
 	}
 }

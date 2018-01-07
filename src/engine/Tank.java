@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
 
 public class Tank {
 	public double x;
@@ -13,11 +14,12 @@ public class Tank {
 	int id;
 	int health;
 	
-	public static final double TANK_WIDTH = 0.2;
-	public static final double TANK_HEIGHT = 0.2;
-	public static final double GUN_WIDTH = 0.2;
-	public static final double GUN_HEIGHT = 0.02;
+	public static final double TANK_WIDTH = 0.05;
+	public static final double TANK_HEIGHT = 0.05;
+	public static final double GUN_WIDTH = 0.07;
+	public static final double GUN_HEIGHT = 0.005;
 	public static final int TANK_HEALTH = 100;
+	public static final double SCALAR = 10000;
 	
 	public Tank(double xNew, double yNew, 
 			double bodyAngleNew, double gunAngleNew, int idNew) {
@@ -39,10 +41,14 @@ public class Tank {
 		}
 	}
 	
+	public Point2D.Double getBulletStartPos()
+	{
+		final double startX = x + Math.cos(gunAngle) * Tank.GUN_WIDTH * 0.6;
+		final double startY = y + Math.sin(gunAngle) * Tank.GUN_WIDTH * 0.6;
+		
+		return new Point2D.Double(startX,  startY);
+	}
 	
-	// Calculations for Polygon shape
-	
-	public static final double SCALAR = 10000;
 	
 	public Polygon getTankRectangle()
 	{
