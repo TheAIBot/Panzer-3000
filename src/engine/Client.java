@@ -10,22 +10,22 @@ import graphics.Menu.Pages.GamePage;
 
 public class Client {
 	
-	public void startGame() {
+	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer();
+			connection.connectToServer(username);
 			Log.message("Client connected");
 			
-			MenuController menu = new MenuController("Panzer", 500, 500);
-			menu.showWindow();
-			GraphicsPanel panel = GamePage.GetGraphicsPanel();
-			Log.message("Created gui");
+			//MenuController menu = new MenuController("Panzer", 500, 500);
+			//menu.showWindow();
+			//GraphicsPanel panel = GamePage.GetGraphicsPanel();
+			//Log.message("Created gui");
 			
 			while (true) {
 				
 				//The call is blocking, so it won't continue before the update is given
-				Object[] updatedObjects = connection.recieveUpdates(); 
+				Object[] updatedObjects 	= connection.recieveUpdates(); 
 				ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 				ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
 				ArrayList<Wall> walls       = connection.unpackWalls(updatedObjects);

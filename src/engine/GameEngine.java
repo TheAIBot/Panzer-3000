@@ -21,13 +21,13 @@ public class GameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int tankCount) {
+	public void startGame(int tankCount, String ipAddress, String[] usernames) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(tankCount);
+			connection.initializeServerConnection(tankCount, ipAddress, usernames);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
@@ -90,7 +90,7 @@ public class GameEngine {
 	public void update(Input[] inputs) {
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
-			final Input currInput = inputs[tank.id];
+			Input currInput = inputs[tank.id];
 			
 			//Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);

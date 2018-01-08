@@ -18,13 +18,15 @@ public class ClientConnector implements Runnable{
 	public RemoteSpace 	privateServerConnections;
 	public RemoteSpace 	updateSpace;
 	public int 			connectionId;
+	public String		username;
 	
-	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		updateSpace		= new RemoteSpace("tcp://192.168.43.196:9001/updateSpace?keep");
-		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
+	public void connectToServer(String username) throws UnknownHostException, IOException, InterruptedException {
+		this.username = username;
+		updateSpace		= new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
+		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new RemoteSpace("tcp://192.168.43.196:9001/clientSpace" + connectionId + "?keep");
-		privateServerConnections.put("connected", 0.0);
+		privateServerConnections = new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections.put("connected", connectionId);
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
@@ -66,7 +68,7 @@ public class ClientConnector implements Runnable{
 	@Override
 	public void run() {
 		try {
-			connectToServer();			
+			connectToServer(username);			
 		} catch (Exception e) { 
 			Log.exception(e);
 		}
