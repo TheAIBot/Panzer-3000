@@ -10,17 +10,17 @@ import graphics.Menu.Pages.GamePage;
 
 public class Client {
 	
-	public void startGame() {
+	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer();
+			connection.connectToServer(username);
 			Log.message("Client connected");
 			
-			MenuController menu = new MenuController("Panzer", 500, 500);
-			menu.showWindow();
-			GraphicsPanel panel = GamePage.GetGraphicsPanel();
-			Log.message("Created gui");
+			//MenuController menu = new MenuController("Panzer", 500, 500);
+			//menu.showWindow();
+			//GraphicsPanel panel = GamePage.GetGraphicsPanel();
+			//Log.message("Created gui");
 			
 			while (true) {
 				

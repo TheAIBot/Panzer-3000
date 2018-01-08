@@ -12,23 +12,27 @@ public class ServerConnector implements Runnable {
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
+	String[] usernames;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
 	
 	public int numClients;
 	public int numConnectedClients;
+	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients) throws InterruptedException {
+	public void initializeServerConnection(int numClients, String ipAddress, String[] usernames) throws InterruptedException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
+		this.ipAddress = ipAddress;
+		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + IP_ADDRESS + ":9001/?keep");
+		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -40,7 +44,7 @@ public class ServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(id);
+			updateSpace.put(new ActualField(id), new ActualField(usernames[id]));
 		}
 		
 		//And waits for all clients to connect:
@@ -74,7 +78,7 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients);	
+			initializeServerConnection(numClients, ipAddress, usernames);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}
