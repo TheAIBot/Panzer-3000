@@ -4,14 +4,19 @@ import java.util.*;
 
 import org.jspace.*;
 
+import com.sun.swing.internal.plaf.metal.resources.metal;
+import com.sun.webkit.ThemeClient;
+
 import Logger.Log;
 import engine.*;
 public class ServerConnector implements Runnable {
 	
-	public final static String IP_ADDRESS = "192.168.43.196";
+	public final static String IP_ADDRESS = "localhost"; //"192.168.43.196";
+	public final static String CONNECTION_TYPE = "tcp";
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
+	String[] usernames;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
@@ -27,8 +32,9 @@ public class ServerConnector implements Runnable {
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
+		usernames = new String[numClients];
 		
-		repository.addGate("tcp://" + IP_ADDRESS + ":9001/?keep");
+		repository.addGate(CONNECTION_TYPE + "://" + IP_ADDRESS + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -37,18 +43,27 @@ public class ServerConnector implements Runnable {
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
 		}
 		
+		//Some initial information for all the clients:
+		
+		//Number of users to connect:
+		updateSpace.put("numClients", numClients);
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(id);
+			updateSpace.put("ID", id);
 		}
 		
+		System.out.println("0 clients are connected");
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
+				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id), new FormalField(String.class));
+				usernames[id] = (String) tuple[2];
 				numConnectedClients++;
+				System.out.println(numConnectedClients + " clients are connected");
 		}
-		//Now communication is up and running.
+		System.out.println("All has connected.");
+		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
+		updateSpace.get(new ActualField("numClients"), new ActualField(numClients));
 	}
 	
 	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
@@ -78,6 +93,12 @@ public class ServerConnector implements Runnable {
 		} catch (Exception e) {
 			Log.exception(e);
 		}
+	}
+
+	public void setUserNames(ArrayList<Tank> tanks) {
+		for (int i = 0; i < tanks.size(); i++) {
+			tanks.get(i).userName = usernames[tanks.get(i).id];
+		}		
 	}
 	
 	/*
