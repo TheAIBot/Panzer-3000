@@ -16,7 +16,8 @@ public class Input {
 		this.id = id;
 	}
 	
-	public Input() {	
+	public Input() {
+		id = 0; w = false; a = false; s = false; d = false; click = false; x = 0; y = 0;
 	}
 	
 	public String toString()

@@ -31,7 +31,7 @@ public class GameEngine {
 			initializeTanks(tankCount);
 			initializeWalls();
 			connection = new ServerConnector();
-			connection.initializeServerConnection(1);
+			connection.initializeServerConnection(tankCount);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
@@ -90,7 +90,8 @@ public class GameEngine {
 	public void update(Input[] inputs) {
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
-			final Input currInput = inputs[i];
+			inputs[i] = (inputs[i] == null)? new Input(): inputs[i];
+			Input currInput = inputs[i];
 			
 			//Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);

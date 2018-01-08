@@ -26,7 +26,7 @@ public class Client {
 			while (true) {
 				
 				//The call is blocking, so it won't continue before the update is given
-				Object[] updatedObjects = connection.recieveUpdates(); 
+				Object[] updatedObjects 	= connection.recieveUpdates(); 
 				ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 				ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
 				ArrayList<Wall> walls       = connection.unpackWalls(updatedObjects);
