@@ -9,7 +9,6 @@ import org.jspace.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.internal.LinkedTreeMap;
 
 import Logger.Log;
 import engine.*;
@@ -21,11 +20,11 @@ public class ClientConnector implements Runnable{
 	public int 			connectionId;
 	
 	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		updateSpace		= new RemoteSpace("tcp://localhost:9001/updateSpace?keep");
+		updateSpace		= new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new RemoteSpace("tcp://localhost:9001/clientSpace" + connectionId + "?keep");
-		privateServerConnections.put("connected", 0.0);
+		privateServerConnections = new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections.put("connected", connectionId);
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
@@ -59,8 +58,9 @@ public class ClientConnector implements Runnable{
 	}
 	
 	
-	public void sendUserInput(Input inputs) {
-		privateServerConnections.put(inputs);		
+	public void sendUserInput(Input input) {
+		input.id = connectionId;
+		privateServerConnections.put(input);		
 	}
 
 	@Override

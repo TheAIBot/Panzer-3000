@@ -8,9 +8,10 @@ import Logger.Log;
 import engine.*;
 public class ServerConnector implements Runnable {
 	
+	public final static String IP_ADDRESS = "192.168.43.196";
 	public SpaceRepository 	repository;
-	SequentialSpace[] 	clientSpaces;
 	SequentialSpace		updateSpace;
+	SequentialSpace[] 	clientSpaces;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
@@ -27,7 +28,7 @@ public class ServerConnector implements Runnable {
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://localhost:9001/?keep");
+		repository.addGate("tcp://" + IP_ADDRESS + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -44,7 +45,7 @@ public class ServerConnector implements Runnable {
 		
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].get(new ActualField("connected"), new FormalField(Double.class));
+				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
 		}
 		//Now communication is up and running.
@@ -58,10 +59,6 @@ public class ServerConnector implements Runnable {
 	
 	
 	public Input[] reciveUserInputs() throws InterruptedException {
-		//Removes everything from the update space. Thus, when the clients ask for the updates, 
-		//they will have to wait until the server makes an update based on the current  input.
-		//updateSpace.getAll(new FormalField(ArrayList.class), new FormalField(ArrayList.class)); 
-		//Log.message("UpdateSpace: " + updateSpace.size());
 		Input[] recievedInputs = new Input[numClients];
 		for (int i = 0; i < numClients; i++) {
 			//Log.message("Input count: " + clientSpaces[i].size());

@@ -3,9 +3,7 @@ package graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;

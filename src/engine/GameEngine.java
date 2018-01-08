@@ -3,13 +3,11 @@ package engine;
 import connector.ServerConnector;
 
 import java.awt.Polygon;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import Logger.Log;
-import connector.ClientConnector;
 
 public class GameEngine {
 	ServerConnector connection;
@@ -18,8 +16,6 @@ public class GameEngine {
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
-	public static final double BULLET_WIDTH = 0.01;
-	public static final double BULLET_HEIGHT = 0.01;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
@@ -28,8 +24,8 @@ public class GameEngine {
 	public void startGame(int tankCount) {
 		try {
 			Log.message("Starting server");
-			initializeTanks(tankCount);
 			initializeWalls();
+			initializeTanks(tankCount);
 			connection = new ServerConnector();
 			connection.initializeServerConnection(tankCount);
 			Log.message("Clients connected");
@@ -61,10 +57,14 @@ public class GameEngine {
 	
 	private void initializeTanks(int tankCount) {
 		for(int i = 0; i < tankCount; i++) {
+			Tank newTank;
 			
-			double xNew = Math.random();
-			double yNew = Math.random();
-			Tank newTank = new Tank(xNew, yNew, 0, 0, i);
+			do {
+				final double xNew = Math.random();
+				final double yNew = Math.random();
+				newTank = new Tank(xNew, yNew, 0, 0, i);
+				//tank shouldn't spawn inside a wall
+			} while (isTankInsideAnyWall(newTank));
 			
 			tanks.add(newTank);
 		}
@@ -108,10 +108,11 @@ public class GameEngine {
 		//Create bullet
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
-			final Input currInput = inputs[i];
+			final Input currInput = inputs[tank.id];
 			
-			if(currInput.click == true) {
-				createBullet(tank);
+			tank.timeBeforeShoot--;
+			if(currInput.click == true && tank.canShoot()) {
+				bullets.add(tank.shoot());
 			}
 		}
 		
@@ -119,6 +120,11 @@ public class GameEngine {
 		final Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			final Bullet bullet = bulletIterator.next();
+			
+			bullet.timeAlive--;
+			if (!bullet.stillAlive()) {
+				bulletIterator.remove();
+			}
 			
 			if (!updateBulletLocation(bullet)) {
 				bulletIterator.remove();
@@ -135,28 +141,26 @@ public class GameEngine {
 			return false;
 		}
 		
-		// Work out changes in x and y given bullets angle and movement distance
-
-		
 		return !checkDamage(bullet);
 	}
 	
 	//returns true if bullet hits
 	private Boolean checkDamage(Bullet bullet) {
-		final Point2D.Double bulletPos = new Point2D.Double(bullet.x, bullet.y);
+		final Point2D.Double bulletPos = new Point2D.Double(bullet.x * Tank.SCALAR, bullet.y * Tank.SCALAR);
 		
 		final Iterator<Tank> tankIterator = tanks.iterator();
 		while (tankIterator.hasNext()) {
-			final Tank tank = tankIterator.next();
-			final Polygon tankPolygon =tank.getTankRectangle();
+			Tank tank = tankIterator.next();
+			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(bulletPos)) {
 				tank.takeDamage(Bullet.BULLET_DAMAGE);
-				if (tank.health == 0) {
+				if (!tank.isAlive()) {
 					tankIterator.remove();
 				}
 				return true;
 			}
+			
 		}
 		return false;
 	}
@@ -169,28 +173,39 @@ public class GameEngine {
 		currTank.gunAngle = Math.atan2(y, x);
 	}
 
-	private void createBullet(Tank currTank) {
-		final Point2D.Double bulletStartPos = currTank.getBulletStartPos();
-		bullets.add(new Bullet(bulletStartPos.x, bulletStartPos.y, BULLET_WIDTH, BULLET_HEIGHT, currTank.gunAngle));
-	}
-
 	// true: clockwise, false: counterclockwise
 	private void angleTank(Tank currTank, boolean angle ) {
-		currTank.bodyAngle += angle ? Math.toRadians(2) : -Math.toRadians(2);
+		final double angleAddition = angle ? Math.toRadians(2) : -Math.toRadians(2);
+		
+		currTank.bodyAngle += angleAddition;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.bodyAngle -= angleAddition;
+		}
 	}
 
 	// true: forward, false: backward
 	private void moveTank(Tank currTank, Boolean direction) {
 		final double x = Math.cos( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
 		final double y = Math.sin( currTank.bodyAngle ) * TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
-		final double possibleX = currTank.x + x; 
-		final double possibleY = currTank.y + y;
-		if (0 < possibleX && possibleX < BOARD_MAX_X) {
-			currTank.x += x; 
+		currTank.x += x;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.x -= x;
 		}
-		if (0 < possibleY && possibleY < BOARD_MAX_Y) {
-			currTank.y += y;
+		
+		currTank.y += y;
+		if (isTankInsideAnyWall(currTank)) {
+			currTank.y -= y;
 		}
+	}
+	
+	private boolean isTankInsideAnyWall(Tank tank)
+	{
+		for (Wall wall : walls) {
+			if (wall.collidesWith(tank)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ArrayList<Tank> getTanks() {
