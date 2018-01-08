@@ -15,11 +15,10 @@ public class GameEngine {
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static final int FPS = 50;
-	public static final int TANK_COUNT = 2;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
-	 
+	public static boolean gameIsWon = false;
 	 
 	public void startGame(int tankCount) {
 		try {
@@ -28,6 +27,7 @@ public class GameEngine {
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
 			connection.initializeServerConnection(tankCount);
+			connection.setUserNames(tanks);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
@@ -44,17 +44,29 @@ public class GameEngine {
 				//Log.message(userInputs[0].toString());
 				//Log.message("Received inputs from clients");
 				update(userInputs);
+				
 				//Log.message("Updated game");
 				connection.sendUpdates(tanks, bullets, walls);
 				//Log.message("Sent game state update");
+				if (hasTankWonGame(tanks, tankCount)) {
+					//Victory!!!
+					System.out.println("The game has been won!!!");
+					break;
+				}
 				
-				Thread.sleep(1000 / FPS);
+				//Thread.sleep(1000 / FPS);
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
 		}
 	}
-	
+
+
+
+	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
+		return tanks.size() <= 1 && tanks.size() != numberOfClients;
+	}
+
 	private void initializeTanks(int tankCount) {
 		for(int i = 0; i < tankCount; i++) {
 			Tank newTank;
@@ -88,6 +100,7 @@ public class GameEngine {
 
 
 	public void update(Input[] inputs) {
+		
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
 			Input currInput = inputs[tank.id];
@@ -174,7 +187,7 @@ public class GameEngine {
 
 	// true: clockwise, false: counterclockwise
 	private void angleTank(Tank currTank, boolean angle ) {
-		final double angleAddition = angle ? Math.toRadians(2) : -Math.toRadians(2);
+		final double angleAddition = angle ? Math.toRadians(Tank.TURNING_ANGLE) : -Math.toRadians(Tank.TURNING_ANGLE);
 		
 		currTank.bodyAngle += angleAddition;
 		if (isTankInsideAnyWall(currTank)) {
@@ -214,5 +227,4 @@ public class GameEngine {
 	public ArrayList<Bullet> getBullets() {
 		return bullets;	
 	}
-	
 }

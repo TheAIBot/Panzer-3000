@@ -9,6 +9,8 @@ import org.jspace.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.corba.se.spi.activation.Server;
+import com.sun.swing.internal.plaf.metal.resources.metal;
 
 import Logger.Log;
 import engine.*;
@@ -18,13 +20,17 @@ public class ClientConnector implements Runnable{
 	public RemoteSpace 	privateServerConnections;
 	public RemoteSpace 	updateSpace;
 	public int 			connectionId;
+	public int 			numberOfClients;
 	
-	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		updateSpace		= new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
-		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
-		connectionId   	= (int) tuple[0];
-		privateServerConnections = new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/clientSpace" + connectionId + "?keep");
-		privateServerConnections.put("connected", connectionId);
+	public void connectToServer(String username) throws UnknownHostException, IOException, InterruptedException {
+		updateSpace		= new RemoteSpace(ServerConnector.CONNECTION_TYPE + "://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
+		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
+		numberOfClients = (int) tuple1[1];
+		Object[] tuple2 = updateSpace.get(new ActualField("ID"), new FormalField(Integer.class));
+		connectionId   	= (int) tuple2[1];
+		
+		privateServerConnections = new RemoteSpace(ServerConnector.CONNECTION_TYPE + "://" + ServerConnector.IP_ADDRESS + ":9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections.put("connected", connectionId, username);
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
@@ -66,7 +72,7 @@ public class ClientConnector implements Runnable{
 	@Override
 	public void run() {
 		try {
-			connectToServer();			
+			connectToServer("kage");			
 		} catch (Exception e) { 
 			Log.exception(e);
 		}

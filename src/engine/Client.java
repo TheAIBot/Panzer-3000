@@ -4,17 +4,20 @@ import java.util.ArrayList;
 
 import Logger.Log;
 import connector.ClientConnector;
+import connector.ServerConnector;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 
 public class Client {
 	
-	public void startGame() {
+	boolean hasPlayerWon = false;
+	
+	public void startGame(String username) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer();
+			connection.connectToServer(username);
 			Log.message("Client connected");
 			
 			MenuController menu = new MenuController("Panzer", 500, 500);
@@ -22,13 +25,19 @@ public class Client {
 			GraphicsPanel panel = GamePage.GetGraphicsPanel();
 			Log.message("Created gui");
 			
-			while (true) {
+			while (!hasPlayerWon) {
 				
 				//The call is blocking, so it won't continue before the update is given
 				Object[] updatedObjects 	= connection.recieveUpdates(); 
 				ArrayList<Tank> tanks 		= connection.unpackTanks(updatedObjects);
 				ArrayList<Bullet> bullets 	= connection.unpackBullets(updatedObjects);
 				ArrayList<Wall> walls       = connection.unpackWalls(updatedObjects);
+				
+				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
+					System.out.println("The game has been won!!!");
+					hasPlayerWon = true;
+					panel.setPlayerHasWon();
+				}
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
@@ -48,5 +57,10 @@ public class Client {
 		} catch (Exception e) {
 			Log.exception(e);
 		}
+		
+	}
+
+	private boolean hasTankWonGame(ArrayList<Tank> tanks) {
+		return tanks.size() <= 1;
 	}
 }
