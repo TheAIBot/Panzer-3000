@@ -18,17 +18,19 @@ public class ServerConnector implements Runnable {
 	
 	public int numClients;
 	public int numConnectedClients;
+	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients) throws InterruptedException {
+	public void initializeServerConnection(int numClients, String ipAddress) throws InterruptedException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
+		this.ipAddress = ipAddress;
 		
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + IP_ADDRESS + ":9001/?keep");
+		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -74,7 +76,7 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients);	
+			initializeServerConnection(numClients, ipAddress);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}

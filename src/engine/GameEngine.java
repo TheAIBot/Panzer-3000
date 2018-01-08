@@ -21,13 +21,13 @@ public class GameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int tankCount) {
+	public void startGame(int tankCount, String ipAddress) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(tankCount);
+			connection.initializeServerConnection(tankCount, ipAddress);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
