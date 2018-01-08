@@ -20,10 +20,10 @@ public class ClientConnector implements Runnable{
 	public int 			connectionId;
 	
 	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		updateSpace		= new RemoteSpace("tcp://localhost:9001/updateSpace?keep");
+		updateSpace		= new RemoteSpace("tcp://192.168.43.196:9001/updateSpace?keep");
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new RemoteSpace("tcp://localhost:9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections = new RemoteSpace("tcp://192.168.43.196:9001/clientSpace" + connectionId + "?keep");
 		privateServerConnections.put("connected", 0.0);
 	}
 	
