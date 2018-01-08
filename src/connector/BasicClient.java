@@ -19,6 +19,19 @@ public class BasicClient {
 	MenuController menu;
 	GraphicsPanel panel;
 	
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		BasicClient client = new BasicClient();
+		
+
+		ServerInfo curr = new ServerInfo();
+		curr.name = "name";
+		curr.ipAddress = "localhost";
+		curr.clientsConnected = 1;
+		
+		client.joinGame(curr, "username1");
+	}
+	
+	
 	public void startClient() {
 
 		menu = new MenuController("Panzer", 500, 500);
@@ -35,9 +48,10 @@ public class BasicClient {
 	}
 	
 	
-	public void joinGame(ServerInfo info) throws UnknownHostException, IOException {
+	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException {
 		//join the game -- connect to servers 
 		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/clientConnectSpace?keep");
+		serverConnection.put(new ActualField(username));
 		
 		//listen for when to call startGame
 		
@@ -47,8 +61,8 @@ public class BasicClient {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			new Client().startGame(info.ipAddress, menu, panel);
-		});
+			new Client().startGame(info.ipAddress, username, menu, panel);
+		}).start();
 	}
 	
 	public void startGame(ServerInfo info) {

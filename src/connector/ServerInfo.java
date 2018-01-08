@@ -1,7 +1,7 @@
 package connector;
 
 public class ServerInfo {
-	String name;
-	String ipAddress;
-	int clientsConnected;
+	public String name;
+	public String ipAddress;
+	public int clientsConnected;
 }
