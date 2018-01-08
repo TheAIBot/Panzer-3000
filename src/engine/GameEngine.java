@@ -90,8 +90,7 @@ public class GameEngine {
 	public void update(Input[] inputs) {
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
-			inputs[i] = (inputs[i] == null)? new Input(): inputs[i];
-			Input currInput = inputs[i];
+			Input currInput = inputs[tank.id];
 			
 			//Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);
