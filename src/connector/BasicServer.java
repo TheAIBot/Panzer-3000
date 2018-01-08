@@ -32,7 +32,7 @@ public class BasicServer {
 	
 	private void receiveBroadcasts()
 	{
-		try (DatagramSocket socket = new DatagramSocket(BasicClient.UDP_PORT))
+		try (DatagramSocket socket = new DatagramSocket(BasicClient.UDP_PORT_ASK))
 		{
 			socket.setReuseAddress(true);
 			final ArrayList<InetAddress> broadcastAddresses = BasicClient.getBroadcastAddresses();
@@ -47,7 +47,7 @@ public class BasicServer {
 					if (message.equals(BasicClient.BROADCAST_MESSAGE)) {
 						byte[] sendData = info.toByteArray();
 						for (InetAddress address : broadcastAddresses) {
-							BasicClient.broadcastUDPMessage(socket, sendData, address);
+							BasicClient.broadcastUDPMessage(socket, sendData, address, BasicClient.UDP_PORT_ANSWER);
 						}
 						Log.message("Server sent server information to all clients");
 					}

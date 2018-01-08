@@ -27,7 +27,8 @@ public class BasicClient implements ServerFoundListener {
 	ServerFoundListener listener;
 	
 	public static final String BROADCAST_MESSAGE = "anyone there?";
-	public static final int UDP_PORT = 3242;
+	public static final int UDP_PORT_ASK = 3242;
+	public static final int UDP_PORT_ANSWER = 3243;
 	
 	
 	public static void main(String[] args) {
@@ -65,23 +66,23 @@ public class BasicClient implements ServerFoundListener {
 	{		
 		try 
 		{
-			DatagramSocket socket = new DatagramSocket(UDP_PORT);
+			DatagramSocket socket = new DatagramSocket(UDP_PORT_ANSWER);
 			socket.setReuseAddress(true);
 			new Thread(() -> listenForServers(socket)).start();
 			socket.setReuseAddress(true);
 			for (InetAddress inetAddress : broadcastAddresses) {
 				byte[] sendData = stringToBytes(BROADCAST_MESSAGE);
-				broadcastUDPMessage(socket, sendData, inetAddress);
+				broadcastUDPMessage(socket, sendData, inetAddress, UDP_PORT_ASK);
 			}
 		} catch (Exception e) {
 			Log.exception(e);
 		}
 	}
 	
-	public static void broadcastUDPMessage(DatagramSocket socket, byte[] message, InetAddress address) throws IOException
+	public static void broadcastUDPMessage(DatagramSocket socket, byte[] message, InetAddress address, int port) throws IOException
 	{
 		socket.setBroadcast(true);
-		socket.send(new DatagramPacket(message, message.length, address, UDP_PORT));
+		socket.send(new DatagramPacket(message, message.length, address, port));
 		Log.message("Client sent a udp message");
 	}
 	
