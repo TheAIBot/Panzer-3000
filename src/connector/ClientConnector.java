@@ -1,6 +1,7 @@
 package connector;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -20,10 +21,11 @@ public class ClientConnector implements Runnable{
 	public int 			connectionId;
 	
 	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		updateSpace		= new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		updateSpace		= new RemoteSpace("tcp://" + ip + ":9001/updateSpace?keep");
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections = new RemoteSpace("tcp://" + ip + ":9001/clientSpace" + connectionId + "?keep");
 		privateServerConnections.put("connected", connectionId);
 	}
 	

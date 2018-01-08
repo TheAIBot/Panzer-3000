@@ -1,5 +1,7 @@
 package connector;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import org.jspace.*;
@@ -7,8 +9,6 @@ import org.jspace.*;
 import Logger.Log;
 import engine.*;
 public class ServerConnector implements Runnable {
-	
-	public final static String IP_ADDRESS = "192.168.43.196";
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
@@ -20,7 +20,7 @@ public class ServerConnector implements Runnable {
 	public int numConnectedClients;
 	
 	
-	public void initializeServerConnection(int numClients) throws InterruptedException {
+	public void initializeServerConnection(int numClients) throws InterruptedException, UnknownHostException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		
@@ -28,7 +28,7 @@ public class ServerConnector implements Runnable {
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + IP_ADDRESS + ":9001/?keep");
+		repository.addGate("tcp://" + InetAddress.getLocalHost().getHostAddress() + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
