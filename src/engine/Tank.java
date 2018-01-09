@@ -3,6 +3,8 @@ package engine;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Tank {
 	public double x;
@@ -14,6 +16,7 @@ public class Tank {
 	int id;
 	int health;
 	public int timeBeforeShoot = 0;
+	public ArrayList<Powerup> powerups;
 	
 	public static final double TANK_WIDTH = 0.05;
 	public static final double TANK_HEIGHT = 0.05;
@@ -33,6 +36,28 @@ public class Tank {
 		gunAngle = gunAngleNew;
 		id = idNew;
 		health = TANK_HEALTH;
+		powerups = new ArrayList<Powerup>();
+	}
+	
+	public void updatePowerups() {
+
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
+			powerup.timeAlive--;
+		}
+	}
+	
+	public Boolean hasPowerup(int powerupId) {
+
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
+			if (powerup.type == powerupId) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void takeDamage(int damage) {

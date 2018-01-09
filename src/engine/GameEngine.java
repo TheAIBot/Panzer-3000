@@ -21,6 +21,7 @@ public class GameEngine {
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	public static final int LUCKY_POWERUP_NUMBER = 1;
+	public static final int POWERUP_HALF_DAMAGE = 1;
 	 
 	 
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
@@ -89,7 +90,7 @@ public class GameEngine {
 	}
 	
 	private void createPowerup() {
-		// chance of power up happening is 1/100 [possibly too much]
+		// chance of power up happening is 1/100 [possibly too much?]
 		
 		if ((int) Math.ceil(Math.random() * 100) == LUCKY_POWERUP_NUMBER) {
 			Powerup curr = getNewPowerup();
@@ -104,9 +105,9 @@ public class GameEngine {
 		do {
 			final double xNew = Math.random();
 			final double yNew = Math.random();
-			newPowerup = new Powerup(xNew, yNew);
+			newPowerup = new Powerup(xNew, yNew, POWERUP_HALF_DAMAGE);
 			
-			//Powerup shouldn't spawn inside a wall
+			//Power up shouldn't spawn inside a wall
 		} while (isPowerupInsideAnyWall(newPowerup));
 		
 		return newPowerup;
@@ -115,18 +116,18 @@ public class GameEngine {
 	private void updatePowerups() {
 		
 		final Iterator<Powerup> powerupIterator = powerups.iterator();
-		for(powerupIterator.hasNext()) {
-			powerup = powerupIterator.hasNext();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
 			
 			// Check if tank has collected the power up
 			if (isPowerupCollected(powerup)) {
-				powerup.remove();
+				powerupIterator.remove();
 			}
 			
 			// If a tank hasn't taken a power up, decrease its time alive
 			powerup.timeAlive--;
 			if (powerup.timeAlive == 0) {
-				powerup.remove();
+				powerupIterator.remove();
 			}
 		} 
 	}
@@ -140,6 +141,7 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(powerupLoc)) {
+				
 				return true;
 			}
 			
@@ -150,6 +152,10 @@ public class GameEngine {
 	public void update(Input[] inputs) {
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
+			
+			//update tanks power ups
+			tank.updatePowerups();
+			
 			Input currInput = inputs[tank.id];
 			
 			//Update gun angle before shooting or moving
@@ -219,7 +225,11 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(bulletPos)) {
-				tank.takeDamage(Bullet.BULLET_DAMAGE);
+				if (tank.hasPowerup(POWERUP_HALF_DAMAGE)) {
+					tank.takeDamage((int) Math.floor(Bullet.BULLET_DAMAGE * 0.5));
+				} else {
+					tank.takeDamage(Bullet.BULLET_DAMAGE);
+				}
 				if (!tank.isAlive()) {
 					tankIterator.remove();
 				}
