@@ -13,4 +13,5 @@ public class ServerStarter {
 		//new BasicServer().startServer();
 		new GameEngine().startGame(1, "localhost", new String[] {"Derp"});
 	}
+	
 }

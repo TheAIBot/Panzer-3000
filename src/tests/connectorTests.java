@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,23 +22,30 @@ import engine.Wall;
 public class connectorTests {
 	ServerConnector server;
 	ClientConnector[] clients;
+	String[] clientNames = new String[] {"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
 	
 	@Test
 	public void testSetupInitialClientServerConnection() throws InterruptedException {
 		int numOfClients = 8;
 		server = new ServerConnector();
+		server.usernames = clientNames;
 		server.numClients = numOfClients;
-		clients = new ClientConnector[numOfClients];
+		server.ipAddress = "localhost";
 		new Thread(server).start();
+		
+		clients = new ClientConnector[numOfClients];
 		Thread.sleep(1000); //The server needs to be set up, before the clients tries to connect.
 		for (int i = 0; i < numOfClients; i++) {
+			final int k = i;
 			clients[i] =  new ClientConnector();
-			new Thread(clients[i]).start();
+			clients[i].username = clientNames[i];
+			new Thread(clients[i]).start();;
 		}
 		//As it runs on different threads, and essentially a deadlock will be reached if this doesn't work,
 		//it will instead be checked that after 1 second (2 might be better), all connections are established.
 		Thread.sleep(1500);
 		assertEquals(numOfClients, server.numConnectedClients);
+		//server.closeConnections();
 		
 	}
 	
@@ -53,8 +61,8 @@ public class connectorTests {
 		tanks.add(new Tank(0, 0, 0, 0, 0));
 		bullets.add(new Bullet(0, 0, 1, 0));
 		bullets.add(new Bullet(0, 0, 2, 0));
-		
-		
+		tanks.get(0).userName = clientNames[0];
+		tanks.get(1).userName = clientNames[1];
 		server.sendUpdates(tanks, bullets);
 		
 		//Now all the clients should be able to get the updates.

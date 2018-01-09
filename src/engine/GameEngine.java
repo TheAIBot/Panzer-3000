@@ -1,6 +1,5 @@
 package engine;
 
-import connector.BasicClient;
 import connector.ServerConnector;
 
 import java.awt.Polygon;
@@ -16,16 +15,16 @@ import Logger.Log;
 
 public class GameEngine {
 	ServerConnector connection;
-	ArrayList<Tank> tanks = new ArrayList<Tank>();
-	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-	ArrayList<Wall> walls = new ArrayList<Wall>();
-	public static final int FPS = 60;
-	public static final double BOARD_MAX_X = 1;
-	public static final double BOARD_MAX_Y = 1;
-	public static boolean gameIsWon = false;
-	public static final boolean LOAD_LEVEL = true;
-	public static final String LEVEL_NAME = "basic";
-	public static final String LEVEL_DIRECTORY = "src/levels/";
+	ArrayList<Tank> tanks 						= new ArrayList<Tank>();
+	ArrayList<Bullet> bullets 					= new ArrayList<Bullet>();
+	ArrayList<Wall> walls 						= new ArrayList<Wall>();
+	public static final int FPS 				= 60;
+	public static final double BOARD_MAX_X 		= 1;
+	public static final double BOARD_MAX_Y 		= 1;
+	public static boolean gameIsWon 			= false;
+	public static final boolean LOAD_LEVEL 		= true;
+	public static final String LEVEL_NAME 		= "basic";
+	public static final String LEVEL_DIRECTORY 	= "src/levels/";
 
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
 		try {
@@ -141,7 +140,7 @@ public class GameEngine {
 
 
 	private List<Wall> wallsFromMatrix(boolean[][] levelMatrix){
-		List<Wall> level = new ArrayList<Wall>();
+		List<Wall> level  = new ArrayList<Wall>();
 		double wallHeight = 1/(double) levelMatrix[0].length;
 		double wallWidth  = 1/(double) levelMatrix.length;//BasicClient.MENU_WIDTH /levelMatrix.length;
 		
