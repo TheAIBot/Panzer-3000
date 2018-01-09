@@ -51,11 +51,11 @@ public class connectorTests {
 		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 		tanks.add(new Tank(0, 0, 0, 0, 0));
 		tanks.add(new Tank(0, 0, 0, 0, 0));
-		bullets.add(new Bullet(0, 0, 0, 1, 0));
-		bullets.add(new Bullet(0, 0, 0, 2, 0));
+		bullets.add(new Bullet(0, 0, 1, 0));
+		bullets.add(new Bullet(0, 0, 2, 0));
 		
 		
-		server.sendUpdates(tanks, bullets, new ArrayList<Wall>());
+		server.sendUpdates(tanks, bullets);
 		
 		//Now all the clients should be able to get the updates.
 		
@@ -67,8 +67,8 @@ public class connectorTests {
 			double acceptedMarginOfError = 0.01;
 			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
 			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
-			assertEquals(bullets.get(0).height  , recievedBullets.get(0).height  , acceptedMarginOfError);
-			assertEquals(bullets.get(1).height  , recievedBullets.get(1).height  , acceptedMarginOfError);
+			assertEquals(bullets.get(0).size  , recievedBullets.get(0).size  , acceptedMarginOfError);
+			assertEquals(bullets.get(1).size  , recievedBullets.get(1).size  , acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}

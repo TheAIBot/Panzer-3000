@@ -46,12 +46,12 @@ public class Tank extends DeSerializer {
 	
 	@Override
 	protected void toBytes(DataOutputStream out) throws IOException {
-		out.writeDouble(x);
-		out.writeDouble(y);
-		out.writeDouble(bodyWidth);
-		out.writeDouble(bodyHeight);
-		out.writeDouble(bodyAngle);
-		out.writeDouble(gunAngle);
+		out.writeFloat((float) x);
+		out.writeFloat((float) y);
+		out.writeFloat((float) bodyWidth);
+		out.writeFloat((float) bodyHeight);
+		out.writeFloat((float) bodyAngle);
+		out.writeFloat((float) gunAngle);
 		out.writeInt(id);
 		out.writeInt(health);
 		out.writeInt(timeBeforeShoot);
@@ -59,12 +59,12 @@ public class Tank extends DeSerializer {
 
 	@Override
 	protected void fromBytes(DataInputStream in) throws IOException {
-		x = in.readDouble();
-		y = in.readDouble();
-		bodyWidth = in.readDouble();
-		bodyHeight = in.readDouble();
-		bodyAngle = in.readDouble();
-		gunAngle = in.readDouble();
+		x = in.readFloat();
+		y = in.readFloat();
+		bodyWidth = in.readFloat();
+		bodyHeight = in.readFloat();
+		bodyAngle = in.readFloat();
+		gunAngle = in.readFloat();
 		id = in.readInt();
 		health = in.readInt();
 		timeBeforeShoot = in.readInt();
@@ -148,7 +148,7 @@ public class Tank extends DeSerializer {
 	{
 		timeBeforeShoot = TIME_BETWEEN_SHOTS;
 		final Point2D.Double bulletStartPos = getBulletStartPos();
-		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_WIDTH, Bullet.BULLET_HEIGHT, gunAngle);
+		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_SIZE, gunAngle);
 	}
 	
 	private Point2D.Double getBulletStartPos()

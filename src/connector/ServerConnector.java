@@ -54,13 +54,19 @@ public class ServerConnector implements Runnable {
 		//Now communication is up and running.
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException, IOException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException {
+		for (int i = 0; i < numClients; i++) {
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			updateSpace.put("walls", wallBytes);
+		}
+	}
+	
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException, IOException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] tankBytes = DeSerializer.toBytes(tanks);
 			byte[] bulletBytes = DeSerializer.toBytes(bullets);
-			byte[] wallBytes = DeSerializer.toBytes(walls);
-			Log.message("Package size: " + (tankBytes.length + bulletBytes.length + wallBytes.length));
-			updateSpace.put(i, tankBytes, bulletBytes, wallBytes);
+			Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
+			updateSpace.put(i, tankBytes, bulletBytes);
 		}
 	}
 	

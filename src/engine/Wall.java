@@ -34,18 +34,18 @@ public class Wall extends DeSerializer {
 
 	@Override
 	protected void toBytes(DataOutputStream out) throws IOException {
-		out.writeDouble(x);
-		out.writeDouble(y);
-		out.writeDouble(width);
-		out.writeDouble(height);
+		out.writeFloat((float) x);
+		out.writeFloat((float) y);
+		out.writeFloat((float) width);
+		out.writeFloat((float) height);
 	}
 
 	@Override
 	protected void fromBytes(DataInputStream in) throws IOException {
-		x = in.readDouble();
-		y = in.readDouble();
-		width = in.readDouble();
-		height = in.readDouble();
+		x = in.readFloat();
+		y = in.readFloat();
+		width = in.readFloat();
+		height = in.readFloat();
 		this.topLine    = new Line2D.Double(x        , y         , x + width, y         );
 		this.bottomLine = new Line2D.Double(x        , y + height, x + width, y + height);
 		this.leftLine   = new Line2D.Double(x        , y         , x        , y + height);

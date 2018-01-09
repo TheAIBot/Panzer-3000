@@ -32,7 +32,8 @@ public class GameEngine {
 			
 			//The server will send the initial information first, such that the clients have something to display:
 			
-			connection.sendUpdates(tanks, bullets, walls);
+			connection.sendWalls(walls);
+			connection.sendUpdates(tanks, bullets);
 			Log.message("Sent first update");
 			
 			Thread.sleep(2000);
@@ -45,7 +46,7 @@ public class GameEngine {
 				//Log.message("Received inputs from clients");
 				update(userInputs);
 				//Log.message("Updated game");
-				connection.sendUpdates(tanks, bullets, walls);
+				connection.sendUpdates(tanks, bullets);
 				//Log.message("Sent game state update");
 				
 				Thread.sleep(1000 / FPS);

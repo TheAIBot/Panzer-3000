@@ -24,8 +24,12 @@ public class ClientConnector implements Runnable{
 		privateServerConnections.put("connected", connectionId);
 	}
 	
+	public Object[] receiveWalls() throws InterruptedException {
+		return updateSpace.get(new ActualField("walls"), new FormalField(byte[].class));
+	}
+	
 	public Object[] recieveUpdates() throws InterruptedException {
-		return updateSpace.get(new ActualField(connectionId), new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
+		return updateSpace.get(new ActualField(connectionId), new FormalField(byte[].class), new FormalField(byte[].class));
 	}
 	
 	
