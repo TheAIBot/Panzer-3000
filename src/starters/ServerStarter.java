@@ -8,7 +8,9 @@ import engine.GameEngine;
 public class ServerStarter {
 	
 	public static void main(String[] args) throws UnknownHostException {
-		new BasicServer().startServer();
+		//new BasicServer().startServer();
 		//new GameEngine().startGame(2);
+		//new BasicServer().startServer();
+		new GameEngine().startGame(1, "localhost", new String[] {"Derp"});
 	}
 }

@@ -18,6 +18,8 @@ public class BasicClient {
 	RemoteSpace serverConnection;
 	MenuController menu;
 	GraphicsPanel panel;
+	public static final int MENU_HEIGHT = 0;
+	public static final int MENU_WIDTH  = 0;
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		BasicClient client = new BasicClient();
@@ -34,7 +36,7 @@ public class BasicClient {
 	
 	public void startClient() {
 
-		menu = new MenuController("Panzer", 500, 500);
+		menu = new MenuController("Panzer", MENU_HEIGHT, MENU_WIDTH);
 		menu.showWindow();
 		panel = GamePage.GetGraphicsPanel();
 		Log.message("Created gui");

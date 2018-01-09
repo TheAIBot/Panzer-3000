@@ -3,16 +3,19 @@ package engine;
 import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class Wall {
-	public final double x;
-	public final double y;
-	public final double width;
-	public final double height;
-	public final Line2D.Double topLine;
-	public final Line2D.Double bottomLine;
-	public final Line2D.Double leftLine;
-	public final Line2D.Double rightLine;
+public class Wall extends DeSerializer {
+	public double x;
+	public double y;
+	public double width;
+	public double height;
+	public Line2D.Double topLine;
+	public Line2D.Double bottomLine;
+	public Line2D.Double leftLine;
+	public Line2D.Double rightLine;
 	
 	
 	public Wall(double x, double y, double width, double height) {
@@ -20,6 +23,30 @@ public class Wall {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		this.topLine    = new Line2D.Double(x        , y         , x + width, y         );
+		this.bottomLine = new Line2D.Double(x        , y + height, x + width, y + height);
+		this.leftLine   = new Line2D.Double(x        , y         , x        , y + height);
+		this.rightLine  = new Line2D.Double(x + width, y         , x + width, y + height);
+	}
+	
+	public Wall() {
+		
+	}
+
+	@Override
+	protected void toBytes(DataOutputStream out) throws IOException {
+		out.writeFloat((float) x);
+		out.writeFloat((float) y);
+		out.writeFloat((float) width);
+		out.writeFloat((float) height);
+	}
+
+	@Override
+	protected void fromBytes(DataInputStream in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		width = in.readFloat();
+		height = in.readFloat();
 		this.topLine    = new Line2D.Double(x        , y         , x + width, y         );
 		this.bottomLine = new Line2D.Double(x        , y + height, x + width, y + height);
 		this.leftLine   = new Line2D.Double(x        , y         , x        , y + height);

@@ -1,14 +1,18 @@
 package connector;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.jspace.*;
+
 
 import Logger.Log;
 import engine.*;
 public class ServerConnector implements Runnable {
 	
-	public final static String IP_ADDRESS = "192.168.43.196";
+	public final static String IP_ADDRESS = "localhost"; //"192.168.43.196";
+	public final static String CONNECTION_TYPE = "tcp";
+	
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
@@ -31,8 +35,9 @@ public class ServerConnector implements Runnable {
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
+		this.usernames = usernames;
 		
-		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
+		repository.addGate(CONNECTION_TYPE + "://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -41,23 +46,41 @@ public class ServerConnector implements Runnable {
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
 		}
 		
+		//Some initial information for all the clients:
+		
+		//Number of users to connect:
+		updateSpace.put("numClients", numClients);
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(new ActualField(id), new ActualField(usernames[id]));
+			updateSpace.put(id, usernames[id]);
 		}
 		
+		System.out.println("0 clients are connected");
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
+				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
+				System.out.println(numConnectedClients + " clients are connected");
 		}
-		//Now communication is up and running.
+		System.out.println("All has connected.");
+		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
+		updateSpace.get(new ActualField("numClients"), new ActualField(numClients));
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException {
 		for (int i = 0; i < numClients; i++) {
-			updateSpace.put(i, tanks, bullets, walls);
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			updateSpace.put("walls", wallBytes);
+		}
+	}
+	
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException, IOException {
+		for (int i = 0; i < numClients; i++) {
+			byte[] tankBytes = DeSerializer.toBytes(tanks);
+			byte[] bulletBytes = DeSerializer.toBytes(bullets);
+			//Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
+			updateSpace.put(i, tankBytes, bulletBytes);
 		}
 	}
 	
@@ -82,6 +105,12 @@ public class ServerConnector implements Runnable {
 		} catch (Exception e) {
 			Log.exception(e);
 		}
+	}
+
+	public void setUserNames(ArrayList<Tank> tanks, String[] usernames) {
+		for (int i = 0; i < tanks.size(); i++) {
+			tanks.get(i).userName = usernames[tanks.get(i).id];
+		}		
 	}
 	
 	/*

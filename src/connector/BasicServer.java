@@ -28,8 +28,8 @@ public class BasicServer {
 	}
 	
 	public void startServer() throws UnknownHostException {
-		ipAddress = getIpAddress();
-		
+		//ipAddress = getIpAddress();
+		ipAddress = "localhost";
 		clientConnectSpace = new SequentialSpace();
 		repository = new SpaceRepository();
 		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
@@ -57,7 +57,7 @@ public class BasicServer {
 		
 		
 		new Thread(() -> {
-			new GameEngine().startGame(2, ipAddress, usernames);
+			new GameEngine().startGame(users.size(), ipAddress, usernames);
 		}).start();
 		
 		clientConnectSpace.put(new ActualField("startGameAccepted"), new ActualField(1));
