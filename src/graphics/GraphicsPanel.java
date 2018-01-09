@@ -155,7 +155,7 @@ public class GraphicsPanel extends JPanel {
 		final int width = (int)(wall.width * this.getWidth());
 		final int height = (int)(wall.height * this.getHeight());
 		
-		g.fillRect(x, y, width, height);
+		g.fillRect(x, y, width + 1, height + 1);
 	}
 	
 	public void setTanks(ArrayList<Tank> tanks)

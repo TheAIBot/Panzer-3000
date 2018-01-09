@@ -24,7 +24,7 @@ public class GameEngine {
 	public static final double BOARD_MAX_Y = 1;
 	public static boolean gameIsWon = false;
 	public static final boolean LOAD_LEVEL = true;
-	public static final String LEVEL_NAME = "Random";
+	public static final String LEVEL_NAME = "basic";
 	public static final String LEVEL_DIRECTORY = "src/levels/";
 
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
@@ -101,29 +101,36 @@ public class GameEngine {
 		// right wall
 		walls.add(new Wall(1, 0, 1, 1));
 
+		
 		if (LOAD_LEVEL) {
 			loadLevel(LEVEL_NAME);
 		} else {
+			
 			for (int i = 0; i < 10; i++) {
 				walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
 			}
+			
 			byte[] levelBytes;
 			try {
 				levelBytes = DeSerializer.toBytes(walls);
-				Path path = Paths.get(LEVEL_DIRECTORY + "Random");
+				Path path = Paths.get(LEVEL_DIRECTORY + "random.lvl");
 				Files.write(path, levelBytes);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+
+
+
 
 	}
 
 	public void loadLevel(String levelName) {
 		byte[] levelBytes;
 		try {
-			Path path = Paths.get(LEVEL_DIRECTORY + levelName);
+			Path path = Paths.get(LEVEL_DIRECTORY + levelName + ".lvl");
 			levelBytes = Files.readAllBytes(path);
 			walls = DeSerializer.toList(levelBytes, Wall.class);
 		} catch (Exception e) {
@@ -135,13 +142,13 @@ public class GameEngine {
 
 	private List<Wall> wallsFromMatrix(boolean[][] levelMatrix){
 		List<Wall> level = new ArrayList<Wall>();
-		double wallHeight = BasicClient.MENU_HEIGHT/levelMatrix[0].length;
-		double wallWidth  = BasicClient.MENU_WIDTH /levelMatrix.length;
+		double wallHeight = 1/(double) levelMatrix[0].length;
+		double wallWidth  = 1/(double) levelMatrix.length;//BasicClient.MENU_WIDTH /levelMatrix.length;
 		
 		for (int i = 0; i < levelMatrix.length; i++) {
 			for (int j = 0; j < levelMatrix[i].length; j++) {
 				if (levelMatrix[i][j]) {
-					level.add(new Wall(wallWidth*i, wallHeight*j,wallHeight,wallWidth));
+					level.add(new Wall(wallWidth*j, wallHeight*i,wallHeight,wallWidth));
 				}
 			}
 		}
