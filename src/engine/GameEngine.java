@@ -14,11 +14,13 @@ public class GameEngine {
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
+	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 	public static final int FPS = 50;
 	public static final int TANK_COUNT = 2;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
+	public static final int LUCKY_POWERUP_NUMBER = 1;
 	 
 	 
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
@@ -85,7 +87,65 @@ public class GameEngine {
 			walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
 		}
 	}
+	
+	private void createPowerup() {
+		// chance of power up happening is 1/100 [possibly too much]
+		
+		if ((int) Math.ceil(Math.random() * 100) == LUCKY_POWERUP_NUMBER) {
+			Powerup curr = getNewPowerup();
+			powerups.add(curr);
+		}
+		
+	}
 
+
+	private Powerup getNewPowerup() {
+		Powerup newPowerup;
+		do {
+			final double xNew = Math.random();
+			final double yNew = Math.random();
+			newPowerup = new Powerup(xNew, yNew);
+			
+			//Powerup shouldn't spawn inside a wall
+		} while (isPowerupInsideAnyWall(newPowerup));
+		
+		return newPowerup;
+	}
+	
+	private void updatePowerups() {
+		
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		for(powerupIterator.hasNext()) {
+			powerup = powerupIterator.hasNext();
+			
+			// Check if tank has collected the power up
+			if (isPowerupCollected(powerup)) {
+				powerup.remove();
+			}
+			
+			// If a tank hasn't taken a power up, decrease its time alive
+			powerup.timeAlive--;
+			if (powerup.timeAlive == 0) {
+				powerup.remove();
+			}
+		} 
+	}
+
+	private boolean isPowerupCollected(Powerup powerup) {
+		final Point2D.Double powerupLoc = new Point2D.Double(powerup.x * Tank.SCALAR, powerup.y * Tank.SCALAR);
+
+		final Iterator<Tank> tankIterator = tanks.iterator();
+		while (tankIterator.hasNext()) {
+			Tank tank = tankIterator.next();
+			final Polygon tankPolygon = tank.getTankRectangle();
+			
+			if (tankPolygon.contains(powerupLoc)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
 
 	public void update(Input[] inputs) {
 		for (int i = 0; i < tanks.size(); i++) {
@@ -129,6 +189,12 @@ public class GameEngine {
 				bulletIterator.remove();
 			}	
 		}
+		
+		//Create power ups
+		createPowerup();
+		
+		//Update power ups
+		updatePowerups();
 	}
 	
 	// returns false if bullet must be deleted
@@ -201,6 +267,16 @@ public class GameEngine {
 	{
 		for (Wall wall : walls) {
 			if (wall.collidesWith(tank)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isPowerupInsideAnyWall(Powerup powerup)
+	{
+		for (Wall wall : walls) {
+			if (wall.collidesWith(powerup)) {
 				return true;
 			}
 		}

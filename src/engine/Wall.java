@@ -1,6 +1,7 @@
 package engine;
 
 import java.awt.Polygon;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 
 public class Wall {
@@ -35,5 +36,11 @@ public class Wall {
 	{
 		final Polygon tankBox = tank.getTankRectangle();
 		return tankBox.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
+	}
+	
+	public boolean collidesWith(Powerup powerup)
+	{
+		final Ellipse2D ellipse = powerup.getEllipse();
+		return ellipse.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
 	}
 }
