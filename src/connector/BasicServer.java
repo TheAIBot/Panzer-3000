@@ -9,9 +9,14 @@ import Logger.Log;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.LinkedList;
 
 import engine.Client;
@@ -20,32 +25,51 @@ import engine.GameEngine;
 public class BasicServer {
 	public SpaceRepository repository;
 	private SequentialSpace	clientConnectSpace;
-	public String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
+	private SequentialSpace startSpace;
+	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
+	public static final String START_SPACE_NAME = "startSpace";
+	public static final String REQUEST_START_GAME = "startGame";
+	public static final String START_GAME_ACCEPTED = "startGameAccepted";
 	private ServerInfo info;
 	
-	public BasicServer(String serverName) throws UnknownHostException {
+	public BasicServer(String serverName) throws UnknownHostException, SocketException {
 		info = new ServerInfo();
 		info.ipAddress = getIpAddress();
 		info.name = serverName;
 	}
 	
-	public static String getIpAddress() throws UnknownHostException {
-		InetAddress ipAddr = InetAddress.getLocalHost();
-		return ipAddr.getHostAddress();
+	public static String getIpAddress() throws UnknownHostException, SocketException {
+		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+	    while (networkInterfaces.hasMoreElements()) {
+	    	NetworkInterface netInterface = networkInterfaces.nextElement();
+	    	if (!netInterface.isVirtual() &&
+	    		!netInterface.isPointToPoint() && 
+	    		!netInterface.isLoopback() &&
+	    		netInterface.isUp()) {
+				for (InterfaceAddress ia : netInterface.getInterfaceAddresses()) {
+					if (ia.getAddress() != null && ia.getAddress() instanceof Inet4Address) {
+						return ia.getAddress().getHostAddress();
+					}
+				}
+			}
+	    }
+	    throw new UnknownHostException("Failed to find this computers ipaddress");
 	}
 	
 	public void startServer() throws UnknownHostException {
 		
 		clientConnectSpace = new SequentialSpace();
+		startSpace = new SequentialSpace();
 		repository = new SpaceRepository();
-		repository.addGate("tcp://" + info.ipAddress + ":9001/?keep");
+		repository.addGate("tcp://" + info.ipAddress + ":9001/?conn");
 		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
+		repository.add(START_SPACE_NAME, startSpace);
 		
 		new Thread(() -> {
 			try {
-				clientConnectSpace.query(new ActualField("startGame"), new ActualField(1));
+				startSpace.get(new ActualField(REQUEST_START_GAME), new ActualField(1));
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Log.exception(e);
 			}
 			startGame();
 		}).start();
@@ -95,9 +119,11 @@ public class BasicServer {
 		
 		
 		new Thread(() -> {
-			new GameEngine().startGame(2, usernames);
+			new GameEngine().startGame(usernames.length, usernames);
 		}).start();
 		
-		clientConnectSpace.put(new ActualField("startGameAccepted"), new ActualField(1));
+		for (int i = 0; i < usernames.length; i++) {
+			startSpace.put(START_GAME_ACCEPTED, 1);	
+		}
 	}
 }

@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -30,8 +32,11 @@ import graphics.Menu.Pages.GamePage;
 public class BasicClient implements ServerFoundListener {
 	ServerInfo serverInfo;
 	RemoteSpace serverConnection;
+	RemoteSpace serverStartSpace;
 	ServerFoundListener listener;
 	MenuController menu;
+	Thread listenForGameStart;
+	String username;
 	
 	public static final String BROADCAST_MESSAGE = "anyone there?";
 	public static final int UDP_PORT_ASK = 3242;
@@ -61,7 +66,12 @@ public class BasicClient implements ServerFoundListener {
 		}
 	}
 	
-	public void searchForServers(ArrayList<InetAddress> broadcastAddresses) throws IOException
+	public void searchForServers() throws IOException {
+		ArrayList<InetAddress> broadcastAddresses = getBroadcastAddresses();
+		searchForServers(broadcastAddresses);
+	}
+	
+	private void searchForServers(ArrayList<InetAddress> broadcastAddresses) throws IOException
 	{		
 		try 
 		{
@@ -120,26 +130,64 @@ public class BasicClient implements ServerFoundListener {
 	    return validBroadcastAddresses;
 	}
 	
+	public static InetAddress getOwnIPAddress() throws SocketException
+	{
+		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+	    while (networkInterfaces.hasMoreElements()) {
+	    	NetworkInterface netInterface = networkInterfaces.nextElement();
+	    	if (!netInterface.isVirtual() &&
+	    		!netInterface.isPointToPoint() && 
+	    		!netInterface.isLoopback() &&
+	    		netInterface.isUp()) {
+	  	      for (InterfaceAddress ia : netInterface.getInterfaceAddresses()) {
+		    	  if (ia.getAddress() != null && ia.getAddress() instanceof Inet4Address) {
+					return ia.getAddress();
+				}
+		      }
+			}
+	    }
+	    return null;
+	}
+	
 	
 	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException {
+		this.serverInfo = info;
+		this.username = username;
 		//join the game -- connect to servers 
-		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/clientConnectSpace?keep");
-		serverConnection.put(new ActualField(username));
+		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
+		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_SPACE_NAME + "?conn");
+		serverConnection.put(username);
+	}
+	
+	public void leaveGame() throws InterruptedException
+	{
+		serverConnection.get(new ActualField(username));
+		listenForGameStart.interrupt();
+	}
+	
+	public String[] getPlayerNames(ServerInfo info) throws InterruptedException, UnknownHostException, IOException {
+		List<Object[]> tuples = serverConnection.queryAll(new FormalField(String.class));
+		String[] playerNames = new String[tuples.size()];
+		for (int i = 0; i < playerNames.length; i++) {
+			playerNames[i] = (String) tuples.get(i)[0];
+		}
+		//serverConnection.close();
 		
+		return playerNames;
+	}
+	
+	public void startGame() {
+		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 		//listen for when to call startGame
-		
-		new Thread(() -> {
+		listenForGameStart = new Thread(() -> {
 			try {
-				serverConnection.get(new ActualField("startGameAccepted"), new ActualField(1));
+				serverStartSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			new Client().startGame(info.ipAddress, username, menu, GamePage.GetGraphicsPanel());
-		}).start();
-	}
-	
-	public void startGame(ServerInfo info) {
-		serverConnection.put(new ActualField("startGame"), new ActualField(1));
+			new Client().startGame(serverInfo.ipAddress, username, menu, GamePage.GetGraphicsPanel());
+		});
+		listenForGameStart.start();
 	}
 	
 	public void setServerFoaundLister(ServerFoundListener listener)

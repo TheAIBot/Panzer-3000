@@ -5,11 +5,18 @@ import javax.swing.JList;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import Logger.Log;
 import connector.ServerInfo;
 
 import java.awt.Component;
@@ -17,8 +24,10 @@ import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
-public class ServerList extends JPanel {
+public class ServerList extends JPanel implements ListSelectionListener {
 	private final ServerSelectionPage serverPage;
+	private ServerInfo selectedInfo;
+	
 	private JTextField textFieldUsername;
 	private JTextField textField;
 	
@@ -27,6 +36,12 @@ public class ServerList extends JPanel {
 	
 	private final DefaultListModel<String> listPlayersData = new DefaultListModel<String>();
 	private final JList<String> listPlayers = new JList<String>(listPlayersData);
+	
+	private final JLabel lblServerName = new JLabel("");
+	private final JLabel lblPlayerCount = new JLabel("");
+	
+	private final JButton btnStartGame = new JButton("Start game");
+	private final JButton btnCreateServer = new JButton("Create server");
 
 	/**
 	 * Create the panel.
@@ -38,6 +53,7 @@ public class ServerList extends JPanel {
 		
 		list.setBounds(12, 12, 199, 485);
 		add(list);
+		list.addListSelectionListener(this);
 		
 		JLabel lbl1 = new JLabel("Server:");
 		lbl1.setBounds(223, 13, 99, 15);
@@ -59,23 +75,28 @@ public class ServerList extends JPanel {
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		horizontalStrut.setBounds(223, 267, 456, 15);
 		add(horizontalStrut);
-		
-		JLabel lblServerName = new JLabel("");
+
 		lblServerName.setBounds(334, 13, 123, 15);
 		add(lblServerName);
 		
-		JLabel lblPlayerCount = new JLabel("");
 		lblPlayerCount.setBounds(334, 40, 123, 15);
 		add(lblPlayerCount);
 		
 		listPlayers.setBounds(223, 67, 160, 188);
 		add(listPlayers);
 		
-		JButton btnStartGame = new JButton("Start game");
+		
 		btnStartGame.setBounds(457, 192, 222, 63);
 		add(btnStartGame);
+		btnStartGame.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (selectedInfo != null) {
+					serverPage.startGame();
+				}
+			}
+		});
 		
-		JButton btnCreateServer = new JButton("Create server");
 		btnCreateServer.setBounds(457, 461, 222, 63);
 		add(btnCreateServer);
 		
@@ -95,11 +116,46 @@ public class ServerList extends JPanel {
 		listData.addElement(info);
 	}
 	
-	public void updatePlayersList(String[] playerNames)
+	public void clearServerList()
+	{
+		listData.clear();
+	}
+	
+	private void setServerName(String name) 
+	{
+		lblServerName.setText(name);
+	}
+	
+	private void setPlayerCount(int playerCount) 
+	{
+		lblPlayerCount.setText("" + playerCount);
+	}
+	
+	private void setPlayersList(String[] playerNames)
 	{
 		listPlayersData.clear();
 		for (String playerName : playerNames) {
 			listPlayersData.addElement(playerName);
 		}
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent arg0) {
+		try {
+			ServerInfo info = listData.get(arg0.getFirstIndex());
+			if (selectedInfo == null || !selectedInfo.equals(info)) {
+				serverPage.joinGame(info, textFieldUsername.getText());
+				String[] playerNames = serverPage.getPlayerNames(info);
+				setPlayersList(playerNames);
+				
+				//only set selectedInfo if getPlayerNames doesn't crash because
+				//that means the server is still running for the moment
+				selectedInfo = info;
+				setServerName(selectedInfo.name);
+				setPlayerCount(selectedInfo.clientsConnected);
+			}
+		} catch (Exception e) {
+			Log.exception(e);
+		}		
 	}
 }

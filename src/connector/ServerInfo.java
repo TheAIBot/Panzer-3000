@@ -7,9 +7,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ServerInfo {
-	String name = "";
-	String ipAddress = "";
-	int clientsConnected = 0;
+	public String name = "";
+	public String ipAddress = "";
+	public int clientsConnected = 0;
 	
 	public byte[] toByteArray() throws IOException
 	{
@@ -36,5 +36,14 @@ public class ServerInfo {
 				return info;
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return name + ": " + clientsConnected;
+	}
+	
+	public boolean equals(ServerInfo info) {
+		return ipAddress.equals(info.ipAddress);
 	}
 }

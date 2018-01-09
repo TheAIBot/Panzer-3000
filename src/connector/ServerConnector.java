@@ -1,6 +1,7 @@
 package connector;
 
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.io.IOException;
 import java.util.*;
@@ -23,7 +24,7 @@ public class ServerConnector implements Runnable {
 	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients, String[] usernames) throws InterruptedException, UnknownHostException {
+	public void initializeServerConnection(int numClients, String[] usernames) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		this.ipAddress = BasicServer.getIpAddress();
@@ -33,7 +34,7 @@ public class ServerConnector implements Runnable {
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
+		repository.addGate("tcp://" + ipAddress + ":9002/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		

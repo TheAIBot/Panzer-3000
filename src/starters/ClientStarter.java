@@ -1,8 +1,5 @@
 package starters;
 
-import Logger.Log;
-import connector.BasicClient;
-import engine.Client;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
