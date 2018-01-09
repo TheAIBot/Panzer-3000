@@ -14,41 +14,45 @@ public class GameEngine {
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
-	public static final int FPS = 50;
+	public static final int FPS = 60;
 	public static final int TANK_COUNT = 2;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int tankCount) {
+	public void startGame(int tankCount, String[] usernames) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(tankCount);
+			connection.initializeServerConnection(tankCount, usernames);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
 			
-			connection.sendUpdates(tanks, bullets, walls);
+			connection.sendWalls(walls);
+			connection.sendUpdates(tanks, bullets);
 			Log.message("Sent first update");
 			
 			Thread.sleep(2000);
 			
 			//Then the main loop can begin:
 			
-			while(true) { //Game loop			
+			while(true) { //Game loop	
+				final long startTime = System.currentTimeMillis();
 				Input[] userInputs = connection.reciveUserInputs();
 				//Log.message(userInputs[0].toString());
 				//Log.message("Received inputs from clients");
 				update(userInputs);
 				//Log.message("Updated game");
-				connection.sendUpdates(tanks, bullets, walls);
+				connection.sendUpdates(tanks, bullets);
 				//Log.message("Sent game state update");
 				
-				Thread.sleep(1000 / FPS);
+				final long timePassed = System.currentTimeMillis() - startTime;
+				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
+				Thread.sleep(timeToSleep);
 			}	
 		} catch (Exception e) {
 			Log.exception(e);

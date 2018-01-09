@@ -72,10 +72,10 @@ public class GraphicsPanel extends JPanel {
 	
 	private void drawBullet(Bullet bullet, Graphics g)
 	{
-		final int x = (int)((bullet.x - bullet.width / 2) * this.getWidth());
-		final int y = (int)((bullet.y - bullet.height / 2) * this.getHeight());
-		final int width = (int)(bullet.width * this.getWidth());
-		final int height = (int)(bullet.height * this.getHeight());
+		final int x = (int)((bullet.x - bullet.size / 2) * this.getWidth());
+		final int y = (int)((bullet.y - bullet.size / 2) * this.getHeight());
+		final int width = (int)(bullet.size * this.getWidth());
+		final int height = (int)(bullet.size * this.getHeight());
 		
 		g.fillOval(x, y, width, height);
 	}

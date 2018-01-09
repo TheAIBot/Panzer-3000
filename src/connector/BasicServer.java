@@ -1,31 +1,54 @@
 package connector;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import org.jspace.ActualField;
+import org.jspace.FormalField;
+import org.jspace.SequentialSpace;
+import org.jspace.SpaceRepository;
 
 import Logger.Log;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+import engine.Client;
 import engine.GameEngine;
 
 public class BasicServer {
-	ServerInfo info;
+	public SpaceRepository repository;
+	private SequentialSpace	clientConnectSpace;
+	public String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
+	private ServerInfo info;
 	
-	public static void main(String[] args) {
-		BasicServer server = new BasicServer();
-		try {
-			server.startServer();
-		} catch (Exception e) {
-			Log.exception(e);
-		}
+	public BasicServer(String serverName) throws UnknownHostException {
+		info = new ServerInfo();
+		info.ipAddress = getIpAddress();
+		info.name = serverName;
+	}
+	
+	public static String getIpAddress() throws UnknownHostException {
+		InetAddress ipAddr = InetAddress.getLocalHost();
+		return ipAddr.getHostAddress();
 	}
 	
 	public void startServer() throws UnknownHostException {
-		info = new ServerInfo();
-		info.ipaddress = InetAddress.getLocalHost().getHostAddress();
+		
+		clientConnectSpace = new SequentialSpace();
+		repository = new SpaceRepository();
+		repository.addGate("tcp://" + info.ipAddress + ":9001/?keep");
+		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
+		
+		new Thread(() -> {
+			try {
+				clientConnectSpace.query(new ActualField("startGame"), new ActualField(1));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			startGame();
+		}).start();
 		
 		new Thread(() -> receiveBroadcasts()).start();
 	}
@@ -62,6 +85,19 @@ public class BasicServer {
 	}
 	
 	public void startGame() {
-		new GameEngine().startGame(2);
+		LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class));
+		String[] usernames = new String[users.size()]; 
+		int x = 0;
+		for(Object[] temp : users) {
+			usernames[x] = (String) temp[0];
+			x++;
+		}
+		
+		
+		new Thread(() -> {
+			new GameEngine().startGame(2, usernames);
+		}).start();
+		
+		clientConnectSpace.put(new ActualField("startGameAccepted"), new ActualField(1));
 	}
 }

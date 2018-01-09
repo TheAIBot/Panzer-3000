@@ -2,6 +2,7 @@ package connector;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.*;
 
 import org.jspace.*;
@@ -12,23 +13,27 @@ public class ServerConnector implements Runnable {
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
+	String[] usernames;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
 	
 	public int numClients;
 	public int numConnectedClients;
+	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients) throws InterruptedException, UnknownHostException {
+	public void initializeServerConnection(int numClients, String[] usernames) throws InterruptedException, UnknownHostException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
+		this.ipAddress = BasicServer.getIpAddress();
+		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + InetAddress.getLocalHost().getHostAddress() + ":9001/?keep");
+		repository.addGate("tcp://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -40,7 +45,7 @@ public class ServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(id);
+			updateSpace.put(id, usernames[id]);
 		}
 		
 		//And waits for all clients to connect:
@@ -51,9 +56,19 @@ public class ServerConnector implements Runnable {
 		//Now communication is up and running.
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException {
 		for (int i = 0; i < numClients; i++) {
-			updateSpace.put(i, tanks, bullets, walls);
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			updateSpace.put("walls", wallBytes);
+		}
+	}
+	
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException, IOException {
+		for (int i = 0; i < numClients; i++) {
+			byte[] tankBytes = DeSerializer.toBytes(tanks);
+			byte[] bulletBytes = DeSerializer.toBytes(bullets);
+			Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
+			updateSpace.put(i, tankBytes, bulletBytes);
 		}
 	}
 	
@@ -74,7 +89,7 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients);	
+			initializeServerConnection(numClients, usernames);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}

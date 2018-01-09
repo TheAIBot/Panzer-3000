@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ServerInfo {
 	String name = "";
-	String ipaddress = "";
+	String ipAddress = "";
 	int clientsConnected = 0;
 	
 	public byte[] toByteArray() throws IOException
@@ -16,7 +16,7 @@ public class ServerInfo {
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
 			try (DataOutputStream out = new DataOutputStream(stream)) {
 				out.writeUTF(name);
-				out.writeUTF(ipaddress);
+				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
 				
 				return stream.toByteArray();
@@ -30,7 +30,7 @@ public class ServerInfo {
 			try (DataInputStream in = new DataInputStream(stream)) {
 				ServerInfo info = new ServerInfo();
 				info.name = in.readUTF();
-				info.ipaddress = in.readUTF();
+				info.ipAddress = in.readUTF();
 				info.clientsConnected = in.readInt();
 				
 				return info;

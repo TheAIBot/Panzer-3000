@@ -9,7 +9,7 @@ import connector.ServerInfo;
 import graphics.Menu.MenuController;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
-	BasicClient client = new BasicClient();
+	BasicClient client = new BasicClient(controller);
 	BasicServer server;
 	ServerList serverListPage;
 
@@ -20,13 +20,15 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 
 	@Override
 	public JPanel createPage(MenuController control) {
+		setResizeable(true);
 		serverListPage = new ServerList(this);
 		page = serverListPage;
 		return page;
 	}
 
 	@Override
-	public void startPage() {		
+	public void startPage() {	
+		client.
 	}
 
 	@Override

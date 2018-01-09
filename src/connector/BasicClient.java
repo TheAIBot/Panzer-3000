@@ -14,32 +14,31 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import Logger.Log;
 import engine.Client;
+import graphics.GraphicsPanel;
+import graphics.Menu.MenuController;
+import graphics.Menu.Pages.GamePage;
 
 public class BasicClient implements ServerFoundListener {
 	ServerInfo serverInfo;
 	RemoteSpace serverConnection;
 	ServerFoundListener listener;
+	MenuController menu;
 	
 	public static final String BROADCAST_MESSAGE = "anyone there?";
 	public static final int UDP_PORT_ASK = 3242;
 	public static final int UDP_PORT_ANSWER = 3243;
 	
-	
-	public static void main(String[] args) {
-		try {
-			final BasicClient client = new BasicClient();
-			final ArrayList<InetAddress> broadcastAddresses = client.getBroadcastAddresses();
-			client.searchForServers(broadcastAddresses);
-			client.setServerFoaundLister(client);
-		} catch (Exception e) {
-			Log.exception(e);
-		}
+	public BasicClient(MenuController menu) {
+		this.menu = menu;
 	}
 	
 	private static byte[] stringToBytes(String message) throws IOException
@@ -96,7 +95,7 @@ public class BasicClient implements ServerFoundListener {
 				try {
 					final ServerInfo info = ServerInfo.toServerInfo(receivePacket.getData());
 					listener.foundServer(info);
-					Log.message("Found server: " + info.ipaddress);
+					Log.message("Found server: " + info.ipAddress);
 				} catch (Exception e) {
 					Log.exception(e);
 				}
@@ -122,16 +121,21 @@ public class BasicClient implements ServerFoundListener {
 	}
 	
 	
-	public void joinGame(ServerInfo info) {
-		//join the game
-		
+	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException {
+		//join the game -- connect to servers 
+		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/clientConnectSpace?keep");
+		serverConnection.put(new ActualField(username));
 		
 		//listen for when to call startGame
 		
 		new Thread(() -> {
-			//serverConnection.query(new ActualField("startGame"), new ActualField(1));
-			//new Client().startGame(info.ipaddress);
-		});
+			try {
+				serverConnection.get(new ActualField("startGameAccepted"), new ActualField(1));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			new Client().startGame(info.ipAddress, username, menu, GamePage.GetGraphicsPanel());
+		}).start();
 	}
 	
 	public void startGame(ServerInfo info) {
@@ -145,6 +149,6 @@ public class BasicClient implements ServerFoundListener {
 
 	@Override
 	public void foundServer(ServerInfo info) {
-		Log.message("Client found server: " + info.ipaddress);
+		Log.message("Client found server: " + info.ipAddress);
 	}
 }

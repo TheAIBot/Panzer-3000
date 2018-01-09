@@ -3,8 +3,13 @@ package engine;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class Tank {
+public class Tank extends DeSerializer {
 	public double x;
 	public double y;
 	public double bodyWidth;
@@ -33,6 +38,37 @@ public class Tank {
 		gunAngle = gunAngleNew;
 		id = idNew;
 		health = TANK_HEALTH;
+	}
+	
+	public Tank() {
+		
+	}
+	
+	@Override
+	protected void toBytes(DataOutputStream out) throws IOException {
+		out.writeFloat((float) x);
+		out.writeFloat((float) y);
+		out.writeFloat((float) bodyWidth);
+		out.writeFloat((float) bodyHeight);
+		out.writeFloat((float) bodyAngle);
+		out.writeFloat((float) gunAngle);
+		out.writeInt(id);
+		out.writeInt(health);
+		out.writeInt(timeBeforeShoot);
+	}
+
+	@Override
+	protected void fromBytes(DataInputStream in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		bodyWidth = in.readFloat();
+		bodyHeight = in.readFloat();
+		bodyAngle = in.readFloat();
+		gunAngle = in.readFloat();
+		id = in.readInt();
+		health = in.readInt();
+		timeBeforeShoot = in.readInt();
+		
 	}
 	
 	public void takeDamage(int damage) {
@@ -112,7 +148,7 @@ public class Tank {
 	{
 		timeBeforeShoot = TIME_BETWEEN_SHOTS;
 		final Point2D.Double bulletStartPos = getBulletStartPos();
-		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_WIDTH, Bullet.BULLET_HEIGHT, gunAngle);
+		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_SIZE, gunAngle);
 	}
 	
 	private Point2D.Double getBulletStartPos()
@@ -127,4 +163,5 @@ public class Tank {
 	{
 		return health > 0;
 	}
+
 }

@@ -4,6 +4,7 @@ package tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.junit.*;
 import connector.ClientConnector;
 import connector.ServerConnector;
 import engine.Bullet;
+import engine.DeSerializer;
 import engine.Input;
 import engine.Tank;
 import engine.Wall;
@@ -41,7 +43,7 @@ public class connectorTests {
 	
 	
 	@Test
-	public void testSendAndRecieveUpdates() throws InterruptedException {
+	public void testSendAndRecieveUpdates() throws Exception {
 		testSetupInitialClientServerConnection();
 		
 		//Creating an unique test input.
@@ -49,24 +51,24 @@ public class connectorTests {
 		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 		tanks.add(new Tank(0, 0, 0, 0, 0));
 		tanks.add(new Tank(0, 0, 0, 0, 0));
-		bullets.add(new Bullet(0, 0, 0, 1, 0));
-		bullets.add(new Bullet(0, 0, 0, 2, 0));
+		bullets.add(new Bullet(0, 0, 1, 0));
+		bullets.add(new Bullet(0, 0, 2, 0));
 		
 		
-		server.sendUpdates(tanks, bullets, new ArrayList<Wall>());
+		server.sendUpdates(tanks, bullets);
 		
 		//Now all the clients should be able to get the updates.
 		
 		for (int i = 0; i < tanks.size(); i++) {
 			Object[] updateTuple = clients[i].recieveUpdates();
-			ArrayList<Tank> recievedTanks = clients[i].unpackTanks(updateTuple);
-			ArrayList<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
+			ArrayList<Tank> recievedTanks = DeSerializer.toList((byte[])updateTuple[1], Tank.class);
+			ArrayList<Bullet> recievedBullets = DeSerializer.toList((byte[])updateTuple[2], Bullet.class);
 			
 			double acceptedMarginOfError = 0.01;
 			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
 			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
-			assertEquals(bullets.get(0).height  , recievedBullets.get(0).height  , acceptedMarginOfError);
-			assertEquals(bullets.get(1).height  , recievedBullets.get(1).height  , acceptedMarginOfError);
+			assertEquals(bullets.get(0).size  , recievedBullets.get(0).size  , acceptedMarginOfError);
+			assertEquals(bullets.get(1).size  , recievedBullets.get(1).size  , acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}

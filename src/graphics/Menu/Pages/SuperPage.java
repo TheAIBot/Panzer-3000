@@ -10,7 +10,7 @@ import graphics.Menu.MenuController;
 public abstract class SuperPage {
 	protected JPanel page;
 	protected SuperPage previousPage;
-	private final MenuController controller;
+	protected final MenuController controller;
 	private PageRequestsListener listener;
 	
 	public SuperPage(MenuController control, PageRequestsListener listener)
