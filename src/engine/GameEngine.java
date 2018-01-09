@@ -40,7 +40,8 @@ public class GameEngine {
 			
 			//Then the main loop can begin:
 			
-			while(true) { //Game loop			
+			while(true) { //Game loop	
+				final long startTime = System.currentTimeMillis();
 				Input[] userInputs = connection.reciveUserInputs();
 				//Log.message(userInputs[0].toString());
 				//Log.message("Received inputs from clients");
@@ -49,7 +50,9 @@ public class GameEngine {
 				connection.sendUpdates(tanks, bullets);
 				//Log.message("Sent game state update");
 				
-				Thread.sleep(1000 / FPS);
+				final long timePassed = System.currentTimeMillis() - startTime;
+				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
+				Thread.sleep(timeToSleep);
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
