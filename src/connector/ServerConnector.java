@@ -23,18 +23,21 @@ public class ServerConnector implements Runnable {
 	
 	public int numClients;
 	public int numConnectedClients;
+	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients) throws InterruptedException {
+	public void initializeServerConnection(int numClients, String ipAddress, String[] usernames) throws InterruptedException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
+		this.ipAddress = ipAddress;
+		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
-		usernames = new String[numClients];
+		this.usernames = usernames;
 		
-		repository.addGate(CONNECTION_TYPE + "://" + IP_ADDRESS + ":9001/?keep");
+		repository.addGate(CONNECTION_TYPE + "://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -50,14 +53,13 @@ public class ServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put("ID", id);
+			updateSpace.put(id, usernames[id]);
 		}
 		
 		System.out.println("0 clients are connected");
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id), new FormalField(String.class));
-				usernames[id] = (String) tuple[2];
+				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
 				System.out.println(numConnectedClients + " clients are connected");
 		}
@@ -89,13 +91,13 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients);	
+			initializeServerConnection(numClients, ipAddress, usernames);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}
 	}
 
-	public void setUserNames(ArrayList<Tank> tanks) {
+	public void setUserNames(ArrayList<Tank> tanks, String[] usernames) {
 		for (int i = 0; i < tanks.size(); i++) {
 			tanks.get(i).userName = usernames[tanks.get(i).id];
 		}		

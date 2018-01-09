@@ -19,15 +19,17 @@ public class GameEngine {
 	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	public static boolean gameIsWon = false;
+	public static final boolean LOAD_LEVEL = false;
+	public static final String LEVEL_NAME = "basic";
 	 
-	public void startGame(int tankCount) {
+	public void startGame(int tankCount, String ipAddress, String[] usernames) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(tankCount);
-			connection.setUserNames(tanks);
+			connection.initializeServerConnection(usernames.length, ipAddress, usernames);
+			connection.setUserNames(tanks, usernames);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:
@@ -82,8 +84,7 @@ public class GameEngine {
 		}
 	}
 	
-	private void initializeWalls()
-	{
+	private void initializeWalls()	{
 		//top wall
 		walls.add(new Wall( 0, -1, 1, 1));
 		//left wall
@@ -93,9 +94,19 @@ public class GameEngine {
 		//right wall
 		walls.add(new Wall( 1,  0, 1, 1));
 		
-		for (int i = 0; i < 10; i++) {
-			walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
+		if (LOAD_LEVEL) {
+			loadLevel(LEVEL_NAME);			
+		} else {
+			for (int i = 0; i < 10; i++) {
+				walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
+			}			
 		}
+		
+	}
+	
+	
+	public void loadLevel(String levelName) {
+		
 	}
 
 
