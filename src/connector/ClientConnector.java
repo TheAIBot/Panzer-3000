@@ -22,6 +22,7 @@ public class ClientConnector implements Runnable{
 	
 	public void connectToServer() throws UnknownHostException, IOException, InterruptedException {
 		String ip = InetAddress.getLocalHost().getHostAddress();
+		ip = "192.168.0.17";
 		updateSpace		= new RemoteSpace("tcp://" + ip + ":9001/updateSpace?keep");
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class));
 		connectionId   	= (int) tuple[0];
