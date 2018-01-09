@@ -57,7 +57,7 @@ public class BasicServer {
 		
 		
 		new Thread(() -> {
-			new GameEngine().startGame(2, ipAddress, usernames);
+			new GameEngine().startGame(users.size(), ipAddress, usernames);
 		}).start();
 		
 		clientConnectSpace.put(new ActualField("startGameAccepted"), new ActualField(1));
