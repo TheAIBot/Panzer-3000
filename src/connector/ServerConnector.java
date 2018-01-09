@@ -14,9 +14,9 @@ public class ServerConnector implements Runnable {
 	public final static String CONNECTION_TYPE = "tcp";
 	
 	public SpaceRepository 	repository;
+	public String[] usernames;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
-	String[] usernames;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
@@ -61,7 +61,7 @@ public class ServerConnector implements Runnable {
 		for (int id = 0; id < clientSpaces.length; id++) {				
 				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
-				System.out.println(numConnectedClients + " clients are connected");
+				System.out.println(numConnectedClients + " clients have connected");
 		}
 		System.out.println("All has connected.");
 		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
@@ -122,6 +122,7 @@ public class ServerConnector implements Runnable {
 		}
 	}
 	*/
+	
 	
 	//sendUpdates(Tank[] tanks, Bullet[] bullets); //Sends information to all the clients, about tanks, bullets and the likes.
 	//Inputs recieveUserInputs();

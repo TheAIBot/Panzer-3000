@@ -25,7 +25,7 @@ public class ClientConnector implements Runnable{
 	
 	public void connectToServer(String ipaddress, String username) throws UnknownHostException, IOException, InterruptedException {
 		this.username = username;
-		updateSpace		= new RemoteSpace("tcp://" + ServerConnector.IP_ADDRESS + ":9001/updateSpace?keep");
+		updateSpace		= new RemoteSpace("tcp://" + ipaddress + ":9001/updateSpace?keep");
 		List<Object[]> tuples = updateSpace.queryAll(new FormalField(Object.class), new FormalField(Object.class));
 		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
 		numberOfClients = (int) tuple1[1];
