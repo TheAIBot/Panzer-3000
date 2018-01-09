@@ -103,13 +103,10 @@ public class GraphicsPanel extends JPanel {
 	}
 	
 	private void drawUserName(Tank tank, Graphics g) {
-		//AffineTransform orig = g.getTransform();
-		//g.rotate(-Math.PI/2);
 	    FontMetrics metrics = g.getFontMetrics(g.getFont());
 		int xCoordinate = (int) (tank.x * this.getWidth() - metrics.stringWidth(tank.userName)/2);
 		int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
 		g.drawString(tank.userName, xCoordinate, yCoordinate);
-		//g.setTransform(orig)
 	}
 
 
@@ -135,10 +132,10 @@ public class GraphicsPanel extends JPanel {
 	
 	private void drawBullet(Bullet bullet, Graphics g)
 	{
-		final int x = (int)((bullet.x - bullet.width / 2) * this.getWidth());
-		final int y = (int)((bullet.y - bullet.height / 2) * this.getHeight());
-		final int width = (int)(bullet.width * this.getWidth());
-		final int height = (int)(bullet.height * this.getHeight());
+		final int x = (int)((bullet.x - bullet.size / 2) * this.getWidth());
+		final int y = (int)((bullet.y - bullet.size / 2) * this.getHeight());
+		final int width = (int)(bullet.size * this.getWidth());
+		final int height = (int)(bullet.size * this.getHeight());
 		
 		g.fillOval(x, y, width, height);
 	}

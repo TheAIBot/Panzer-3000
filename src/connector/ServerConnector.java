@@ -1,11 +1,10 @@
 package connector;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.jspace.*;
 
-import com.sun.swing.internal.plaf.metal.resources.metal;
-import com.sun.webkit.ThemeClient;
 
 import Logger.Log;
 import engine.*;
@@ -13,6 +12,7 @@ public class ServerConnector implements Runnable {
 	
 	public final static String IP_ADDRESS = "localhost"; //"192.168.43.196";
 	public final static String CONNECTION_TYPE = "tcp";
+	
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
@@ -68,9 +68,19 @@ public class ServerConnector implements Runnable {
 		updateSpace.get(new ActualField("numClients"), new ActualField(numClients));
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException {
 		for (int i = 0; i < numClients; i++) {
-			updateSpace.put(i, tanks, bullets, walls);
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			updateSpace.put("walls", wallBytes);
+		}
+	}
+	
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException, IOException {
+		for (int i = 0; i < numClients; i++) {
+			byte[] tankBytes = DeSerializer.toBytes(tanks);
+			byte[] bulletBytes = DeSerializer.toBytes(bullets);
+			//Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
+			updateSpace.put(i, tankBytes, bulletBytes);
 		}
 	}
 	
