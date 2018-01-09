@@ -14,7 +14,7 @@ public class GameEngine {
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
-	public static final int FPS = 50;
+	public static final int FPS = 60;
 	public static final int TANK_COUNT = 2;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
