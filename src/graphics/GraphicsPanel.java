@@ -17,12 +17,14 @@ import com.sun.javafx.font.Metrics;
 import com.sun.xml.internal.bind.v2.runtime.Name;
 
 import engine.Bullet;
+import engine.Powerup;
 import engine.Tank;
 import engine.Wall;
 
 public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank>   tanks 	= new ArrayList<Tank>();
 	private ArrayList<Bullet> bullets 	= new ArrayList<Bullet>();
+	private ArrayList<Powerup>powerups 	= new ArrayList<Powerup>();
 	private ArrayList<Wall>   walls 	= new ArrayList<Wall>();
 	boolean playerHasWon 				= false;
 	
@@ -39,6 +41,7 @@ public class GraphicsPanel extends JPanel {
 		super.paintComponent(g);
 		drawTanks(g);
 		drawBullets(g);
+		drawPowerups(g);
 		drawWalls(g);
 		drawWinnerMessage(g);
 	}
@@ -94,6 +97,27 @@ public class GraphicsPanel extends JPanel {
 		for (Tank tank : tanks) {
 			drawUserName(tank, g);
 		}
+	}
+
+
+
+	private void drawPowerups(Graphics g) {
+		g.setColor(Color.CYAN);
+		for(Powerup powerup : powerups){
+			drawPowerup(powerup, g);
+		}
+		
+	}
+
+	
+	private void drawPowerup(Powerup powerup, Graphics g) {
+		final int x = (int)((powerup.x - Powerup.POWERUP_WIDTH / 2) * this.getWidth());
+		final int y = (int)((powerup.y - Powerup.POWERUP_HEIGHT / 2) * this.getHeight());
+		final int width = (int)(Powerup.POWERUP_WIDTH * this.getWidth());
+		final int height = (int)(Powerup.POWERUP_HEIGHT * this.getHeight());
+		
+		g.fillOval(x, y, width, height);
+		
 	}
 
 
@@ -167,6 +191,11 @@ public class GraphicsPanel extends JPanel {
 	{
 		this.bullets = bullets;
 	}
+
+	public void setPowerups(ArrayList<Powerup> powerups) {
+		this.powerups = powerups;
+		
+	}
 	
 	public void setWalls(ArrayList<Wall> walls)
 	{
@@ -177,5 +206,6 @@ public class GraphicsPanel extends JPanel {
 	public void setPlayerHasWon() {
 		playerHasWon = true;
 	}
+
 	
 }

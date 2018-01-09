@@ -75,12 +75,13 @@ public class ServerConnector implements Runnable {
 		}
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets) throws InterruptedException, IOException {
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws InterruptedException, IOException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] tankBytes = DeSerializer.toBytes(tanks);
 			byte[] bulletBytes = DeSerializer.toBytes(bullets);
+			byte[] powerupBytes = DeSerializer.toBytes(powerups);
 			//Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
-			updateSpace.put(i, tankBytes, bulletBytes);
+			updateSpace.put(i, tankBytes, bulletBytes, powerupBytes);
 		}
 	}
 	

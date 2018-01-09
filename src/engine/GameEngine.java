@@ -20,8 +20,7 @@ public class GameEngine {
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
-	public static final int LUCKY_POWERUP_NUMBER = 1;
-	public static final int POWERUP_HALF_DAMAGE = 1;
+	
 	public static final int FPS = 60;
 	public static final double BOARD_MAX_X = 1;
 	public static final double BOARD_MAX_Y = 1;
@@ -45,7 +44,7 @@ public class GameEngine {
 			// have something to display:
 
 			connection.sendWalls(walls);
-			connection.sendUpdates(tanks, bullets);
+			connection.sendUpdates(tanks, bullets, powerups);
 			Log.message("Sent first update");
 
 			Thread.sleep(2000);
@@ -60,7 +59,7 @@ public class GameEngine {
 				update(userInputs);
 
 				// Log.message("Updated game");
-				connection.sendUpdates(tanks, bullets);
+				connection.sendUpdates(tanks, bullets, powerups);
 				// Log.message("Sent game state update");
 				if (hasTankWonGame(tanks, tankCount)) {
 					// Victory!!!
@@ -146,7 +145,7 @@ public class GameEngine {
 	private void createPowerup() {
 		// chance of power up happening is 1/100 [possibly too much?]
 		
-		if ((int) Math.ceil(Math.random() * 100) == LUCKY_POWERUP_NUMBER) {
+		if ((int) Math.ceil(Math.random() * 1000) == Powerup.LUCKY_POWERUP_NUMBER) {
 			Powerup curr = getNewPowerup();
 			powerups.add(curr);
 		}
@@ -159,7 +158,7 @@ public class GameEngine {
 		do {
 			final double xNew = Math.random();
 			final double yNew = Math.random();
-			newPowerup = new Powerup(xNew, yNew, POWERUP_HALF_DAMAGE);
+			newPowerup = new Powerup(xNew, yNew, Powerup.POWERUP_HALF_DAMAGE);
 			
 			//Power up shouldn't spawn inside a wall
 		} while (isPowerupInsideAnyWall(newPowerup));
@@ -195,7 +194,7 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(powerupLoc)) {
-				
+				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType()));
 				return true;
 			}
 			
@@ -304,10 +303,10 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 
 			if (tankPolygon.contains(bulletPos)) {
-				if (tank.hasPowerup(POWERUP_HALF_DAMAGE)) {
-					tank.takeDamage((int) Math.floor(Bullet.BULLET_DAMAGE * 0.5));
+				if (tank.hasPowerup(Powerup.POWERUP_HALF_DAMAGE)) {
+					tank.takeDamage((int) Math.floor(bullet.bulletDamage * 0.5));
 				} else {
-					tank.takeDamage(Bullet.BULLET_DAMAGE);
+					tank.takeDamage(bullet.bulletDamage);
 				}
 				if (!tank.isAlive()) {
 					tankIterator.remove();
