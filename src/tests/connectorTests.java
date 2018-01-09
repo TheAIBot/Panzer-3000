@@ -4,6 +4,7 @@ package tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.junit.*;
 import connector.ClientConnector;
 import connector.ServerConnector;
 import engine.Bullet;
+import engine.DeSerializer;
 import engine.Input;
 import engine.Tank;
 import engine.Wall;
@@ -41,7 +43,7 @@ public class connectorTests {
 	
 	
 	@Test
-	public void testSendAndRecieveUpdates() throws InterruptedException {
+	public void testSendAndRecieveUpdates() throws Exception {
 		testSetupInitialClientServerConnection();
 		
 		//Creating an unique test input.
@@ -59,8 +61,8 @@ public class connectorTests {
 		
 		for (int i = 0; i < tanks.size(); i++) {
 			Object[] updateTuple = clients[i].recieveUpdates();
-			ArrayList<Tank> recievedTanks = clients[i].unpackTanks(updateTuple);
-			ArrayList<Bullet> recievedBullets = clients[i].unpackBullets(updateTuple);
+			ArrayList<Tank> recievedTanks = DeSerializer.toList((byte[])updateTuple[1], Tank.class);
+			ArrayList<Bullet> recievedBullets = DeSerializer.toList((byte[])updateTuple[2], Bullet.class);
 			
 			double acceptedMarginOfError = 0.01;
 			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);

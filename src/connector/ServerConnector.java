@@ -1,5 +1,6 @@
 package connector;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.jspace.*;
@@ -7,8 +8,6 @@ import org.jspace.*;
 import Logger.Log;
 import engine.*;
 public class ServerConnector implements Runnable {
-	
-	public final static String IP_ADDRESS = "192.168.43.196";
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
@@ -44,7 +43,7 @@ public class ServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(new ActualField(id), new ActualField(usernames[id]));
+			updateSpace.put(id, usernames[id]);
 		}
 		
 		//And waits for all clients to connect:
@@ -55,9 +54,13 @@ public class ServerConnector implements Runnable {
 		//Now communication is up and running.
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException {
+	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Wall> walls) throws InterruptedException, IOException {
 		for (int i = 0; i < numClients; i++) {
-			updateSpace.put(i, tanks, bullets, walls);
+			byte[] tankBytes = DeSerializer.toBytes(tanks);
+			byte[] bulletBytes = DeSerializer.toBytes(bullets);
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			Log.message("Package size: " + (tankBytes.length + bulletBytes.length + wallBytes.length));
+			updateSpace.put(i, tankBytes, bulletBytes, wallBytes);
 		}
 	}
 	

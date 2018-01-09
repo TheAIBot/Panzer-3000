@@ -3,8 +3,13 @@ package engine;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class Tank {
+public class Tank extends DeSerializer {
 	public double x;
 	public double y;
 	public double bodyWidth;
@@ -33,6 +38,37 @@ public class Tank {
 		gunAngle = gunAngleNew;
 		id = idNew;
 		health = TANK_HEALTH;
+	}
+	
+	public Tank() {
+		
+	}
+	
+	@Override
+	protected void toBytes(DataOutputStream out) throws IOException {
+		out.writeDouble(x);
+		out.writeDouble(y);
+		out.writeDouble(bodyWidth);
+		out.writeDouble(bodyHeight);
+		out.writeDouble(bodyAngle);
+		out.writeDouble(gunAngle);
+		out.writeInt(id);
+		out.writeInt(health);
+		out.writeInt(timeBeforeShoot);
+	}
+
+	@Override
+	protected void fromBytes(DataInputStream in) throws IOException {
+		x = in.readDouble();
+		y = in.readDouble();
+		bodyWidth = in.readDouble();
+		bodyHeight = in.readDouble();
+		bodyAngle = in.readDouble();
+		gunAngle = in.readDouble();
+		id = in.readInt();
+		health = in.readInt();
+		timeBeforeShoot = in.readInt();
+		
 	}
 	
 	public void takeDamage(int damage) {
@@ -127,4 +163,5 @@ public class Tank {
 	{
 		return health > 0;
 	}
+
 }

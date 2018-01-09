@@ -2,8 +2,11 @@ package engine;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class Bullet {
+public class Bullet extends DeSerializer {
 	public double x;
 	public double y;
 	public double oldX;
@@ -28,6 +31,34 @@ public class Bullet {
 		height = heightNew;
 		angle = angleNew;
 		timeAlive = BULLET_TIME_ALIVE;
+	}
+	
+	public Bullet() {
+		
+	}
+	
+	@Override
+	protected void toBytes(DataOutputStream out) throws IOException {
+		out.writeDouble(x);
+		out.writeDouble(y);
+		out.writeDouble(oldX);
+		out.writeDouble(oldY);
+		out.writeDouble(width);
+		out.writeDouble(height);
+		out.writeDouble(angle);
+		out.writeInt(timeAlive);
+	}
+
+	@Override
+	protected void fromBytes(DataInputStream in) throws IOException {
+		x = in.readDouble();
+		y = in.readDouble();
+		oldX = in.readDouble();
+		oldY = in.readDouble();
+		width = in.readDouble();
+		height = in.readDouble();
+		angle = in.readDouble();
+		timeAlive = in.readInt();
 	}
 	
 	public void move()
