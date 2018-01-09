@@ -69,7 +69,6 @@ public class BasicClient implements ServerFoundListener {
 			DatagramSocket socket = new DatagramSocket(UDP_PORT_ANSWER);
 			socket.setReuseAddress(true);
 			new Thread(() -> listenForServers(socket)).start();
-			socket.setReuseAddress(true);
 			for (InetAddress inetAddress : broadcastAddresses) {
 				byte[] sendData = stringToBytes(BROADCAST_MESSAGE);
 				broadcastUDPMessage(socket, sendData, inetAddress, UDP_PORT_ASK);

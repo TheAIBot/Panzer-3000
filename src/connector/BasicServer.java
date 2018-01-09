@@ -36,6 +36,7 @@ public class BasicServer {
 		{
 			socket.setReuseAddress(true);
 			final ArrayList<InetAddress> broadcastAddresses = BasicClient.getBroadcastAddresses();
+			Log.message("Started server");
 			while (true) {
 				byte[] receiveData = new byte[1024];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

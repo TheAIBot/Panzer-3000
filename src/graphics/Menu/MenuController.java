@@ -17,11 +17,12 @@ import Logger.Log;
 import engine.Input;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
+import graphics.Menu.Pages.ServerSelectionPage;
 import graphics.Menu.Pages.SuperPage;
 
 public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
 	private final JFrame mainMenu;
-	private final GamePage MAIN_PAGE = new GamePage(this, this);
+	private final ServerSelectionPage MAIN_PAGE = new ServerSelectionPage(this, this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();

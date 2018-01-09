@@ -2,37 +2,48 @@ package graphics.Menu.Pages;
 
 import javax.swing.JPanel;
 
+import connector.BasicClient;
+import connector.BasicServer;
+import connector.ServerFoundListener;
+import connector.ServerInfo;
 import graphics.Menu.MenuController;
 
-public class ServerSelectionPage extends SuperPage {
+public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
+	BasicClient client = new BasicClient();
+	BasicServer server;
+	ServerList serverListPage;
 
 	public ServerSelectionPage(MenuController control, PageRequestsListener listener) {
 		super(control, listener);
-		// TODO Auto-generated constructor stub
+		client.setServerFoaundLister(this);
 	}
 
 	@Override
 	public JPanel createPage(MenuController control) {
-		// TODO Auto-generated method stub
-		return null;
+		serverListPage = new ServerList(this);
+		page = serverListPage;
+		return page;
 	}
 
 	@Override
-	public void startPage() {
-		// TODO Auto-generated method stub
-		
+	public void startPage() {		
 	}
 
 	@Override
 	public void closePage() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean canShowPage() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
+	}
+
+	@Override
+	public void foundServer(ServerInfo info) {
+		if (serverListPage != null) {
+			serverListPage.addServer(info);
+		}
 	}
 
 }
