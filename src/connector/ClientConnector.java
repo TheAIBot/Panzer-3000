@@ -40,7 +40,8 @@ public class ClientConnector implements Runnable{
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
-		return updateSpace.get(new ActualField(connectionId), new FormalField(byte[].class), new FormalField(byte[].class));
+		return updateSpace.get(new ActualField(connectionId), new FormalField(byte[].class), 
+				new FormalField(byte[].class), new FormalField(byte[].class));
 	}
 	
 	

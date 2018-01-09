@@ -14,13 +14,13 @@ public class Bullet extends DeSerializer {
 	public double size;
 	public double angle;
 	public int timeAlive;
+	public int bulletDamage;
 	
 	public static final double BULLET_SIZE = 0.01;
-	public static final int BULLET_DAMAGE = 10;
 	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
 	public static final int BULLET_TIME_ALIVE = 170;
 	
-	public Bullet(double xNew, double yNew, double sizeNew, double angleNew) {
+	public Bullet(double xNew, double yNew, double sizeNew, double angleNew, int damage) {
 		x = xNew;
 		y = yNew;
 		oldX = x;
@@ -28,6 +28,7 @@ public class Bullet extends DeSerializer {
 		size = sizeNew;
 		angle = angleNew;
 		timeAlive = BULLET_TIME_ALIVE;
+		bulletDamage = damage;
 	}
 	
 	public Bullet() {

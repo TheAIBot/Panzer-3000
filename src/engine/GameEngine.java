@@ -15,9 +15,10 @@ import Logger.Log;
 
 public class GameEngine {
 	ServerConnector connection;
-	ArrayList<Tank> tanks 						= new ArrayList<Tank>();
-	ArrayList<Bullet> bullets 					= new ArrayList<Bullet>();
-	ArrayList<Wall> walls 						= new ArrayList<Wall>();
+	ArrayList<Tank> tanks = new ArrayList<Tank>();
+	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	ArrayList<Wall> walls = new ArrayList<Wall>();
+	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
 	public static final double BOARD_MAX_Y 		= 1;
@@ -26,6 +27,7 @@ public class GameEngine {
 	public static final String LEVEL_NAME 		= "basic";
 	public static final String LEVEL_DIRECTORY 	= "src/levels/";
 
+	
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
 		try {
 			Log.message("Starting server");
@@ -40,7 +42,7 @@ public class GameEngine {
 			// have something to display:
 
 			connection.sendWalls(walls);
-			connection.sendUpdates(tanks, bullets);
+			connection.sendUpdates(tanks, bullets, powerups);
 			Log.message("Sent first update");
 
 			Thread.sleep(2000);
@@ -55,7 +57,7 @@ public class GameEngine {
 				update(userInputs);
 
 				// Log.message("Updated game");
-				connection.sendUpdates(tanks, bullets);
+				connection.sendUpdates(tanks, bullets, powerups);
 				// Log.message("Sent game state update");
 				if (hasTankWonGame(tanks, tankCount)) {
 					// Victory!!!
@@ -137,7 +139,66 @@ public class GameEngine {
 			Log.exception(e);
 		}
 	}
+	
+	private void createPowerup() {
+		// chance of power up happening is 1/100 [possibly too much?]
+		
+		if ((int) Math.ceil(Math.random() * 1000) == Powerup.LUCKY_POWERUP_NUMBER) {
+			Powerup curr = getNewPowerup();
+			powerups.add(curr);
+		}
+		
+	}
 
+
+	private Powerup getNewPowerup() {
+		Powerup newPowerup;
+		do {
+			final double xNew = Math.random();
+			final double yNew = Math.random();
+			newPowerup = new Powerup(xNew, yNew, Powerup.POWERUP_HALF_DAMAGE);
+			
+			//Power up shouldn't spawn inside a wall
+		} while (isPowerupInsideAnyWall(newPowerup));
+		
+		return newPowerup;
+	}
+	
+	private void updatePowerups() {
+		
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
+			
+			// Check if tank has collected the power up
+			if (isPowerupCollected(powerup)) {
+				powerupIterator.remove();
+			}
+			
+			// If a tank hasn't taken a power up, decrease its time alive
+			powerup.timeAlive--;
+			if (powerup.timeAlive == 0) {
+				powerupIterator.remove();
+			}
+		} 
+	}
+
+	private boolean isPowerupCollected(Powerup powerup) {
+		final Point2D.Double powerupLoc = new Point2D.Double(powerup.x * Tank.SCALAR, powerup.y * Tank.SCALAR);
+
+		final Iterator<Tank> tankIterator = tanks.iterator();
+		while (tankIterator.hasNext()) {
+			Tank tank = tankIterator.next();
+			final Polygon tankPolygon = tank.getTankRectangle();
+			
+			if (tankPolygon.contains(powerupLoc)) {
+				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType()));
+				return true;
+			}
+			
+		}
+		return false;
+	}
 
 	private List<Wall> wallsFromMatrix(boolean[][] levelMatrix){
 		List<Wall> level  = new ArrayList<Wall>();
@@ -159,6 +220,10 @@ public class GameEngine {
 
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
+			
+			//update tanks power ups
+			tank.updatePowerups();
+			
 			Input currInput = inputs[tank.id];
 
 			// Update gun angle before shooting or moving
@@ -206,6 +271,12 @@ public class GameEngine {
 				bulletIterator.remove();
 			}
 		}
+		
+		//Create power ups
+		createPowerup();
+		
+		//Update power ups
+		updatePowerups();
 	}
 
 	// returns false if bullet must be deleted
@@ -230,7 +301,11 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 
 			if (tankPolygon.contains(bulletPos)) {
-				tank.takeDamage(Bullet.BULLET_DAMAGE);
+				if (tank.hasPowerup(Powerup.POWERUP_HALF_DAMAGE)) {
+					tank.takeDamage((int) Math.floor(bullet.bulletDamage * 0.5));
+				} else {
+					tank.takeDamage(bullet.bulletDamage);
+				}
 				if (!tank.isAlive()) {
 					tankIterator.remove();
 				}
@@ -277,6 +352,16 @@ public class GameEngine {
 	private boolean isTankInsideAnyWall(Tank tank) {
 		for (Wall wall : walls) {
 			if (wall.collidesWith(tank)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isPowerupInsideAnyWall(Powerup powerup)
+	{
+		for (Wall wall : walls) {
+			if (wall.collidesWith(powerup)) {
 				return true;
 			}
 		}

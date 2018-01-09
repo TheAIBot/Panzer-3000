@@ -28,6 +28,7 @@ public class Client {
 				Object[] updatedObjects 	= connection.recieveUpdates(); 
 				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
 				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
+				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
 				
 				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
 					System.out.println("The game has been won!!!");
@@ -39,6 +40,7 @@ public class Client {
 				//Here the graphics needs to render the things seen above
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
+				panel.setPowerups(powerups);
 				panel.repaint();
 
 				//Create a new Input

@@ -3,6 +3,8 @@ package engine;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -19,6 +21,7 @@ public class Tank extends DeSerializer {
 	public int 	  id;
 	int health;
 	public int timeBeforeShoot = 0;
+	public ArrayList<Powerup> powerups;
 	public String userName;
 
 	public static final double TANK_MOVEMENT_DISTANCE = 0.004;
@@ -41,6 +44,28 @@ public class Tank extends DeSerializer {
 		gunAngle = gunAngleNew;
 		id = idNew;
 		health = TANK_HEALTH;
+		powerups = new ArrayList<Powerup>();
+	}
+	
+	public void updatePowerups() {
+
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
+			powerup.timeAlive--;
+		}
+	}
+	
+	public Boolean hasPowerup(int powerupId) {
+
+		final Iterator<Powerup> powerupIterator = powerups.iterator();
+		while (powerupIterator.hasNext()) {
+			Powerup powerup = powerupIterator.next();
+			if (powerup.type == powerupId) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Tank() {
@@ -164,8 +189,12 @@ public class Tank extends DeSerializer {
 	
 	public Bullet shoot() {
 		timeBeforeShoot = TIME_BETWEEN_SHOTS;
+		int damage = 10;
+		if (this.hasPowerup(Powerup.POWERUP_DOUBLE_DAMAGE)) {
+			damage = 20;
+		}
 		final Point2D.Double bulletStartPos = getBulletStartPos();
-		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_SIZE, gunAngle);
+		return new Bullet(bulletStartPos.x, bulletStartPos.y, Bullet.BULLET_SIZE, gunAngle, damage);
 	}
 	
 	private Point2D.Double getBulletStartPos() {

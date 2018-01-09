@@ -16,6 +16,7 @@ import connector.ServerConnector;
 import engine.Bullet;
 import engine.DeSerializer;
 import engine.Input;
+import engine.Powerup;
 import engine.Tank;
 import engine.Wall;
 
@@ -57,13 +58,17 @@ public class connectorTests {
 		//Creating an unique test input.
 		ArrayList<Tank> tanks = new ArrayList<Tank>();
 		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+		ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 		tanks.add(new Tank(0, 0, 0, 0, 0));
 		tanks.add(new Tank(0, 0, 0, 0, 0));
-		bullets.add(new Bullet(0, 0, 1, 0));
-		bullets.add(new Bullet(0, 0, 2, 0));
+		bullets.add(new Bullet(0, 0, 1, 0, 10));
+		bullets.add(new Bullet(0, 0, 2, 0, 10));
+		powerups.add(new Powerup(0.5, 0.5, 1));
+		powerups.add(new Powerup(0.5, 0.5, 1));
 		tanks.get(0).userName = clientNames[0];
 		tanks.get(1).userName = clientNames[1];
-		server.sendUpdates(tanks, bullets);
+		
+		server.sendUpdates(tanks, bullets, powerups);
 		
 		//Now all the clients should be able to get the updates.
 		
@@ -71,12 +76,15 @@ public class connectorTests {
 			Object[] updateTuple = clients[i].recieveUpdates();
 			ArrayList<Tank> recievedTanks = DeSerializer.toList((byte[])updateTuple[1], Tank.class);
 			ArrayList<Bullet> recievedBullets = DeSerializer.toList((byte[])updateTuple[2], Bullet.class);
+			ArrayList<Powerup> recievedPowerups = DeSerializer.toList((byte[])updateTuple[3], Powerup.class);
 			
 			double acceptedMarginOfError = 0.01;
 			assertEquals(tanks.get(0).bodyHeight, recievedTanks.get(0).bodyHeight, acceptedMarginOfError);
 			assertEquals(tanks.get(1).bodyHeight, recievedTanks.get(1).bodyHeight, acceptedMarginOfError);
 			assertEquals(bullets.get(0).size  , recievedBullets.get(0).size  , acceptedMarginOfError);
 			assertEquals(bullets.get(1).size  , recievedBullets.get(1).size  , acceptedMarginOfError);
+			assertEquals(powerups.get(0).x  , recievedPowerups.get(0).x  , acceptedMarginOfError);
+			assertEquals(powerups.get(1).x  , recievedPowerups.get(1).x  , acceptedMarginOfError);
 		}		
 		//TODO The cleanup from recieving inputs also needs to be tested.
 	}
