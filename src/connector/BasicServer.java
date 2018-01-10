@@ -67,7 +67,7 @@ public class BasicServer {
 		startSpace = new SequentialSpace();
 		startAcceptedSpace = new SequentialSpace();
 		repository = new SpaceRepository();
-		final String serverUri = "tcp://" + info.ipAddress + ":" + info.port  + "/?keep";
+		final String serverUri = "tcp://" + info.ipAddress + ":" + info.port  + "/?conn";
 		repository.addGate(serverUri);
 		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
 		repository.add(START_SPACE_NAME, startSpace);
