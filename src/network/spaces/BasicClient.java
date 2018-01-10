@@ -33,33 +33,17 @@ import network.NetworkTools;
 import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
 
-public class BasicClient implements ServerFoundListener, UDPPacketListener {
+public class BasicClient {
 	ServerInfo serverInfo;
 	RemoteSpace serverConnection;
 	RemoteSpace serverStartSpace;
 	RemoteSpace serverStartAcceptedSpace;
-	ServerFoundListener listener;
 	MenuController menu;
 	Thread listenForGameStart;
 	String username;
 	
-	public static final String BROADCAST_MESSAGE = "anyone there?";
-	public static final int UDP_PORT_ASK = 3242;
-	public static final int UDP_PORT_ANSWER = 3243;
-	
 	public BasicClient(MenuController menu) {
 		this.menu = menu;
-	}
-	
-	public void searchForServers() throws IOException {
-		final byte[] data = NetworkTools.stringToBytes(BROADCAST_MESSAGE);
-		UDPConnector.broadcastData(data, UDP_PORT_ASK);
-	}
-	
-	public void startListeningForServers()
-	{
-		UDPConnector.startListeningForBroadcasts(UDP_PORT_ANSWER);
-		UDPConnector.addUDPPacketListener(UDP_PORT_ANSWER, this);
 	}
 	
 	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
@@ -103,25 +87,5 @@ public class BasicClient implements ServerFoundListener, UDPPacketListener {
 	
 	public void startGame() {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
-	}
-	
-	public void setServerFoaundLister(ServerFoundListener listener)
-	{
-		this.listener = listener;
-	}
-
-	@Override
-	public void foundServer(ServerInfo info) {
-		Log.message("Client found server: " + info.ipAddress);
-	}
-
-	@Override
-	public void packetReceived(byte[] packetData) {
-		try {
-			final ServerInfo info = ServerInfo.toServerInfo(packetData);
-			listener.foundServer(info);
-		} catch (Exception e) {
-			Log.exception(e);
-		}
 	}
 }

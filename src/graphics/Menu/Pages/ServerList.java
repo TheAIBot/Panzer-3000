@@ -185,6 +185,8 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		//only set selectedInfo if getPlayerNames doesn't crash because
 		//that means the server is still running for the moment
 		selectedInfo = info;
+		//update serverInfo and repaint list so the new player count
+		//is shown
 		selectedInfo.clientsConnected = playerNames.length;
 		listPlayers.repaint();
 		setServerName(selectedInfo.name);

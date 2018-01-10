@@ -75,4 +75,15 @@ public class UDPConnector {
 			listeners.add(listener);	
 		}
 	}
+	
+	public static void removeUDPPacketListener(int listenPort, UDPPacketListener listener)
+	{
+		synchronized (listenersByPort) {
+			if (!listenersByPort.containsKey(listenPort)) {
+				return;
+			}
+			final ArrayList<UDPPacketListener> listeners = listenersByPort.get(listenPort);
+			listeners.remove(listener);
+		}
+	}
 }

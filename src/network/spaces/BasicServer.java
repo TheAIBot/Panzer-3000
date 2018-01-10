@@ -21,6 +21,7 @@ import engine.Client;
 import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
+import network.udp.ServerFinder;
 import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
 
@@ -67,8 +68,8 @@ public class BasicServer implements UDPPacketListener {
 			startGame();
 		}).start();
 		
-		UDPConnector.startListeningForBroadcasts(BasicClient.UDP_PORT_ASK);
-		UDPConnector.addUDPPacketListener(BasicClient.UDP_PORT_ASK, this);
+		UDPConnector.startListeningForBroadcasts(ServerFinder.UDP_PORT_ASK);
+		UDPConnector.addUDPPacketListener(ServerFinder.UDP_PORT_ASK, this);
 	}
 	
 	public void startGame() {
@@ -88,8 +89,8 @@ public class BasicServer implements UDPPacketListener {
 	public void packetReceived(byte[] packetData) {
 		try {
 			final String message = NetworkTools.bytesToString(packetData);
-			if (message.equals(BasicClient.BROADCAST_MESSAGE)) {
-				UDPConnector.broadcastData(info.toByteArray(), BasicClient.UDP_PORT_ANSWER);
+			if (message.equals(ServerFinder.BROADCAST_MESSAGE)) {
+				UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 			}
 		} catch (Exception e) {
 			return;

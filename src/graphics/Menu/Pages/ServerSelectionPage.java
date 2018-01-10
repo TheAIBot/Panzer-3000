@@ -15,17 +15,19 @@ import network.spaces.BasicClient;
 import network.spaces.BasicServer;
 import network.spaces.ServerFoundListener;
 import network.spaces.ServerInfo;
+import network.udp.ServerFinder;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
 	GamePage gamePage = new GamePage(controller, controller);
 	BasicClient client = new BasicClient(controller);
+	ServerFinder serverFinder = new ServerFinder();
 	ArrayList<BasicServer> createdServers = new ArrayList<BasicServer>();
 	ServerList serverListPage = new ServerList(this);
 	Timer serverUpdateTimer;
 
 	public ServerSelectionPage(MenuController control, PageRequestsListener listener) {
 		super(control, listener);
-		client.setServerFoaundLister(this);
+		serverFinder.setServerFoundLister(this);
 	}
 
 	@Override
@@ -37,14 +39,14 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 
 	@Override
 	public void startPage() {		
-		client.startListeningForServers();
+		serverFinder.startListeningForServers();
 		
 		serverUpdateTimer = new Timer();
 		serverUpdateTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				try {
-					client.searchForServers();
+					serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
 				} catch (Exception e) {
@@ -57,6 +59,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	@Override
 	public void closePage() {
 		serverUpdateTimer.cancel();
+		serverFinder.stopListeningForServers();
 	}
 
 	@Override
