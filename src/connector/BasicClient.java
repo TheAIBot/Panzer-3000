@@ -9,13 +9,14 @@ import org.jspace.RemoteSpace;
 
 import Logger.Log;
 import engine.Client;
+import engine.SecureRemoteSpace;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 
 public class BasicClient {
 	ServerInfo serverInfo;
-	RemoteSpace serverConnection;
+	SecureRemoteSpace serverConnection;
 	MenuController menu;
 	GraphicsPanel panel;
 	public static final int MENU_HEIGHT = 0;
@@ -52,7 +53,7 @@ public class BasicClient {
 	
 	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException {
 		//join the game -- connect to servers 
-		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/clientConnectSpace?keep");
+		serverConnection = new SecureRemoteSpace("tcp://" + info.ipAddress + ":9001/clientConnectSpace?keep");
 		serverConnection.put(new ActualField(username));
 		
 		//listen for when to call startGame
