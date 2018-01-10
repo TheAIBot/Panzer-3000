@@ -43,6 +43,16 @@ public class ServerInfo {
 		return name + ": " + clientsConnected;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ServerInfo)) {
+			return false;
+		}
+		
+		ServerInfo info = (ServerInfo) obj;
+		return this.equals(info);
+	}
+	
 	public boolean equals(ServerInfo info) {
 		return ipAddress.equals(info.ipAddress);
 	}

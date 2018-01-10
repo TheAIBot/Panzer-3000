@@ -41,8 +41,6 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 	            //AudioManager.closeBackgroundMusic();
 	        }
 		});
-		mainMenu.addKeyListener(this);
-		mainMenu.addMouseListener(this);
 	}
 	
 	public void showWindow()

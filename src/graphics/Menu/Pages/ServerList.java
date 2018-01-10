@@ -113,7 +113,10 @@ public class ServerList extends JPanel implements ListSelectionListener {
 
 	public void addServer(ServerInfo info)
 	{
-		listData.addElement(info);
+		if (!listData.contains(info)) {
+			listData.addElement(info);
+		}
+
 	}
 	
 	public void clearServerList()
