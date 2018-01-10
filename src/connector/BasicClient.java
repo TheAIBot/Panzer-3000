@@ -161,6 +161,17 @@ public class BasicClient implements ServerFoundListener {
 		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_SPACE_NAME + "?conn");
 		serverConnection.put(username);
+		
+		//listen for when to call startGame
+		listenForGameStart = new Thread(() -> {
+			try {
+				serverStartSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			new Client().startGame(serverInfo.ipAddress, username, menu, GamePage.GetGraphicsPanel());
+		});
+		listenForGameStart.start();
 	}
 	
 	public void leaveGame() throws InterruptedException
@@ -182,16 +193,6 @@ public class BasicClient implements ServerFoundListener {
 	
 	public void startGame() {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
-		//listen for when to call startGame
-		listenForGameStart = new Thread(() -> {
-			try {
-				serverStartSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			new Client().startGame(serverInfo.ipAddress, username, menu, GamePage.GetGraphicsPanel());
-		});
-		listenForGameStart.start();
 	}
 	
 	public void setServerFoaundLister(ServerFoundListener listener)

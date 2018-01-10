@@ -17,7 +17,6 @@ public class ClientConnector implements Runnable{
 	public String		username;
 	
 	public void connectToServer(String ipaddress, String username) throws UnknownHostException, IOException, InterruptedException {
-		Thread.sleep(1000);
 		this.username = username;
 		updateSpace		= new RemoteSpace("tcp://" + ipaddress + ":9002/updateSpace?keep");
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
