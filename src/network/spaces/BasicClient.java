@@ -1,22 +1,7 @@
 package network.spaces;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.jspace.ActualField;
@@ -24,26 +9,27 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
-import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
-import logger.Log;
-import network.NetworkTools;
-import network.udp.UDPConnector;
-import network.udp.UDPPacketListener;
 
 public class BasicClient {
-	ServerInfo serverInfo;
-	RemoteSpace serverConnection;
-	RemoteSpace serverStartSpace;
-	RemoteSpace serverStartAcceptedSpace;
-	MenuController menu;
-	Thread listenForGameStart;
-	String username;
+	private ServerInfo serverInfo;
+	private RemoteSpace serverConnection;
+	private RemoteSpace serverStartSpace;
+	private RemoteSpace serverStartAcceptedSpace;
+	private MenuController menu;
+	private Thread listenForGameStart;
+	private String username;
+	private boolean hasJoinedAGame = false;
 	
 	public BasicClient(MenuController menu) {
 		this.menu = menu;
+	}
+	
+	
+	public void requestStartGame() {
+		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 	
 	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
@@ -54,6 +40,7 @@ public class BasicClient {
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 		serverConnection.put(username);
+		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
@@ -72,6 +59,12 @@ public class BasicClient {
 	{
 		serverConnection.get(new ActualField(username));
 		listenForGameStart.interrupt();
+		hasJoinedAGame = false;
+	}
+	
+	public boolean hasJoinedAGame()
+	{
+		return hasJoinedAGame;
 	}
 	
 	public String[] getPlayerNames(ServerInfo info) throws InterruptedException, UnknownHostException, IOException {
@@ -83,9 +76,5 @@ public class BasicClient {
 		}
 		
 		return playerNames;
-	}
-	
-	public void startGame() {
-		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 }

@@ -93,7 +93,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (selectedInfo != null) {
-					serverPage.startGame();
+					serverPage.requestStartGame();
 				}
 			}
 		});
@@ -103,7 +103,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		btnCreateServer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String serverName = textFieldServerName.getText();
+				final String serverName = textFieldServerName.getText();
 				//don't create a server with an empty name
 				if (!serverName.trim().isEmpty()) {
 					try {
@@ -126,7 +126,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 
 	}
 
-	public void addServer(ServerInfo info)
+	public synchronized void addServer(ServerInfo info)
 	{
 		if (!listData.contains(info)) {
 			listData.addElement(info);
@@ -134,7 +134,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 
 	}
 	
-	public void clearServerList()
+	public synchronized void clearServerList()
 	{
 		listData.clear();
 	}
@@ -185,11 +185,12 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		//only set selectedInfo if getPlayerNames doesn't crash because
 		//that means the server is still running for the moment
 		selectedInfo = info;
-		//update serverInfo and repaint list so the new player count
-		//is shown
 		selectedInfo.clientsConnected = playerNames.length;
-		listPlayers.repaint();
 		setServerName(selectedInfo.name);
 		setPlayerCount(playerNames.length);
+		//data about the server may have changed in the server list
+		//so update by adding an removing a dummy element.
+		listData.addElement(new ServerInfo());
+		listData.removeElementAt(listData.size() - 1);
 	}
 }

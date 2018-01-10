@@ -26,16 +26,17 @@ import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
 
 public class BasicServer implements UDPPacketListener {
-	public SpaceRepository repository;
+	private SpaceRepository repository;
 	private SequentialSpace	clientConnectSpace;
 	private SequentialSpace startSpace;
 	private SequentialSpace startAcceptedSpace;
+	private ServerInfo info;
+	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
 	public static final String START_ACCEPTED_SPACE_NAME = "startAcceptedSpace";
 	public static final String REQUEST_START_GAME = "startGame";
 	public static final String START_GAME_ACCEPTED = "startGameAccepted";
-	private ServerInfo info;
 	
 	public BasicServer(String serverName) throws UnknownHostException, SocketException {
 		info = new ServerInfo();
