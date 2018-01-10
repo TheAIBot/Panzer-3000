@@ -12,15 +12,17 @@ public class Client {
 	
 	boolean hasPlayerWon = false;
 	private KeyPair keyPair;
+	private String salt;
 	
 	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Initializing public and private keys");
 			keyPair = Crypto.getPair();
+			salt = Crypto.getSaltString();
 			
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, username, keyPair);
+			connection.connectToServer(ipaddress, username, keyPair, salt);
 			Log.message("Client connected");
 			
 			

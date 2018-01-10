@@ -24,12 +24,17 @@ public class ClientConnector implements Runnable{
 	public String				username;
 	public int 					numberOfClients;
 	private KeyPair				keyPair;
+	private String				salt;
 	
-	public void connectToServer(String ipaddress, String username, KeyPair keyPair) throws UnknownHostException, IOException, InterruptedException {
+	public void connectToServer(String ipaddress, String username, KeyPair keyPair, String salt) throws UnknownHostException, IOException, InterruptedException {
 		this.username = username;
 		this.keyPair = keyPair;
+		this.salt = salt;
 		updateSpace		= new SecureRemoteSpace("tcp://" + ipaddress + ":9001/updateSpace?keep");
 		List<Object[]> tuples = updateSpace.queryAll(new FormalField(Object.class), new FormalField(Object.class));
+		
+		updateSpace.put(new ActualField(username), new ActualField(salt));
+		
 		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
 		numberOfClients = (int) tuple1[1];
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
@@ -56,7 +61,7 @@ public class ClientConnector implements Runnable{
 	@Override
 	public void run() {
 		try {
-			connectToServer("localhost", username, keyPair);			
+			connectToServer("localhost", username, keyPair, salt);			
 		} catch (Exception e) { 
 			Log.exception(e);
 		}

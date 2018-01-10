@@ -40,10 +40,16 @@ public class ServerConnector implements Runnable {
 		repository.addGate(CONNECTION_TYPE + "://" + ipAddress + ":9001/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
+
+		for (int i = 0; i < usernames.length; i++) {
+			Object[] tuple = updateSpace.get(new ActualField(usernames[i]), new FormalField(String.class));
+			String salt = (String) tuple[1];
+			clientSpaces[i] = new SequentialSpace();
+			repository.add(INITIAL_CLIENT_SPACE_NAME + i + salt, clientSpaces[i]);
+		}
+		
 		
 		for (int i = 0; i < clientSpaces.length; i++) {
-			clientSpaces[i] = new SequentialSpace();
-			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
 		}
 		
 		//Some initial information for all the clients:

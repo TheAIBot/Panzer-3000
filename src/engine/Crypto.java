@@ -10,6 +10,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -21,6 +22,7 @@ public final class Crypto {
 	
     private static final String ALGORITHM = "DSA";
     private static final String PROVIDER = "SUN";
+    private static final String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	
 	private Crypto()  {
 		// Empty
@@ -58,6 +60,18 @@ public final class Crypto {
 		return decryptedBytes;
 		
 	} 
+	
+	public static String getSaltString() {
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
 	
 	
 }
