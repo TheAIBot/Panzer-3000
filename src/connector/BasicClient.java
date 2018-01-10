@@ -33,6 +33,7 @@ public class BasicClient implements ServerFoundListener {
 	ServerInfo serverInfo;
 	RemoteSpace serverConnection;
 	RemoteSpace serverStartSpace;
+	RemoteSpace serverStartAcceptedSpace;
 	ServerFoundListener listener;
 	MenuController menu;
 	Thread listenForGameStart;
@@ -160,12 +161,13 @@ public class BasicClient implements ServerFoundListener {
 		//join the game -- connect to servers 
 		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_SPACE_NAME + "?conn");
+		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 		serverConnection.put(username);
 		
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
 			try {
-				serverStartSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
+				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1), new ActualField(1));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

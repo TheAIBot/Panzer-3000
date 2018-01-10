@@ -26,8 +26,10 @@ public class BasicServer {
 	public SpaceRepository repository;
 	private SequentialSpace	clientConnectSpace;
 	private SequentialSpace startSpace;
+	private SequentialSpace startAcceptedSpace;
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
+	public static final String START_ACCEPTED_SPACE_NAME = "startAcceptedSpace";
 	public static final String REQUEST_START_GAME = "startGame";
 	public static final String START_GAME_ACCEPTED = "startGameAccepted";
 	private ServerInfo info;
@@ -60,10 +62,12 @@ public class BasicServer {
 		
 		clientConnectSpace = new SequentialSpace();
 		startSpace = new SequentialSpace();
+		startAcceptedSpace = new SequentialSpace();
 		repository = new SpaceRepository();
 		repository.addGate("tcp://" + info.ipAddress + ":9001/?conn");
 		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
 		repository.add(START_SPACE_NAME, startSpace);
+		repository.add(START_ACCEPTED_SPACE_NAME, startAcceptedSpace);
 		
 		new Thread(() -> {
 			try {
@@ -123,7 +127,7 @@ public class BasicServer {
 		}).start();
 		
 		for (int i = 0; i < usernames.length; i++) {
-			startSpace.put(START_GAME_ACCEPTED, 1);	
+			startAcceptedSpace.put(START_GAME_ACCEPTED, 1);	
 		}
 	}
 }
