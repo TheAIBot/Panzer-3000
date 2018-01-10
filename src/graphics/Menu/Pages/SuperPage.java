@@ -25,8 +25,6 @@ public abstract class SuperPage {
 			return page;
 		}
 		page = new JPanel();
-		page.addKeyListener(controller);
-		page.addMouseListener(controller);
 		return createPage(controller);
 	}
 	

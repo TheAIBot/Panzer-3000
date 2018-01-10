@@ -75,9 +75,8 @@ public class BasicClient implements ServerFoundListener {
 	{		
 		try 
 		{
-			DatagramSocket socket = new DatagramSocket(UDP_PORT_ANSWER);
+			DatagramSocket socket = new DatagramSocket();
 			socket.setReuseAddress(true);
-			new Thread(() -> listenForServers(socket)).start();
 			for (InetAddress inetAddress : broadcastAddresses) {
 				byte[] sendData = stringToBytes(BROADCAST_MESSAGE);
 				broadcastUDPMessage(socket, sendData, inetAddress, UDP_PORT_ASK);
@@ -94,9 +93,14 @@ public class BasicClient implements ServerFoundListener {
 		Log.message("Client sent a udp message");
 	}
 	
-	private void listenForServers(DatagramSocket socket)
+	public void startListeningForServers()
 	{
-		try 
+		new Thread(() -> listenForServers()).start();
+	}
+	
+	private void listenForServers()
+	{
+		try (DatagramSocket socket = new DatagramSocket(UDP_PORT_ANSWER))
 		{
 			while (true) {
 				byte[] receiveData = new byte[1024];

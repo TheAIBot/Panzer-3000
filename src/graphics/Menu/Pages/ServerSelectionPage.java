@@ -2,6 +2,8 @@ package graphics.Menu.Pages;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
@@ -16,7 +18,8 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	GamePage gamePage = new GamePage(controller, controller);
 	BasicClient client = new BasicClient(controller);
 	BasicServer server;
-	ServerList serverListPage;
+	ServerList serverListPage = new ServerList(this);
+	Timer serverUpdateTimer;
 
 	public ServerSelectionPage(MenuController control, PageRequestsListener listener) {
 		super(control, listener);
@@ -26,23 +29,32 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	@Override
 	public JPanel createPage(MenuController control) {
 		setResizeable(true);
-		serverListPage = new ServerList(this);
 		page = serverListPage;
 		return page;
 	}
 
 	@Override
-	public void startPage() {	
-		try {
-			client.searchForServers();
-		} catch (IOException e) {
-			Log.exception(e);
-		}
+	public void startPage() {		
+		client.startListeningForServers();
+		
+		serverUpdateTimer = new Timer();
+		serverUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					client.searchForServers();
+					
+					serverListPage.updateServerInfo();
+				} catch (Exception e) {
+					Log.exception(e);
+				}
+			}
+		}, 0, 1000);
 	}
 
 	@Override
 	public void closePage() {
-		
+		serverUpdateTimer.cancel();
 	}
 
 	@Override

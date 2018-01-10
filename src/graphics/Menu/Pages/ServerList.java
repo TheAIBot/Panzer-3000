@@ -143,22 +143,34 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	}
 
 	@Override
-	public void valueChanged(ListSelectionEvent arg0) {
+	public synchronized void valueChanged(ListSelectionEvent arg0) {
 		try {
-			ServerInfo info = listData.get(arg0.getFirstIndex());
+			final ServerInfo info = listData.get(arg0.getFirstIndex());
 			if (selectedInfo == null || !selectedInfo.equals(info)) {
 				serverPage.joinGame(info, textFieldUsername.getText());
-				String[] playerNames = serverPage.getPlayerNames(info);
-				setPlayersList(playerNames);
-				
-				//only set selectedInfo if getPlayerNames doesn't crash because
-				//that means the server is still running for the moment
-				selectedInfo = info;
-				setServerName(selectedInfo.name);
-				setPlayerCount(selectedInfo.clientsConnected);
+				updateServerInfo(info);
 			}
 		} catch (Exception e) {
 			Log.exception(e);
 		}		
+	}
+	
+	public void updateServerInfo() throws UnknownHostException, InterruptedException, IOException
+	{
+		if (selectedInfo != null) {
+			updateServerInfo(selectedInfo);	
+		}
+	}
+	
+	private synchronized void updateServerInfo(ServerInfo info) throws UnknownHostException, InterruptedException, IOException
+	{
+		String[] playerNames = serverPage.getPlayerNames(info);
+		setPlayersList(playerNames);
+		
+		//only set selectedInfo if getPlayerNames doesn't crash because
+		//that means the server is still running for the moment
+		selectedInfo = info;
+		setServerName(selectedInfo.name);
+		setPlayerCount(playerNames.length);
 	}
 }
