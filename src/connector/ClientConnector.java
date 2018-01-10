@@ -32,14 +32,16 @@ public class ClientConnector implements Runnable{
 		this.salt = salt;
 		updateSpace		= new SecureRemoteSpace("tcp://" + ipaddress + ":9001/updateSpace?keep");
 		List<Object[]> tuples = updateSpace.queryAll(new FormalField(Object.class), new FormalField(Object.class));
-		
+
+		Log.message("Client sending own salt");
+		// Client puts salt associated with itself into the update space
 		updateSpace.put(new ActualField(username), new ActualField(salt));
 		
 		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
 		numberOfClients = (int) tuple1[1];
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new SecureRemoteSpace("tcp://" + ipaddress + ":9001/clientSpace" + connectionId + "?keep");
+		privateServerConnections = new SecureRemoteSpace("tcp://" + ipaddress + ":9001/clientSpace" + connectionId + salt + "?keep");
 		privateServerConnections.put("connected", connectionId);
 	}
 	

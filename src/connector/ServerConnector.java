@@ -41,15 +41,14 @@ public class ServerConnector implements Runnable {
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 
+		Log.message("Server recieving salts and creating spaces");
 		for (int i = 0; i < usernames.length; i++) {
 			Object[] tuple = updateSpace.get(new ActualField(usernames[i]), new FormalField(String.class));
 			String salt = (String) tuple[1];
+			Log.message("Salt recieved is: " + salt);
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i + salt, clientSpaces[i]);
-		}
-		
-		
-		for (int i = 0; i < clientSpaces.length; i++) {
+			Log.message("Client space added by Server");
 		}
 		
 		//Some initial information for all the clients:
