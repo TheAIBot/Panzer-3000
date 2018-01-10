@@ -167,7 +167,7 @@ public class BasicClient implements ServerFoundListener {
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
 			try {
-				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1), new ActualField(1));
+				serverStartAcceptedSpace.query(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
