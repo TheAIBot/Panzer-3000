@@ -42,6 +42,8 @@ public class ClientConnector implements Runnable{
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
 		connectionId   	= (int) tuple[0];
 		privateServerConnections = new SecureRemoteSpace("tcp://" + ipaddress + ":9001/clientSpace" + connectionId + salt + "?keep");
+		privateServerConnections.put(keyPair.getPublic(), connectionId);
+		
 		privateServerConnections.put("connected", connectionId);
 	}
 	

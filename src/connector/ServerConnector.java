@@ -1,6 +1,7 @@
 package connector;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.*;
 
 import org.jspace.*;
@@ -25,6 +26,8 @@ public class ServerConnector implements Runnable {
 	public int numConnectedClients;
 	public String ipAddress;
 	
+	private PublicKey[] publicKeys;
+	
 	
 	public void initializeServerConnection(int numClients, String ipAddress, String[] usernames) throws InterruptedException {
 		this.numClients = numClients;
@@ -43,13 +46,16 @@ public class ServerConnector implements Runnable {
 
 		Log.message("Server recieving salts and creating spaces");
 		for (int i = 0; i < usernames.length; i++) {
+			
 			Log.message("Server querying for username: " + usernames[i]);
 			Object[] tuple = updateSpace.get(new ActualField(usernames[i]), new FormalField(String.class));
 			String salt = (String) tuple[1];
 			Log.message("Salt recieved is: " + salt);
+			
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i + salt, clientSpaces[i]);
 			Log.message("Client space added by Server");
+			
 		}
 		
 		//Some initial information for all the clients:
@@ -64,7 +70,10 @@ public class ServerConnector implements Runnable {
 		
 		System.out.println("0 clients are connected");
 		//And waits for all clients to connect:
-		for (int id = 0; id < clientSpaces.length; id++) {				
+		for (int id = 0; id < clientSpaces.length; id++) {		
+				Object[] keyTuple = clientSpaces[id].get(new FormalField(PublicKey.class), new ActualField(id));
+				publicKeys[id] = (PublicKey) keyTuple[0];
+				
 				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
 				System.out.println(numConnectedClients + " clients have connected");
