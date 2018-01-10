@@ -160,10 +160,13 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	@Override
 	public synchronized void valueChanged(ListSelectionEvent arg0) {
 		try {
-			final ServerInfo info = listData.get(arg0.getFirstIndex());
+			final ServerInfo info = listData.get(list.getSelectedIndex());
 			if (selectedInfo == null || !selectedInfo.equals(info)) {
 				serverPage.joinGame(info, textFieldUsername.getText());
 				updateServerInfo(info);
+				//data about the server may have changed in the server list
+				//so repaint to show the changes
+				list.repaint();
 			}
 		} catch (Exception e) {
 			Log.exception(e);
@@ -188,9 +191,5 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		selectedInfo.clientsConnected = playerNames.length;
 		setServerName(selectedInfo.name);
 		setPlayerCount(playerNames.length);
-		//data about the server may have changed in the server list
-		//so update by adding an removing a dummy element.
-		listData.addElement(new ServerInfo());
-		listData.removeElementAt(listData.size() - 1);
 	}
 }
