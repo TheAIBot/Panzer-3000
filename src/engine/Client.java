@@ -10,11 +10,11 @@ import graphics.Menu.Pages.GamePage;
 
 public class Client {
 	
-	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
+	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, username);
+			connection.connectToServer(ipaddress, port, username);
 			Log.message("Client connected");
 			
 			

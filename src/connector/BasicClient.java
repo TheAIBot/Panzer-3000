@@ -159,9 +159,9 @@ public class BasicClient implements ServerFoundListener {
 		this.serverInfo = info;
 		this.username = username;
 		//join the game -- connect to servers 
-		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
-		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_SPACE_NAME + "?conn");
-		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":9001/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
+		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
+		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?keep");
+		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?keep");
 		serverConnection.put(username);
 		
 		//listen for when to call startGame
@@ -172,7 +172,7 @@ public class BasicClient implements ServerFoundListener {
 				e.printStackTrace();
 			}
 			page.gameStarted();
-			new Client().startGame(serverInfo.ipAddress, username, menu, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, menu, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();
 	}

@@ -10,6 +10,7 @@ public class ServerInfo {
 	public String name = "";
 	public String ipAddress = "";
 	public int clientsConnected = 0;
+	public int port;
 	
 	public byte[] toByteArray() throws IOException
 	{
@@ -18,6 +19,7 @@ public class ServerInfo {
 				out.writeUTF(name);
 				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
+				out.writeInt(port);
 				
 				return stream.toByteArray();
 			}
@@ -32,6 +34,7 @@ public class ServerInfo {
 				info.name = in.readUTF();
 				info.ipAddress = in.readUTF();
 				info.clientsConnected = in.readInt();
+				info.port = in.readInt();
 				
 				return info;
 			}

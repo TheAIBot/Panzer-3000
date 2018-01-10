@@ -24,7 +24,7 @@ public class ServerConnector implements Runnable {
 	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
+	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		this.ipAddress = BasicServer.getIpAddress();
@@ -34,7 +34,7 @@ public class ServerConnector implements Runnable {
 		updateSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		
-		repository.addGate("tcp://" + ipAddress + ":9002/?keep");
+		repository.addGate("tcp://" + ipAddress + ":" + port + "/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -63,7 +63,7 @@ public class ServerConnector implements Runnable {
 		//Now communication is up and running.
 	}
 	
-	public void sendWalls(ArrayList<Wall> walls) throws IOException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] wallBytes = DeSerializer.toBytes(walls);
 			updateSpace.put("walls", wallBytes);

@@ -38,6 +38,9 @@ public class BasicServer {
 		info = new ServerInfo();
 		info.ipAddress = getIpAddress();
 		info.name = serverName;
+		//chose a random port between 1025-2^15. Port starting at 1025
+		//because the first 1024 first 1024 ports are reserved
+		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
 	}
 	
 	public static String getIpAddress() throws UnknownHostException, SocketException {
@@ -64,7 +67,8 @@ public class BasicServer {
 		startSpace = new SequentialSpace();
 		startAcceptedSpace = new SequentialSpace();
 		repository = new SpaceRepository();
-		repository.addGate("tcp://" + info.ipAddress + ":9001/?conn");
+		final String serverUri = "tcp://" + info.ipAddress + ":" + info.port  + "/?keep";
+		repository.addGate(serverUri);
 		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
 		repository.add(START_SPACE_NAME, startSpace);
 		repository.add(START_ACCEPTED_SPACE_NAME, startAcceptedSpace);
@@ -75,6 +79,7 @@ public class BasicServer {
 			} catch (InterruptedException e) {
 				Log.exception(e);
 			}
+			repository.closeGate(serverUri);
 			startGame();
 		}).start();
 		
@@ -123,7 +128,7 @@ public class BasicServer {
 		Log.message("starting server asdljasldjahdkjashdaskjdhaskjdhaskjdsak");
 		
 		new Thread(() -> {
-			new GameEngine().startGame(usernames.length, usernames, startAcceptedSpace);
+			new GameEngine().startGame(info.port , usernames.length, usernames, startAcceptedSpace);
 		}).start();
 	}
 }
