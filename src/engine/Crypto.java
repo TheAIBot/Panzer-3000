@@ -19,53 +19,39 @@ import javax.crypto.NoSuchPaddingException;
 
 public final class Crypto {
 	
-	private static KeyPairGenerator keyGen;
-	private static KeyPair pair;
     private static final String ALGORITHM = "DSA";
     private static final String PROVIDER = "SUN";
 	
-	private Crypto() throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
-
+	private Crypto()  {
+		// Empty
+	}
+	
+	public static KeyPair getPair() throws NoSuchAlgorithmException, NoSuchProviderException {
 		// Initialize a generator - DSA is algorithm, SUN is a provider
-		keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
+		KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
 		
-
 		// Initialize a random - SHA1PRNG is algorithm, SUN is a provider
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG", PROVIDER);
 		keyGen.initialize(1024, random);
 		
 		// Generate keys
-		pair = keyGen.generateKeyPair();
-		
-		
+		return keyGen.generateKeyPair();
 	}
 	
-	public static KeyPair getPair() {
-		return pair;
-	}
-	
-	public static PrivateKey getPrivate() {
-		return pair.getPrivate();
-	}
-	
-	public static PublicKey getPublic() {
-		return pair.getPublic();
-	}
-	
-	public static byte[] encrypt(byte[] data) throws Exception {
+	public static byte[] encrypt(byte[] data, PublicKey publicKey) throws Exception {
 		
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
-		cipher.init(Cipher.PUBLIC_KEY, pair.getPublic());
+		cipher.init(Cipher.PUBLIC_KEY, publicKey);
 
 		byte[] encryptedBytes = cipher.doFinal(data);
 
 		return encryptedBytes;
 	}
 	
-	public static byte[] decrypt(byte[] data) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+	public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
-		cipher.init(Cipher.PRIVATE_KEY, pair.getPrivate());
+		cipher.init(Cipher.PRIVATE_KEY, privateKey);
 
 		byte[] decryptedBytes = cipher.doFinal(data);
 

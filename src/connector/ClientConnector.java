@@ -2,6 +2,7 @@ package connector;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.security.KeyPair;
 import java.util.List;
 
 import org.jspace.*;
@@ -22,9 +23,11 @@ public class ClientConnector implements Runnable{
 	public int 					connectionId;
 	public String				username;
 	public int 					numberOfClients;
+	private KeyPair				keyPair;
 	
-	public void connectToServer(String ipaddress, String username) throws UnknownHostException, IOException, InterruptedException {
+	public void connectToServer(String ipaddress, String username, KeyPair keyPair) throws UnknownHostException, IOException, InterruptedException {
 		this.username = username;
+		this.keyPair = keyPair;
 		updateSpace		= new SecureRemoteSpace("tcp://" + ipaddress + ":9001/updateSpace?keep");
 		List<Object[]> tuples = updateSpace.queryAll(new FormalField(Object.class), new FormalField(Object.class));
 		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
@@ -53,7 +56,7 @@ public class ClientConnector implements Runnable{
 	@Override
 	public void run() {
 		try {
-			connectToServer("localhost", username);			
+			connectToServer("localhost", username, keyPair);			
 		} catch (Exception e) { 
 			Log.exception(e);
 		}

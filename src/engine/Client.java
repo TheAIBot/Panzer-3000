@@ -1,5 +1,6 @@
 package engine;
 
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 import Logger.Log;
@@ -10,11 +11,16 @@ import graphics.Menu.MenuController;
 public class Client {
 	
 	boolean hasPlayerWon = false;
+	private KeyPair keyPair;
+	
 	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
 		try {
+			Log.message("Initializing public and private keys");
+			keyPair = Crypto.getPair();
+			
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, username);
+			connection.connectToServer(ipaddress, username, keyPair);
 			Log.message("Client connected");
 			
 			
