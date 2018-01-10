@@ -43,6 +43,7 @@ public class ServerConnector implements Runnable {
 
 		Log.message("Server recieving salts and creating spaces");
 		for (int i = 0; i < usernames.length; i++) {
+			Log.message("Server querying for username: " + usernames[i]);
 			Object[] tuple = updateSpace.get(new ActualField(usernames[i]), new FormalField(String.class));
 			String salt = (String) tuple[1];
 			Log.message("Salt recieved is: " + salt);

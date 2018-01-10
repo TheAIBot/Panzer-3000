@@ -35,7 +35,7 @@ public class ClientConnector implements Runnable{
 
 		Log.message("Client sending own salt");
 		// Client puts salt associated with itself into the update space
-		updateSpace.put(new ActualField(username), new ActualField(salt));
+		updateSpace.put(username, salt);
 		
 		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
 		numberOfClients = (int) tuple1[1];
