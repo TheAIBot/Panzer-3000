@@ -1,11 +1,15 @@
 package engine;
 
+import connector.BasicServer;
 import connector.ServerConnector;
 
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
 
 import Logger.Log;
 
@@ -21,13 +25,13 @@ public class GameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int tankCount, String[] usernames) {
+	public void startGame(int tankCount, String[] usernames, SequentialSpace startServerSpace) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
-			connection.initializeServerConnection(tankCount, usernames);
+			connection.initializeServerConnection(tankCount, usernames, startServerSpace);
 			Log.message("Clients connected");
 			
 			//The server will send the initial information first, such that the clients have something to display:

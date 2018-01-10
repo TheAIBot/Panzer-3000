@@ -28,6 +28,7 @@ import engine.Client;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
+import graphics.Menu.Pages.ServerSelectionPage;
 
 public class BasicClient implements ServerFoundListener {
 	ServerInfo serverInfo;
@@ -91,7 +92,6 @@ public class BasicClient implements ServerFoundListener {
 	{
 		socket.setBroadcast(true);
 		socket.send(new DatagramPacket(message, message.length, address, port));
-		Log.message("Client sent a udp message");
 	}
 	
 	public void startListeningForServers()
@@ -155,7 +155,7 @@ public class BasicClient implements ServerFoundListener {
 	}
 	
 	
-	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException {
+	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
 		this.serverInfo = info;
 		this.username = username;
 		//join the game -- connect to servers 
@@ -171,6 +171,7 @@ public class BasicClient implements ServerFoundListener {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			page.gameStarted();
 			new Client().startGame(serverInfo.ipAddress, username, menu, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();

@@ -87,21 +87,20 @@ public class BasicServer {
 		{
 			socket.setReuseAddress(true);
 			final ArrayList<InetAddress> broadcastAddresses = BasicClient.getBroadcastAddresses();
-			Log.message("Started server");
 			while (true) {
 				byte[] receiveData = new byte[1024];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				socket.receive(receivePacket);
-				Log.message("Server received a udp message");
+				//Log.message("Server received a udp message");
 				try {
 					String message = BasicClient.bytesToString(receivePacket.getData());
-					Log.message("Server received message: " + message);
+					//Log.message("Server received message: " + message);
 					if (message.equals(BasicClient.BROADCAST_MESSAGE)) {
 						byte[] sendData = info.toByteArray();
 						for (InetAddress address : broadcastAddresses) {
 							BasicClient.broadcastUDPMessage(socket, sendData, address, BasicClient.UDP_PORT_ANSWER);
 						}
-						Log.message("Server sent server information to all clients");
+						//Log.message("Server sent server information to all clients");
 					}
 				} catch (Exception e) {	
 					Log.exception(e);
@@ -121,13 +120,10 @@ public class BasicServer {
 			x++;
 		}
 		
+		Log.message("starting server asdljasldjahdkjashdaskjdhaskjdhaskjdsak");
 		
 		new Thread(() -> {
-			new GameEngine().startGame(usernames.length, usernames);
+			new GameEngine().startGame(usernames.length, usernames, startAcceptedSpace);
 		}).start();
-		
-		for (int i = 0; i < usernames.length; i++) {
-			startAcceptedSpace.put(START_GAME_ACCEPTED, 1);	
-		}
 	}
 }

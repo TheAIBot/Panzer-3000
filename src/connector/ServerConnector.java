@@ -24,7 +24,7 @@ public class ServerConnector implements Runnable {
 	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int numClients, String[] usernames) throws InterruptedException, UnknownHostException, SocketException {
+	public void initializeServerConnection(int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		this.ipAddress = BasicServer.getIpAddress();
@@ -44,6 +44,11 @@ public class ServerConnector implements Runnable {
 		}
 		
 		
+		for (int i = 0; i < usernames.length; i++) {
+			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
+		}
+		
+		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
 			updateSpace.put(id, usernames[id]);
@@ -53,6 +58,7 @@ public class ServerConnector implements Runnable {
 		for (int id = 0; id < clientSpaces.length; id++) {				
 				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
+				Log.message("Someone connected");
 		}
 		//Now communication is up and running.
 	}
@@ -90,7 +96,7 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients, usernames);	
+			//initializeServerConnection(numClients, usernames);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}

@@ -75,12 +75,15 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	
 	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException 
 	{
-		client.joinGame(info, username);
+		client.joinGame(info, username, this);
 	}
 	
 	public void startGame()
 	{
 		client.startGame();
+	}
+	
+	public void gameStarted() {
 		switchPage(gamePage);
 	}
 
