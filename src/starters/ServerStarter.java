@@ -3,8 +3,8 @@ package starters;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import connector.BasicServer;
 import engine.GameEngine;
+import network.spaces.BasicServer;
 
 public class ServerStarter {
 	

@@ -4,8 +4,8 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import Logger.Log;
 import graphics.Menu.MenuController;
+import logger.Log;
 
 public abstract class SuperPage {
 	protected JPanel page;

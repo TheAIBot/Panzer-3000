@@ -1,23 +1,25 @@
 package graphics.Menu.Pages;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import Logger.Log;
-import connector.BasicClient;
-import connector.BasicServer;
-import connector.ServerFoundListener;
-import connector.ServerInfo;
 import graphics.Menu.MenuController;
+import logger.Log;
+import network.spaces.BasicClient;
+import network.spaces.BasicServer;
+import network.spaces.ServerFoundListener;
+import network.spaces.ServerInfo;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
 	GamePage gamePage = new GamePage(controller, controller);
 	BasicClient client = new BasicClient(controller);
-	BasicServer server;
+	ArrayList<BasicServer> createdServers = new ArrayList<BasicServer>();
 	ServerList serverListPage = new ServerList(this);
 	Timer serverUpdateTimer;
 
@@ -85,6 +87,12 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	
 	public void gameStarted() {
 		switchPage(gamePage);
+	}
+	
+	public void createServer(String serverName) throws UnknownHostException, SocketException {
+		BasicServer server = new BasicServer(serverName);
+		server.startServer();
+		createdServers.add(server);
 	}
 
 }

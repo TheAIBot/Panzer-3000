@@ -13,12 +13,12 @@ import java.util.Stack;
 
 import javax.swing.JFrame;
 
-import Logger.Log;
 import engine.Input;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
 import graphics.Menu.Pages.ServerSelectionPage;
 import graphics.Menu.Pages.SuperPage;
+import logger.Log;
 
 public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
 	private final JFrame mainMenu;

@@ -1,4 +1,4 @@
-package connector;
+package network.spaces;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,8 +6,8 @@ import java.net.UnknownHostException;
 
 import org.jspace.*;
 
-import Logger.Log;
 import engine.*;
+import logger.Log;
 
 public class ClientConnector implements Runnable{
 

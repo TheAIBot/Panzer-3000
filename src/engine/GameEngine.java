@@ -1,8 +1,5 @@
 package engine;
 
-import connector.BasicServer;
-import connector.ServerConnector;
-
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -11,7 +8,9 @@ import java.util.Iterator;
 import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
 
-import Logger.Log;
+import logger.Log;
+import network.spaces.BasicServer;
+import network.spaces.ServerConnector;
 
 public class GameEngine {
 	ServerConnector connection;

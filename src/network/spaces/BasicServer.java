@@ -1,11 +1,9 @@
-package connector;
+package network.spaces;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
-
-import Logger.Log;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -21,8 +19,12 @@ import java.util.LinkedList;
 
 import engine.Client;
 import engine.GameEngine;
+import logger.Log;
+import network.NetworkTools;
+import network.udp.UDPConnector;
+import network.udp.UDPPacketListener;
 
-public class BasicServer {
+public class BasicServer implements UDPPacketListener {
 	public SpaceRepository repository;
 	private SequentialSpace	clientConnectSpace;
 	private SequentialSpace startSpace;
@@ -36,29 +38,11 @@ public class BasicServer {
 	
 	public BasicServer(String serverName) throws UnknownHostException, SocketException {
 		info = new ServerInfo();
-		info.ipAddress = getIpAddress();
+		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
 		//chose a random port between 1025-2^15. Port starting at 1025
 		//because the first 1024 first 1024 ports are reserved
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
-	}
-	
-	public static String getIpAddress() throws UnknownHostException, SocketException {
-		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-	    while (networkInterfaces.hasMoreElements()) {
-	    	NetworkInterface netInterface = networkInterfaces.nextElement();
-	    	if (!netInterface.isVirtual() &&
-	    		!netInterface.isPointToPoint() && 
-	    		!netInterface.isLoopback() &&
-	    		netInterface.isUp()) {
-				for (InterfaceAddress ia : netInterface.getInterfaceAddresses()) {
-					if (ia.getAddress() != null && ia.getAddress() instanceof Inet4Address) {
-						return ia.getAddress().getHostAddress();
-					}
-				}
-			}
-	    }
-	    throw new UnknownHostException("Failed to find this computers ipaddress");
 	}
 	
 	public void startServer() throws UnknownHostException {
@@ -83,52 +67,32 @@ public class BasicServer {
 			startGame();
 		}).start();
 		
-		new Thread(() -> receiveBroadcasts()).start();
-	}
-	
-	private void receiveBroadcasts()
-	{
-		try (DatagramSocket socket = new DatagramSocket(BasicClient.UDP_PORT_ASK))
-		{
-			socket.setReuseAddress(true);
-			final ArrayList<InetAddress> broadcastAddresses = BasicClient.getBroadcastAddresses();
-			while (true) {
-				byte[] receiveData = new byte[1024];
-				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-				socket.receive(receivePacket);
-				//Log.message("Server received a udp message");
-				try {
-					String message = BasicClient.bytesToString(receivePacket.getData());
-					//Log.message("Server received message: " + message);
-					if (message.equals(BasicClient.BROADCAST_MESSAGE)) {
-						byte[] sendData = info.toByteArray();
-						for (InetAddress address : broadcastAddresses) {
-							BasicClient.broadcastUDPMessage(socket, sendData, address, BasicClient.UDP_PORT_ANSWER);
-						}
-						//Log.message("Server sent server information to all clients");
-					}
-				} catch (Exception e) {	
-					Log.exception(e);
-				}
-			}
-		} catch (Exception e) {
-			Log.exception(e);
-		}
+		UDPConnector.startListeningForBroadcasts(BasicClient.UDP_PORT_ASK);
+		UDPConnector.addUDPPacketListener(BasicClient.UDP_PORT_ASK, this);
 	}
 	
 	public void startGame() {
-		LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class));
-		String[] usernames = new String[users.size()]; 
-		int x = 0;
-		for(Object[] temp : users) {
-			usernames[x] = (String) temp[0];
-			x++;
-		}
+		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class));
 		
-		Log.message("starting server asdljasldjahdkjashdaskjdhaskjdhaskjdsak");
+		final String[] usernames = new String[users.size()]; 
+		for (int i = 0; i < usernames.length; i++) {
+			usernames[i] = (String) users.get(i)[0];
+		}
 		
 		new Thread(() -> {
 			new GameEngine().startGame(info.port , usernames.length, usernames, startAcceptedSpace);
 		}).start();
+	}
+
+	@Override
+	public void packetReceived(byte[] packetData) {
+		try {
+			final String message = NetworkTools.bytesToString(packetData);
+			if (message.equals(BasicClient.BROADCAST_MESSAGE)) {
+				UDPConnector.broadcastData(info.toByteArray(), BasicClient.UDP_PORT_ANSWER);
+			}
+		} catch (Exception e) {
+			return;
+		}
 	}
 }

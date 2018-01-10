@@ -2,11 +2,11 @@ package engine;
 
 import java.util.ArrayList;
 
-import Logger.Log;
-import connector.ClientConnector;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
+import logger.Log;
+import network.spaces.ClientConnector;
 
 public class Client {
 	

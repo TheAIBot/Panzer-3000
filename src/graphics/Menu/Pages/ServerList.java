@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -16,8 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import Logger.Log;
-import connector.ServerInfo;
+import logger.Log;
+import network.spaces.ServerInfo;
 
 import java.awt.Component;
 import javax.swing.Box;
@@ -29,7 +30,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	private ServerInfo selectedInfo;
 	
 	private JTextField textFieldUsername;
-	private JTextField textField;
+	private JTextField textFieldServerName;
 	
 	private final DefaultListModel<ServerInfo> listData = new DefaultListModel<ServerInfo>();
 	private final JList<ServerInfo> list = new JList<ServerInfo>(listData);
@@ -99,15 +100,29 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		
 		btnCreateServer.setBounds(457, 461, 222, 63);
 		add(btnCreateServer);
+		btnCreateServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String serverName = textFieldServerName.getText();
+				//don't create a server with an empty name
+				if (!serverName.trim().isEmpty()) {
+					try {
+						serverPage.createServer(serverName);
+					} catch (Exception e1) {
+						Log.exception(e1);
+					}
+				}
+			}
+		});
 		
 		JLabel lblServerName_1 = new JLabel("Server name: ");
 		lblServerName_1.setBounds(457, 432, 99, 15);
 		add(lblServerName_1);
 		
-		textField = new JTextField();
-		textField.setBounds(556, 430, 123, 19);
-		add(textField);
-		textField.setColumns(10);
+		textFieldServerName = new JTextField();
+		textFieldServerName.setBounds(556, 430, 123, 19);
+		add(textFieldServerName);
+		textFieldServerName.setColumns(10);
 
 	}
 
@@ -170,6 +185,8 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		//only set selectedInfo if getPlayerNames doesn't crash because
 		//that means the server is still running for the moment
 		selectedInfo = info;
+		selectedInfo.clientsConnected = playerNames.length;
+		listPlayers.repaint();
 		setServerName(selectedInfo.name);
 		setPlayerCount(playerNames.length);
 	}

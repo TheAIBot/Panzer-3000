@@ -7,9 +7,9 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
-import connector.BasicClient;
-import connector.BasicServer;
-import connector.ServerInfo;
+import network.spaces.BasicClient;
+import network.spaces.BasicServer;
+import network.spaces.ServerInfo;
 
 public class basicTests {
 	BasicServer server;

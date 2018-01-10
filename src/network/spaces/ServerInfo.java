@@ -1,4 +1,4 @@
-package connector;
+package network.spaces;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,6 +57,6 @@ public class ServerInfo {
 	}
 	
 	public boolean equals(ServerInfo info) {
-		return ipAddress.equals(info.ipAddress);
+		return ipAddress.equals(info.ipAddress) && port == info.port;
 	}
 }

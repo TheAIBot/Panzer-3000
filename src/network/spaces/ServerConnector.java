@@ -1,4 +1,4 @@
-package connector;
+package network.spaces;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -8,8 +8,9 @@ import java.util.*;
 
 import org.jspace.*;
 
-import Logger.Log;
 import engine.*;
+import logger.Log;
+import network.NetworkTools;
 public class ServerConnector implements Runnable {
 	public SpaceRepository 	repository;
 	SequentialSpace		updateSpace;
@@ -27,7 +28,7 @@ public class ServerConnector implements Runnable {
 	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
-		this.ipAddress = BasicServer.getIpAddress();
+		this.ipAddress = NetworkTools.getIpAddress();
 		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
