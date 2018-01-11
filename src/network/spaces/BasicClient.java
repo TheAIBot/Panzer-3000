@@ -45,7 +45,7 @@ public class BasicClient {
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 
 		
-		String encryptedSalt = "";
+		byte[] encryptedSalt = null;
 		try {
 			encryptedSalt = Crypto.encrypt(salt, info.publicKey);
 		} catch (Exception e) {

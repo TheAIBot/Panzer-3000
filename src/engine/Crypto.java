@@ -43,30 +43,22 @@ public final class Crypto {
 		return keyGen.generateKeyPair();
 	}
 	
-	public static String encrypt(String data, PublicKey publicKey) throws Exception {
+	public static byte[] encrypt(String data, PublicKey publicKey) throws Exception {
 		
-		KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-		RSAPublicKeySpec keySpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
-		
-		byte[] byteData = data.getBytes();
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
-		cipher.init(Cipher.PUBLIC_KEY, publicKey);
+		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
-		byte[] encryptedBytes = cipher.doFinal(byteData);
+		byte[] encryptedBytes = cipher.doFinal(data.getBytes());
 
-		return new String(encryptedBytes);
+		return encryptedBytes;
 	}
 	
-	public static String decrypt(String data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException {
-
-		KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-		RSAPrivateKeySpec keySpec = keyFactory.getKeySpec(privateKey, RSAPrivateKeySpec.class);
+	public static String decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		
-		byte[] byteData = data.getBytes();
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
-		cipher.init(Cipher.PRIVATE_KEY, privateKey);
+		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-		byte[] decryptedBytes = cipher.doFinal(byteData);
+		byte[] decryptedBytes = cipher.doFinal(data);
 
 		return new String(decryptedBytes);
 		

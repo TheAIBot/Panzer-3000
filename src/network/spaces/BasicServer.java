@@ -18,6 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -96,6 +97,9 @@ public class BasicServer implements UDPPacketListener {
 			} catch (NoSuchPaddingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}).start();
 		
@@ -104,14 +108,14 @@ public class BasicServer implements UDPPacketListener {
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 	}
 	
-	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(String.class));
+	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException {
+		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(byte[].class));
 		
 		final String[] usernames = new String[users.size()]; 
 		final String[] salts = new String[users.size()]; 
 		for (int i = 0; i < usernames.length; i++) {
 			usernames[i] = (String) users.get(i)[0];
-			String encSalt = (String) users.get(i)[1];
+			byte[] encSalt = (byte[]) users.get(i)[1];
 			salts[i] = Crypto.decrypt(encSalt, keyPair.getPrivate());
 		}
 		
