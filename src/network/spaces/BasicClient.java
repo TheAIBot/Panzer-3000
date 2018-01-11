@@ -9,6 +9,7 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
+import engine.Crypto;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
@@ -22,6 +23,7 @@ public class BasicClient {
 	private MenuController menu;
 	private Thread listenForGameStart;
 	private String username;
+	private String salt;
 	private boolean hasJoinedAGame = false;
 	
 	public BasicClient(MenuController menu) {
@@ -36,11 +38,21 @@ public class BasicClient {
 	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
 		this.serverInfo = info;
 		this.username = username;
+		this.salt = Crypto.getSaltString();
 		//join the game -- connect to servers 
 		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
-		serverConnection.put(username);
+
+		
+		String encryptedSalt = "";
+		try {
+			encryptedSalt = Crypto.encrypt(salt, info.publicKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		serverConnection.put(username, encryptedSalt);
 		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
@@ -51,7 +63,8 @@ public class BasicClient {
 				Log.exception(e);
 			}
 			page.gameStarted();
-			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, menu, GamePage.GetGraphicsPanel());
+			
+			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, salt, menu, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();
 	}

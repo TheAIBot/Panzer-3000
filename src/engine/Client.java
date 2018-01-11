@@ -10,11 +10,11 @@ import network.spaces.ClientConnector;
 public class Client {
 	boolean hasPlayerWon = false;
 
-	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
+	public void startGame(String ipaddress, int port, String username, String salt, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, port, username);
+			connection.connectToServer(ipaddress, port, username, salt);
 			Log.message("Client connected");
 			
 			
