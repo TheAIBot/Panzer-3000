@@ -64,10 +64,10 @@ public final class Crypto {
 		
 	} 
 	
-	public static String getSaltString() {
+	public static String getSaltString(int length) {
         StringBuilder salt = new StringBuilder();
         Random rnd = new Random();
-        while (salt.length() < 18) { // length of the random string.
+        while (salt.length() < length) { // length of the random string.
             int index = (int) (rnd.nextFloat() * SALTCHARS.length());
             salt.append(SALTCHARS.charAt(index));
         }
