@@ -8,13 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
-
-import com.sun.javafx.font.Metrics;
-import com.sun.xml.internal.bind.v2.runtime.Name;
 
 import engine.Bullet;
 import engine.Powerup;
