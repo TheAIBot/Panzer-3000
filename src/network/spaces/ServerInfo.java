@@ -29,7 +29,7 @@ public class ServerInfo {
 				out.writeInt(clientsConnected);
 				out.writeInt(port);
 				out.writeInt(publicKeyBytes.length);
-				out.write(publicKeyBytes, 0, publicKeyBytes.length);
+				out.write(publicKeyBytes);
 				
 				return stream.toByteArray();
 			}
@@ -49,7 +49,7 @@ public class ServerInfo {
 				int publicKeyLength = in.readInt();
 				
 				byte[] publicKey = new byte[publicKeyLength];
-				in.readFully(publicKey, 0, publicKeyLength);
+				in.read(publicKey);
 				info.publicKey = Crypto.unencode(publicKey);
 				
 				return info;

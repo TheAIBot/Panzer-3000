@@ -38,7 +38,7 @@ public class BasicClient {
 	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
 		this.serverInfo = info;
 		this.username = username;
-		this.salt = Crypto.getSaltString();
+		this.salt = Crypto.getSaltString(18);
 		//join the game -- connect to servers 
 		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
