@@ -61,9 +61,6 @@ public class ServerConnector implements Runnable {
 				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
 		}
-		System.out.println("All has connected.");
-		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
-		updateSpace.get(new ActualField("numClients"), new ActualField(numClients));
 	}
 	
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
