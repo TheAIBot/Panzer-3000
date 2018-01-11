@@ -12,6 +12,7 @@ import engine.Client;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
+import logger.Log;
 
 public class BasicClient {
 	private ServerInfo serverInfo;
@@ -45,9 +46,9 @@ public class BasicClient {
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
 			try {
-				serverStartAcceptedSpace.query(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
+				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Log.exception(e);
 			}
 			page.gameStarted();
 			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, menu, GamePage.GetGraphicsPanel());
@@ -55,11 +56,14 @@ public class BasicClient {
 		listenForGameStart.start();
 	}
 	
-	public void leaveGame() throws InterruptedException
+	public void leaveGame() throws InterruptedException, IOException
 	{
 		serverConnection.get(new ActualField(username));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
+		serverConnection.close();
+		serverStartSpace.close();
+		serverStartAcceptedSpace.close();
 	}
 	
 	public boolean hasJoinedAGame()
