@@ -44,20 +44,19 @@ public class BasicServer implements UDPPacketListener {
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
 		//chose a random port between 1025-2^15. Port starting at 1025
-		//because the first 1024 first 1024 ports are reserved
+		//because the first 1024 ports are reserved
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
 	}
 	
-	public void startServer() throws IOException {
-		
+	public void startServer() throws IOException {		
 		clientConnectSpace = new SequentialSpace();
-		startSpace = new SequentialSpace();
+		startSpace 		   = new SequentialSpace();
 		startAcceptedSpace = new SequentialSpace();
-		repository = new SpaceRepository();
+		repository         = new SpaceRepository();
 		final String serverUri = "tcp://" + info.ipAddress + ":" + info.port  + "/?conn";
 		repository.addGate(serverUri);
 		repository.add(CLIENT_CONNECT_SPACE_NAME, clientConnectSpace);
-		repository.add(START_SPACE_NAME, startSpace);
+		repository.add(START_SPACE_NAME			, startSpace);
 		repository.add(START_ACCEPTED_SPACE_NAME, startAcceptedSpace);
 		
 		new Thread(() -> {

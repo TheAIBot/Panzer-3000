@@ -37,8 +37,8 @@ public class BasicClient {
 		this.serverInfo = info;
 		this.username = username;
 		//join the game -- connect to servers 
-		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
-		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
+		serverConnection 		 = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
+		serverStartSpace 		 = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME 		 + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 		serverConnection.put(username);
 		hasJoinedAGame = true;
@@ -56,8 +56,7 @@ public class BasicClient {
 		listenForGameStart.start();
 	}
 	
-	public void leaveGame() throws InterruptedException, IOException
-	{
+	public void leaveGame() throws InterruptedException, IOException {
 		serverConnection.get(new ActualField(username));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
@@ -66,8 +65,7 @@ public class BasicClient {
 		serverStartAcceptedSpace.close();
 	}
 	
-	public boolean hasJoinedAGame()
-	{
+	public boolean hasJoinedAGame() {
 		return hasJoinedAGame;
 	}
 	

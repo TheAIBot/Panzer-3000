@@ -17,28 +17,28 @@ import engine.Input;
 import engine.Powerup;
 import engine.Tank;
 import engine.Wall;
-import network.spaces.ClientConnector;
-import network.spaces.ServerConnector;
+import network.spaces.SuperClientConnector;
+import network.spaces.SuperServerConnector;
 
 public class connectorTests {
-	ServerConnector server;
-	ClientConnector[] clients;
+	SuperServerConnector server;
+	SuperClientConnector[] clients;
 	String[] clientNames = new String[] {"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
 	
 	@Test
 	public void testSetupInitialClientServerConnection() throws InterruptedException {
 		int numOfClients = 8;
-		server = new ServerConnector();
+		server = new SuperServerConnector();
 		server.usernames = clientNames;
 		server.numClients = numOfClients;
 		server.ipAddress = "localhost";
 		new Thread(server).start();
 		
-		clients = new ClientConnector[numOfClients];
+		clients = new SuperClientConnector[numOfClients];
 		Thread.sleep(1000); //The server needs to be set up, before the clients tries to connect.
 		for (int i = 0; i < numOfClients; i++) {
 			final int k = i;
-			clients[i] =  new ClientConnector();
+			clients[i] =  new SuperClientConnector();
 			clients[i].username = clientNames[i];
 			new Thread(clients[i]).start();;
 		}
@@ -46,6 +46,7 @@ public class connectorTests {
 		//it will instead be checked that after 1 second (2 might be better), all connections are established.
 		Thread.sleep(1500);
 		assertEquals(numOfClients, server.numConnectedClients);
+		server.closeConnections();
 		//server.closeConnections();
 		
 	}
@@ -96,7 +97,7 @@ public class connectorTests {
 		
 		
 		for (int i = 0; i < clients.length; i++) {
-			ClientConnector client = clients[i];
+			SuperClientConnector client = clients[i];
 			Input input = new Input(false, false, false, false, false, 0, 0, client.connectionId);
 			client.sendUserInput(input);
 		}		

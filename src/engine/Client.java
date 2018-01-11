@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import logger.Log;
-import network.spaces.ClientConnector;
+import network.spaces.SuperClientConnector;
 
 public class Client {
 	boolean hasPlayerWon = false;
@@ -13,7 +13,7 @@ public class Client {
 	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
-			ClientConnector connection = new ClientConnector();
+			SuperClientConnector connection = new SuperClientConnector();
 			connection.connectToServer(ipaddress, port, username);
 			Log.message("Client connected");
 			

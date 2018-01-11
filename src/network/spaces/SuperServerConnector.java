@@ -6,18 +6,21 @@ import java.net.UnknownHostException;
 import java.io.IOException;
 import java.util.*;
 
+import javax.print.DocFlavor.STRING;
+
 import org.jspace.*;
 
 import engine.*;
 import logger.Log;
 import network.NetworkTools;
-public class ServerConnector implements Runnable {	
+public abstract class SuperServerConnector implements Runnable {	
 	public SpaceRepository 	repository;
 	public String[] usernames;
 	SequentialSpace		updateSpace;
 	SequentialSpace[] 	clientSpaces;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
+	String repositioryGateURI;
 	
 	
 	public int numClients;
@@ -36,7 +39,8 @@ public class ServerConnector implements Runnable {
 		clientSpaces = new SequentialSpace[numClients];
 		this.usernames = usernames;
 		
-		repository.addGate("tcp://" + ipAddress + ":" + port + "/?keep");
+		repositioryGateURI = "tcp://" + ipAddress + ":" + port + "/?keep";
+		repository.addGate(repositioryGateURI);
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
@@ -52,17 +56,11 @@ public class ServerConnector implements Runnable {
 			updateSpace.put(id, usernames[id]);
 		}
 		
-		for (int i = 0; i < usernames.length; i++) {
-			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
-		}
-		
-		//And waits for all clients to connect:
-		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
-				numConnectedClients++;
-		}
+		initilizePrivateConnections();		
 	}
 	
+	protected abstract void initilizePrivateConnections(SequentialSpace startServerSpace) throws InterruptedException;
+
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] wallBytes = DeSerializer.toBytes(walls);
@@ -70,36 +68,14 @@ public class ServerConnector implements Runnable {
 		}
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws InterruptedException, IOException {
-		for (int i = 0; i < numClients; i++) {
-			byte[] tankBytes = DeSerializer.toBytes(tanks);
-			byte[] bulletBytes = DeSerializer.toBytes(bullets);
-			byte[] powerupBytes = DeSerializer.toBytes(powerups);
-			//Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
-			updateSpace.put(i, tankBytes, bulletBytes, powerupBytes);
-		}
-	}
 	
-	
-	public Input[] reciveUserInputs() throws InterruptedException {
-		Input[] recievedInputs = new Input[numClients];
-		for (int i = 0; i < numClients; i++) {
-			//Log.message("Input count: " + clientSpaces[i].size());
-			final Object[] tuple = clientSpaces[i].get(new FormalField(Input.class));
-			//Log.message("Input count: " + clientSpaces[i].size());
-			final Input input = (Input) tuple[0];
-			recievedInputs[input.id] = input;
+	public void closeConnections() {
+		repository.remove(UPDATE_SPACE_NAME);
+		for (int i = 0; i < clientSpaces.length; i++) {
+			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
 		}
+		repository.closeGate(repositioryGateURI);
 		
-		return recievedInputs;
 	}
 
-	@Override
-	public void run() {
-		try {
-			//initializeServerConnection(numClients, usernames);	
-		} catch (Exception e) {
-			Log.exception(e);
-		}
-	}
 }

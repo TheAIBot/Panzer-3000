@@ -27,8 +27,7 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();
 	
-	public MenuController(String windowName, int startWidth, int startHeight)
-	{
+	public MenuController(String windowName, int startWidth, int startHeight) {
 		mainMenu = new JFrame(windowName);
 		mainMenu.setSize(startWidth, startHeight);
 		mainMenu.setLocationRelativeTo(null);
