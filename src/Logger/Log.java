@@ -13,6 +13,5 @@ public class Log {
 		{
 			System.out.println(e.getMessage());
 			e.printStackTrace(System.out);
-			throw new Error();
 		}
 }

@@ -10,7 +10,6 @@ public class ClientStarter {
 	public static void main(String[] args) {		
 		MenuController menu = new MenuController("Panzer", 800, 800);
 		menu.showWindow();
-		GraphicsPanel panel = GamePage.GetGraphicsPanel();
 		//new Client().startGame("localhost", "Derp", menu, panel);
 	}
 	
