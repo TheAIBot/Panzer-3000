@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
@@ -36,7 +37,7 @@ public class ServerInfo {
 		}
 	}
 	
-	public static ServerInfo toServerInfo(byte[] bytes) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException
+	public static ServerInfo toServerInfo(byte[] bytes) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException
 	{
 		try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
 			try (DataInputStream in = new DataInputStream(stream)) {
