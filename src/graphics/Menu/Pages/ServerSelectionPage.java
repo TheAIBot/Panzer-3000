@@ -3,6 +3,8 @@ package graphics.Menu.Pages;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -96,7 +98,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		switchPage(gamePage);
 	}
 	
-	public void createServer(String serverName) throws IOException {
+	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
 		BasicServer server = new BasicServer(serverName);
 		server.startServer();
 		createdServers.add(server);

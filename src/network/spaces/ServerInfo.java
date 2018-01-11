@@ -5,7 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+
+import engine.Crypto;
+import logger.Log;
 
 public class ServerInfo {
 	public String name = "";
@@ -18,17 +23,21 @@ public class ServerInfo {
 	{
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
 			try (DataOutputStream out = new DataOutputStream(stream)) {
+				byte[] publicKeyBytes = publicKey.getEncoded();
+				
 				out.writeUTF(name);
 				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
 				out.writeInt(port);
-				
+				out.writeInt(publicKeyBytes.length);
+				out.write(publicKeyBytes, 0, publicKeyBytes.length);
+				Log.message("TO BYTE ARRAY Public key: " + publicKey);
 				return stream.toByteArray();
 			}
 		}
 	}
 	
-	public static ServerInfo toServerInfo(byte[] bytes) throws IOException
+	public static ServerInfo toServerInfo(byte[] bytes) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException
 	{
 		try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
 			try (DataInputStream in = new DataInputStream(stream)) {
@@ -37,6 +46,12 @@ public class ServerInfo {
 				info.ipAddress = in.readUTF();
 				info.clientsConnected = in.readInt();
 				info.port = in.readInt();
+				int publicKeyLength = in.readInt();
+				
+				byte[] publicKey = new byte[publicKeyLength];
+				in.readFully(publicKey, 0, publicKeyLength);
+				info.publicKey = Crypto.unencode(publicKey);
+				Log.message("TO SERVER INFO Public key: " + info.publicKey);
 				
 				return info;
 			}

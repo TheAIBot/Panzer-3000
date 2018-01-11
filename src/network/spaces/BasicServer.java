@@ -14,11 +14,15 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 
 import engine.Client;
+import engine.Crypto;
 import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
@@ -32,6 +36,7 @@ public class BasicServer implements UDPPacketListener {
 	private SequentialSpace startSpace;
 	private SequentialSpace startAcceptedSpace;
 	private ServerInfo info;
+	private KeyPair keyPair;
 	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
@@ -39,13 +44,16 @@ public class BasicServer implements UDPPacketListener {
 	public static final String REQUEST_START_GAME = "startGame";
 	public static final String START_GAME_ACCEPTED = "startGameAccepted";
 	
-	public BasicServer(String serverName) throws UnknownHostException, SocketException {
+	public BasicServer(String serverName) throws UnknownHostException, SocketException, NoSuchAlgorithmException, NoSuchProviderException {
 		info = new ServerInfo();
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
 		//chose a random port between 1025-2^15. Port starting at 1025
 		//because the first 1024 first 1024 ports are reserved
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
+		
+		keyPair = Crypto.getPair();
+		info.publicKey = keyPair.getPublic();
 	}
 	
 	public void startServer() throws IOException {
