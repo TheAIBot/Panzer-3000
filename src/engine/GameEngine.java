@@ -33,13 +33,13 @@ public class GameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int port, int tankCount, String[] usernames, SequentialSpace startServerSpace) {
+	public void startGame(int port, int tankCount, String[] usernames, String[] salts, SequentialSpace startServerSpace) {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();			
-			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
+			connection.initializeServerConnection(port, tankCount, usernames, salts, startServerSpace);
 			Log.message("Clients connected");
 			
 			for (int i = 0; i < tanks.size(); i++) {

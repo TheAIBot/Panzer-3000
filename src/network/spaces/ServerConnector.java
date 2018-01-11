@@ -25,7 +25,7 @@ public class ServerConnector implements Runnable {
 	public String ipAddress;
 	
 	
-	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
+	public void initializeServerConnection(int port, int numClients, String[] usernames, String[] salts, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		this.ipAddress = NetworkTools.getIpAddress();
@@ -42,7 +42,8 @@ public class ServerConnector implements Runnable {
 		
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
-			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
+			repository.add(INITIAL_CLIENT_SPACE_NAME + i + salts[i], clientSpaces[i]);
+			Log.message("Created: " + i + salts[i]);
 		}
 		
 		//Some initial information for all the clients:

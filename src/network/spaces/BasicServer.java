@@ -14,11 +14,21 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import engine.Client;
+import engine.Crypto;
 import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
@@ -32,6 +42,7 @@ public class BasicServer implements UDPPacketListener {
 	private SequentialSpace startSpace;
 	private SequentialSpace startAcceptedSpace;
 	private ServerInfo info;
+	private KeyPair keyPair;
 	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
@@ -39,8 +50,10 @@ public class BasicServer implements UDPPacketListener {
 	public static final String REQUEST_START_GAME = "startGame";
 	public static final String START_GAME_ACCEPTED = "startGameAccepted";
 	
-	public BasicServer(String serverName) throws UnknownHostException, SocketException {
+	public BasicServer(String serverName) throws UnknownHostException, SocketException, NoSuchAlgorithmException, NoSuchProviderException {
 		info = new ServerInfo();
+		keyPair = Crypto.getPair();
+		info.publicKey = keyPair.getPublic();
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
 		//chose a random port between 1025-2^15. Port starting at 1025
@@ -67,7 +80,27 @@ public class BasicServer implements UDPPacketListener {
 				Log.exception(e);
 			}
 			repository.closeGate(serverUri);
-			startGame();
+			try {
+				startGame();
+			} catch (InvalidKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalBlockSizeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BadPaddingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchPaddingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}).start();
 		
 		UDPConnector.startListeningForBroadcasts(ServerFinder.UDP_PORT_ASK);
@@ -75,16 +108,19 @@ public class BasicServer implements UDPPacketListener {
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 	}
 	
-	public void startGame() {
-		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class));
+	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException {
+		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(byte[].class));
 		
 		final String[] usernames = new String[users.size()]; 
+		final String[] salts = new String[users.size()]; 
 		for (int i = 0; i < usernames.length; i++) {
 			usernames[i] = (String) users.get(i)[0];
+			byte[] encSalt = (byte[]) users.get(i)[1];
+			salts[i] = Crypto.decrypt(encSalt, keyPair.getPrivate());
 		}
 		
 		new Thread(() -> {
-			new GameEngine().startGame(info.port , usernames.length, usernames, startAcceptedSpace);
+			new GameEngine().startGame(info.port , usernames.length, usernames, salts, startAcceptedSpace);
 		}).start();
 	}
 
