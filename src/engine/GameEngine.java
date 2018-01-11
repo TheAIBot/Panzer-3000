@@ -1,7 +1,5 @@
 package engine;
 
-import connector.ServerConnector;
-
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.nio.file.Files;
@@ -11,13 +9,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import Logger.Log;
+import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
+
+import logger.Log;
+import network.spaces.BasicServer;
+import network.spaces.ServerConnector;
 
 public class GameEngine {
 	ServerConnector connection;
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
+<<<<<<< HEAD
 	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
@@ -29,13 +33,27 @@ public class GameEngine {
 
 	
 	public void startGame(int tankCount, String ipAddress, String[] usernames) {
+=======
+	public static final int FPS = 60;
+	public static final int TANK_COUNT = 2;
+	public static final double BOARD_MAX_X = 1;
+	public static final double BOARD_MAX_Y = 1;
+	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
+	 
+	 
+	public void startGame(int port, int tankCount, String[] usernames, SequentialSpace startServerSpace) {
+>>>>>>> refs/remotes/origin/udpbroadcast
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
 			connection = new ServerConnector();
+<<<<<<< HEAD
 			connection.initializeServerConnection(usernames.length, ipAddress, usernames);
 			connection.setUserNames(tanks, usernames);
+=======
+			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
+>>>>>>> refs/remotes/origin/udpbroadcast
 			Log.message("Clients connected");
 
 			// The server will send the initial information first, such that the clients
