@@ -40,6 +40,11 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	@Override
 	public void startPage() {		
 		serverFinder.startListeningForServers();
+		try {
+			serverFinder.searchForServers();
+		} catch (IOException e1) {
+			Log.exception(e1);
+		}
 		
 		serverUpdateTimer = new Timer();
 		serverUpdateTimer.scheduleAtFixedRate(new TimerTask() {
