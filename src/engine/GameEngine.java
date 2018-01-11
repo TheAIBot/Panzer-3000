@@ -21,8 +21,8 @@ public class GameEngine {
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
-<<<<<<< HEAD
 	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
+	
 	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
 	public static final double BOARD_MAX_Y 		= 1;
@@ -30,31 +30,21 @@ public class GameEngine {
 	public static final boolean LOAD_LEVEL 		= true;
 	public static final String LEVEL_NAME 		= "basic";
 	public static final String LEVEL_DIRECTORY 	= "src/levels/";
-
-	
-	public void startGame(int tankCount, String ipAddress, String[] usernames) {
-=======
-	public static final int FPS = 60;
-	public static final int TANK_COUNT = 2;
-	public static final double BOARD_MAX_X = 1;
-	public static final double BOARD_MAX_Y = 1;
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
 	public void startGame(int port, int tankCount, String[] usernames, SequentialSpace startServerSpace) {
->>>>>>> refs/remotes/origin/udpbroadcast
 		try {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
-			connection = new ServerConnector();
-<<<<<<< HEAD
-			connection.initializeServerConnection(usernames.length, ipAddress, usernames);
-			connection.setUserNames(tanks, usernames);
-=======
+			connection = new ServerConnector();			
 			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
->>>>>>> refs/remotes/origin/udpbroadcast
 			Log.message("Clients connected");
+			
+			for (int i = 0; i < tanks.size(); i++) {
+				tanks.get(i).userName = usernames[tanks.get(i).id];
+			}	
 
 			// The server will send the initial information first, such that the clients
 			// have something to display:

@@ -4,21 +4,13 @@ import java.util.ArrayList;
 
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
-<<<<<<< HEAD
-
-public class Client {
-	
-	boolean hasPlayerWon = false;
-	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
-=======
-import graphics.Menu.Pages.GamePage;
 import logger.Log;
 import network.spaces.ClientConnector;
 
 public class Client {
-	
+	boolean hasPlayerWon = false;
+
 	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
->>>>>>> refs/remotes/origin/udpbroadcast
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();

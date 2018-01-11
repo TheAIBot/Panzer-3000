@@ -8,19 +8,10 @@ import java.util.*;
 
 import org.jspace.*;
 
-<<<<<<< HEAD:src/connector/ServerConnector.java
-
-import Logger.Log;
-=======
->>>>>>> refs/remotes/origin/udpbroadcast:src/network/spaces/ServerConnector.java
 import engine.*;
 import logger.Log;
 import network.NetworkTools;
-public class ServerConnector implements Runnable {
-	
-	public final static String IP_ADDRESS = "localhost"; //"192.168.43.196";
-	public final static String CONNECTION_TYPE = "tcp";
-	
+public class ServerConnector implements Runnable {	
 	public SpaceRepository 	repository;
 	public String[] usernames;
 	SequentialSpace		updateSpace;
@@ -45,50 +36,30 @@ public class ServerConnector implements Runnable {
 		clientSpaces = new SequentialSpace[numClients];
 		this.usernames = usernames;
 		
-<<<<<<< HEAD:src/connector/ServerConnector.java
-		repository.addGate(CONNECTION_TYPE + "://" + ipAddress + ":9001/?keep");
-=======
 		repository.addGate("tcp://" + ipAddress + ":" + port + "/?keep");
->>>>>>> refs/remotes/origin/udpbroadcast:src/network/spaces/ServerConnector.java
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 		
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
-<<<<<<< HEAD:src/connector/ServerConnector.java
 		}
 		
 		//Some initial information for all the clients:
-		
-		//Number of users to connect:
-		updateSpace.put("numClients", numClients);
-=======
-		}		
->>>>>>> refs/remotes/origin/udpbroadcast:src/network/spaces/ServerConnector.java
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
 			updateSpace.put(id, usernames[id]);
 		}
 		
-<<<<<<< HEAD:src/connector/ServerConnector.java
-		System.out.println("0 clients are connected");
-=======
 		for (int i = 0; i < usernames.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
 		
->>>>>>> refs/remotes/origin/udpbroadcast:src/network/spaces/ServerConnector.java
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
+				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
-<<<<<<< HEAD:src/connector/ServerConnector.java
-				System.out.println(numConnectedClients + " clients have connected");
-=======
-				Log.message("Someone connected");
->>>>>>> refs/remotes/origin/udpbroadcast:src/network/spaces/ServerConnector.java
 		}
 		System.out.println("All has connected.");
 		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
@@ -134,23 +105,4 @@ public class ServerConnector implements Runnable {
 			Log.exception(e);
 		}
 	}
-
-	public void setUserNames(ArrayList<Tank> tanks, String[] usernames) {
-		for (int i = 0; i < tanks.size(); i++) {
-			tanks.get(i).userName = usernames[tanks.get(i).id];
-		}		
-	}
-	
-	/*
-	public void closeConnections() {
-		repository.remove(UPDATE_SPACE_NAME);
-		for (int i = 0; i < clientSpaces.length; i++) {
-			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
-		}
-	}
-	*/
-	
-	
-	//sendUpdates(Tank[] tanks, Bullet[] bullets); //Sends information to all the clients, about tanks, bullets and the likes.
-	//Inputs recieveUserInputs();
 }
