@@ -92,8 +92,10 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		btnStartGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Log.message("STARTING GAME");
 				if (selectedInfo != null) {
 					serverPage.requestStartGame();
+					Log.message("STARTED GAME");
 				}
 			}
 		});

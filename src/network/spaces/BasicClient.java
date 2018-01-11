@@ -46,7 +46,9 @@ public class BasicClient {
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
 			try {
+				Log.message("Client " + username + " attempting to join game");
 				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
+				Log.message("CLIENT has joined game");
 			} catch (InterruptedException e) {
 				Log.exception(e);
 			}

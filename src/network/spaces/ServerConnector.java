@@ -65,7 +65,9 @@ public class ServerConnector implements Runnable {
 			updateSpace.put(id, usernames[id]);
 		}
 		
+		Log.message("num users: " + usernames.length);
 		for (int i = 0; i < usernames.length; i++) {
+			Log.message("putting start tokens");
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
 		

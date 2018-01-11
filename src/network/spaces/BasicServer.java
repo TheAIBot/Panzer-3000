@@ -71,6 +71,7 @@ public class BasicServer implements UDPPacketListener {
 		new Thread(() -> {
 			try {
 				startSpace.get(new ActualField(REQUEST_START_GAME), new ActualField(1));
+				Log.message("START REQUEST GOTTEN");
 			} catch (InterruptedException e) {
 				Log.exception(e);
 			}
@@ -89,9 +90,11 @@ public class BasicServer implements UDPPacketListener {
 		final String[] usernames = new String[users.size()]; 
 		for (int i = 0; i < usernames.length; i++) {
 			usernames[i] = (String) users.get(i)[0];
+			Log.message("user: " + usernames[i]);
 		}
 		
 		new Thread(() -> {
+			Log.message("Thread started............");
 			new GameEngine().startGame(info.port , usernames.length, usernames, startAcceptedSpace);
 		}).start();
 	}
