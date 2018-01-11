@@ -42,17 +42,15 @@ public class ServerConnector implements Runnable {
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
-		}
-		
-		
-		for (int i = 0; i < usernames.length; i++) {
-			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
-		}
-		
+		}		
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
 			updateSpace.put(id, usernames[id]);
+		}
+		
+		for (int i = 0; i < usernames.length; i++) {
+			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
 		
 		//And waits for all clients to connect:

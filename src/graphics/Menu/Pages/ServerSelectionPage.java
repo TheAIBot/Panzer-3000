@@ -46,7 +46,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			@Override
 			public void run() {
 				try {
-					serverFinder.searchForServers();
+					//serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
 				} catch (Exception e) {
@@ -96,7 +96,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		switchPage(gamePage);
 	}
 	
-	public void createServer(String serverName) throws UnknownHostException, SocketException {
+	public void createServer(String serverName) throws IOException {
 		BasicServer server = new BasicServer(serverName);
 		server.startServer();
 		createdServers.add(server);

@@ -5,6 +5,7 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -47,7 +48,7 @@ public class BasicServer implements UDPPacketListener {
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
 	}
 	
-	public void startServer() throws UnknownHostException {
+	public void startServer() throws IOException {
 		
 		clientConnectSpace = new SequentialSpace();
 		startSpace = new SequentialSpace();
@@ -71,6 +72,7 @@ public class BasicServer implements UDPPacketListener {
 		
 		UDPConnector.startListeningForBroadcasts(ServerFinder.UDP_PORT_ASK);
 		UDPConnector.addUDPPacketListener(ServerFinder.UDP_PORT_ASK, this);
+		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 	}
 	
 	public void startGame() {
