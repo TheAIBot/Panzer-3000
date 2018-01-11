@@ -11,14 +11,14 @@ import java.util.List;
 
 import org.junit.*;
 
-import connector.ClientConnector;
-import connector.ServerConnector;
 import engine.Bullet;
 import engine.DeSerializer;
 import engine.Input;
 import engine.Powerup;
 import engine.Tank;
 import engine.Wall;
+import network.spaces.ClientConnector;
+import network.spaces.ServerConnector;
 
 public class connectorTests {
 	ServerConnector server;

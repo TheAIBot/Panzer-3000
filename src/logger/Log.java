@@ -1,4 +1,4 @@
-package Logger;
+package logger;
 
 public class Log {
 		public static void message(String message) {
@@ -13,6 +13,5 @@ public class Log {
 		{
 			System.out.println(e.getMessage());
 			e.printStackTrace(System.out);
-			throw new Error();
 		}
 }

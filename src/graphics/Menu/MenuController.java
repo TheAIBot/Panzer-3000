@@ -13,15 +13,16 @@ import java.util.Stack;
 
 import javax.swing.JFrame;
 
-import Logger.Log;
 import engine.Input;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.PageRequestsListener;
+import graphics.Menu.Pages.ServerSelectionPage;
 import graphics.Menu.Pages.SuperPage;
+import logger.Log;
 
 public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
 	private final JFrame mainMenu;
-	private final GamePage MAIN_PAGE = new GamePage(this, this);
+	private final ServerSelectionPage MAIN_PAGE = new ServerSelectionPage(this, this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();
@@ -40,17 +41,16 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 	            //AudioManager.closeBackgroundMusic();
 	        }
 		});
+		
 		mainMenu.addKeyListener(this);
 		mainMenu.addMouseListener(this);
+		mainMenu.addMouseMotionListener(this);
+		
 	}
 	
 	public void showWindow()
 	{
-		currentPage = MAIN_PAGE;
-		mainMenu.add(MAIN_PAGE.getPage());
-		currentPage = MAIN_PAGE;
-		currentPage.startPage();
-		mainMenu.setVisible(true);
+		switchPage(MAIN_PAGE, false);
 	}
 
 	@Override
@@ -75,13 +75,17 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 			if (addPreviousPage) {
 				previousPages.add(currentPage);
 			}
-			currentPage.closePage();
-			currentPage = toSwitchTo;
+			if (currentPage != null) {
+				currentPage.closePage();
+			}
 			
+			currentPage = toSwitchTo;
 			mainMenu.getContentPane().removeAll();
-			mainMenu.add(toSwitchTo.getPage());
+			mainMenu.add(currentPage.getPage());
 			mainMenu.repaint();
 			mainMenu.setVisible(true);
+			//KeyListener won't work without this line
+			mainMenu.requestFocus();
 			
 			currentPage.startPage();
 		}
@@ -188,19 +192,28 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		final int thisWidth = currentPage.getPage().getWidth();
-		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
-		int k = (thisWidth - eWidth) / 2;
-		input.x = ((double)e.getX() - k) / eWidth;
-		input.y = (double)e.getY() / e.getComponent().getHeight();
+		updateInputMousePos(e);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		updateInputMousePos(e);
+	}
+	
+	private void updateInputMousePos(MouseEvent e) {
 		final int thisWidth = currentPage.getPage().getWidth();
 		final int eWidth = GamePage.GetGraphicsPanel().getWidth();
 		int k = (thisWidth - eWidth) / 2;
-		input.x = ((double)e.getX() - k) / eWidth;
-		input.y = (double)e.getY() / e.getComponent().getHeight();
+		final double x = ((double)e.getX() - k) / eWidth;
+		final double y = (double)e.getY() / e.getComponent().getHeight();
+		if (Double.isInfinite(x) || Double.isNaN(x) ||
+			Double.isInfinite(y) || Double.isNaN(y)) {
+			input.x = 0;
+			input.y = 0;
+		}
+		else {
+			input.x = x;
+			input.y = y;
+		}
 	}
 }

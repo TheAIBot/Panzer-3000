@@ -4,13 +4,13 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import Logger.Log;
 import graphics.Menu.MenuController;
+import logger.Log;
 
 public abstract class SuperPage {
 	protected JPanel page;
 	protected SuperPage previousPage;
-	private final MenuController controller;
+	protected final MenuController controller;
 	private PageRequestsListener listener;
 	
 	public SuperPage(MenuController control, PageRequestsListener listener)
@@ -25,8 +25,6 @@ public abstract class SuperPage {
 			return page;
 		}
 		page = new JPanel();
-		page.addKeyListener(controller);
-		page.addMouseListener(controller);
 		return createPage(controller);
 	}
 	

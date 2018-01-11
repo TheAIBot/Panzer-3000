@@ -1,19 +1,18 @@
-package connector;
+package network.spaces;
 
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.*;
 
 import org.jspace.*;
 
-
-import Logger.Log;
 import engine.*;
-public class ServerConnector implements Runnable {
-	
-	public final static String IP_ADDRESS = "localhost"; //"192.168.43.196";
-	public final static String CONNECTION_TYPE = "tcp";
-	
+import logger.Log;
+import network.NetworkTools;
+public class ServerConnector implements Runnable {	
 	public SpaceRepository 	repository;
 	public String[] usernames;
 	SequentialSpace		updateSpace;
@@ -29,10 +28,10 @@ public class ServerConnector implements Runnable {
 	private PublicKey[] publicKeys;
 	
 	
-	public void initializeServerConnection(int numClients, String ipAddress, String[] usernames) throws InterruptedException {
+	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
-		this.ipAddress = ipAddress;
+		this.ipAddress = NetworkTools.getIpAddress();
 		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
@@ -40,7 +39,7 @@ public class ServerConnector implements Runnable {
 		clientSpaces = new SequentialSpace[numClients];
 		this.usernames = usernames;
 		
-		repository.addGate(CONNECTION_TYPE + "://" + ipAddress + ":9001/?keep");
+		repository.addGate("tcp://" + ipAddress + ":" + port + "/?keep");
 		repository.add(UPDATE_SPACE_NAME, updateSpace);
 		
 
@@ -60,30 +59,26 @@ public class ServerConnector implements Runnable {
 		
 		//Some initial information for all the clients:
 		
-		//Number of users to connect:
-		updateSpace.put("numClients", numClients);
-		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
 			updateSpace.put(id, usernames[id]);
 		}
 		
-		System.out.println("0 clients are connected");
+		for (int i = 0; i < usernames.length; i++) {
+			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
+		}
+		
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {		
 				Object[] keyTuple = clientSpaces[id].get(new FormalField(PublicKey.class), new ActualField(id));
 				publicKeys[id] = (PublicKey) keyTuple[0];
-				
-				Object[] tuple = clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
+			
+				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 				numConnectedClients++;
-				System.out.println(numConnectedClients + " clients have connected");
 		}
-		System.out.println("All has connected.");
-		//Now communication is up and running. It will remove the extra information added for the sake of the clients:
-		updateSpace.get(new ActualField("numClients"), new ActualField(numClients));
 	}
 	
-	public void sendWalls(ArrayList<Wall> walls) throws IOException {
+	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] wallBytes = DeSerializer.toBytes(walls);
 			updateSpace.put("walls", wallBytes);
@@ -117,28 +112,9 @@ public class ServerConnector implements Runnable {
 	@Override
 	public void run() {
 		try {
-			initializeServerConnection(numClients, ipAddress, usernames);	
+			//initializeServerConnection(numClients, usernames);	
 		} catch (Exception e) {
 			Log.exception(e);
 		}
 	}
-
-	public void setUserNames(ArrayList<Tank> tanks, String[] usernames) {
-		for (int i = 0; i < tanks.size(); i++) {
-			tanks.get(i).userName = usernames[tanks.get(i).id];
-		}		
-	}
-	
-	/*
-	public void closeConnections() {
-		repository.remove(UPDATE_SPACE_NAME);
-		for (int i = 0; i < clientSpaces.length; i++) {
-			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
-		}
-	}
-	*/
-	
-	
-	//sendUpdates(Tank[] tanks, Bullet[] bullets); //Sends information to all the clients, about tanks, bullets and the likes.
-	//Inputs recieveUserInputs();
 }

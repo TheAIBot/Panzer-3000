@@ -2,8 +2,13 @@ package engine;
 
 public class Input {
 	public int id;
-	public boolean w, a, s, d, click;
-	public double x,y;
+	public boolean w;
+	public boolean a;
+	public boolean s;
+	public boolean d;
+	public boolean click;
+	public double x;
+	public double y;
 	
 	public Input(boolean w, boolean a, boolean s, boolean d, boolean click, double x, double y, int id) {
 		this.w = w;

@@ -21,10 +21,8 @@ public class GamePage extends SuperPage {
 
 	@Override
 	public JPanel createPage(MenuController control) {
-		page.addMouseMotionListener(control);
 		page.setLayout(new GridBagLayout());
 		page.add(graphicsPanel);
-		
 		return page;
 	}
 

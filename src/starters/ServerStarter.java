@@ -1,17 +1,12 @@
 package starters;
 
-import java.net.UnknownHostException;
-
-import connector.BasicServer;
-import engine.GameEngine;
+import java.io.IOException;
+import network.spaces.BasicServer;
 
 public class ServerStarter {
 	
-	public static void main(String[] args) throws UnknownHostException {
-		//new BasicServer().startServer();
-		//new GameEngine().startGame(2);
-		//new BasicServer().startServer();
-		new GameEngine().startGame(1, "localhost", new String[] {"Derp"});
+	public static void main(String[] args) throws IOException {
+		new BasicServer("aksdasl").startServer();
+		//new GameEngine().startGame(1, new String[] {"Derp"});
 	}
-	
 }

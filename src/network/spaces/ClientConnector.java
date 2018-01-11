@@ -1,20 +1,15 @@
-package connector;
+package network.spaces;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.util.List;
 
 import org.jspace.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.sun.corba.se.spi.activation.Server;
-import com.sun.swing.internal.plaf.metal.resources.metal;
-
-import Logger.Log;
 import engine.*;
+import logger.Log;
 
 public class ClientConnector implements Runnable{
 
@@ -26,24 +21,19 @@ public class ClientConnector implements Runnable{
 	private KeyPair				keyPair;
 	private String				salt;
 	
-	public void connectToServer(String ipaddress, String username, KeyPair keyPair, String salt) throws UnknownHostException, IOException, InterruptedException {
+	public void connectToServer(String ipaddress, int port, String username, KeyPair keyPair, String salt) throws UnknownHostException, IOException, InterruptedException {
 		this.username = username;
 		this.keyPair = keyPair;
 		this.salt = salt;
-		updateSpace		= new SecureRemoteSpace("tcp://" + ipaddress + ":9001/updateSpace?keep");
-		List<Object[]> tuples = updateSpace.queryAll(new FormalField(Object.class), new FormalField(Object.class));
-
+		updateSpace		= new SecureRemoteSpace("tcp://" + ipaddress + ":" + port + "/updateSpace?keep");
+		
 		Log.message("Client sending own salt");
 		// Client puts salt associated with itself into the update space
 		updateSpace.put(username, salt);
 		
-		Object[] tuple1 = updateSpace.query(new ActualField("numClients"), new FormalField(Integer.class));
-		numberOfClients = (int) tuple1[1];
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
 		connectionId   	= (int) tuple[0];
-		privateServerConnections = new SecureRemoteSpace("tcp://" + ipaddress + ":9001/clientSpace" + connectionId + salt + "?keep");
-		privateServerConnections.put(keyPair.getPublic(), connectionId);
-		
+		privateServerConnections = new SecureRemoteSpace("tcp://" + ipaddress + ":" + port + "/clientSpace" + connectionId + salt + "?keep");
 		privateServerConnections.put("connected", connectionId);
 	}
 	
@@ -65,7 +55,7 @@ public class ClientConnector implements Runnable{
 	@Override
 	public void run() {
 		try {
-			connectToServer("localhost", username, keyPair, salt);			
+			//connectToServer("localhost", username);
 		} catch (Exception e) { 
 			Log.exception(e);
 		}

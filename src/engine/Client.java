@@ -3,18 +3,16 @@ package engine;
 import java.security.KeyPair;
 import java.util.ArrayList;
 
-import Logger.Log;
-import connector.ClientConnector;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
+import logger.Log;
+import network.spaces.ClientConnector;
 
 public class Client {
-	
 	boolean hasPlayerWon = false;
 	private KeyPair keyPair;
 	private String salt;
-	
-	public void startGame(String ipaddress, String username, MenuController menu, GraphicsPanel panel) {
+	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Initializing public and private keys");
 			keyPair = Crypto.getPair();
@@ -22,9 +20,8 @@ public class Client {
 			
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, username, keyPair, salt);
+			connection.connectToServer(ipaddress, port, username, keyPair, salt);
 			Log.message("Client connected");
-			
 			
 			Object[] wallObjects = connection.receiveWalls();
 			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[1], Wall.class);
