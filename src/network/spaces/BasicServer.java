@@ -28,13 +28,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import engine.Client;
-import engine.Crypto;
 import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
 import network.udp.ServerFinder;
 import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
+import security.Crypto;
 
 public class BasicServer implements UDPPacketListener {
 	private SpaceRepository repository;

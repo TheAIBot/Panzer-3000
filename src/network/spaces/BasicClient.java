@@ -9,11 +9,11 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
-import engine.Crypto;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
 import logger.Log;
+import security.Crypto;
 
 public class BasicClient {
 	private ServerInfo serverInfo;
@@ -47,7 +47,7 @@ public class BasicClient {
 		
 		byte[] encryptedSalt = null;
 		try {
-			encryptedSalt = Crypto.encrypt(salt, info.publicKey);
+			encryptedSalt = Crypto.encrypt(salt.getBytes(), info.publicKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

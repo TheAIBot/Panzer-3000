@@ -10,7 +10,7 @@ import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
-import engine.Crypto;
+import security.Crypto;
 
 public class ServerInfo {
 	public String name = "";
