@@ -151,7 +151,7 @@ public class GameEngine {
 	private void createPowerup() {
 		// chance of power up happening is 1/100 [possibly too much?]
 		
-		if ((int) Math.ceil(Math.random() * 1000) == Powerup.LUCKY_POWERUP_NUMBER) {
+		if ((int) Math.ceil(Math.random() * 100) == Powerup.LUCKY_POWERUP_NUMBER) {
 			Powerup curr = getNewPowerup();
 			powerups.add(curr);
 		}
