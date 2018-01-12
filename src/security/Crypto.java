@@ -53,15 +53,11 @@ public final class Crypto {
 		return cipher.doFinal(data);
 	}
 	
-	public static String decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		return new String(decryptToBytes(data, privateKey));
-	} 
-	
-	private static byte[] decryptToBytes(byte[] encryptedData, PrivateKey privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-		return cipher.doFinal(encryptedData);
+		return cipher.doFinal(data);
 	}
 	
 	public static String getSaltString(int length) {
@@ -86,7 +82,7 @@ public final class Crypto {
 	}
 	
 	public static Object[] decryptFields(byte[] fieldsInBytes, PrivateKey privateKey) throws Exception {
-		final byte[] decryptedBytes = decryptToBytes(fieldsInBytes, privateKey);
+		final byte[] decryptedBytes = decrypt(fieldsInBytes, privateKey);
 		return DeSerializer.decodeObjects(decryptedBytes);
 		
 	}
