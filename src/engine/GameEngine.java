@@ -1,6 +1,8 @@
 package engine;
 
 import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -151,7 +153,7 @@ public class GameEngine {
 	private void createPowerup() {
 		// chance of power up happening is 1/100 [possibly too much?]
 		
-		if ((int) Math.ceil(Math.random() * 100) == Powerup.LUCKY_POWERUP_NUMBER) {
+		if ((int) Math.ceil(Math.random() * 200) == Powerup.LUCKY_POWERUP_NUMBER) {
 			Powerup curr = getNewPowerup();
 			powerups.add(curr);
 		}
@@ -169,6 +171,7 @@ public class GameEngine {
 			//Power up shouldn't spawn inside a wall
 		} while (isPowerupInsideAnyWall(newPowerup));
 		
+		Log.message("Powerup made");
 		return newPowerup;
 	}
 	
@@ -192,14 +195,18 @@ public class GameEngine {
 	}
 
 	private boolean isPowerupCollected(Powerup powerup) {
-		final Point2D.Double powerupLoc = new Point2D.Double(powerup.x * Tank.SCALAR, powerup.y * Tank.SCALAR);
+		final Polygon powerupRectangle = powerup.getPowerupRectangle(Tank.SCALAR, Tank.SCALAR);
 
 		final Iterator<Tank> tankIterator = tanks.iterator();
 		while (tankIterator.hasNext()) {
 			Tank tank = tankIterator.next();
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
-			if (tankPolygon.contains(powerupLoc)) {
+			Area ellipseArea = new Area(powerupRectangle);
+			Area tankArea = new Area(tankPolygon);
+			tankArea.intersect(ellipseArea);
+			
+			if (!tankArea.isEmpty()) {
 				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType()));
 				return true;
 			}
@@ -370,6 +377,7 @@ public class GameEngine {
 	{
 		for (Wall wall : walls) {
 			if (wall.collidesWith(powerup)) {
+				Log.message("Collision");
 				return true;
 			}
 		}

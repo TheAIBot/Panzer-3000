@@ -28,7 +28,6 @@ public class BasicClient {
 	private Thread listenForGameStart;
 	private String username;
 	private String salt;
-	private byte[] encryptedSalt;
 	private boolean hasJoinedAGame = false;
 	
 	public BasicClient(MenuController menu) {
