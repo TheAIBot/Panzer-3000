@@ -10,7 +10,8 @@ import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
-import engine.Crypto;
+import logger.Log;
+import security.Crypto;
 
 public class ServerInfo {
 	public String name = "";
@@ -29,6 +30,7 @@ public class ServerInfo {
 				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
 				out.writeInt(port);
+				Log.message("ServerInfo writing: " + publicKeyBytes.length);
 				out.writeInt(publicKeyBytes.length);
 				out.write(publicKeyBytes);
 				
@@ -49,8 +51,9 @@ public class ServerInfo {
 
 				int publicKeyLength = in.readInt();
 				
+				Log.message("ServerInfo reading: " + publicKeyLength);
 				byte[] publicKey = new byte[publicKeyLength];
-				in.read(publicKey);
+				in.readFully(publicKey, 0, publicKeyLength);
 				info.publicKey = Crypto.unencode(publicKey);
 				
 				return info;

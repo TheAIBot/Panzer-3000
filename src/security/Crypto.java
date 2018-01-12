@@ -1,4 +1,4 @@
-package engine;
+package security;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -19,6 +19,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import engine.DeSerializer;
 
 
 public final class Crypto {
@@ -45,26 +47,19 @@ public final class Crypto {
 		return keyGen.generateKeyPair();
 	}
 	
-	public static byte[] encrypt(String data, PublicKey publicKey) throws Exception {
-		
+	public static byte[] encrypt(byte[] data, PublicKey publicKey) throws Exception {
 		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
-		byte[] encryptedBytes = cipher.doFinal(data.getBytes());
-
-		return encryptedBytes;
+		return cipher.doFinal(data);
 	}
 	
-	public static String decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException {
-		
+	public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-		byte[] decryptedBytes = cipher.doFinal(data);
-
-		return new String(decryptedBytes);
-		
-	} 
+		return cipher.doFinal(data);
+	}
 	
 	public static String getSaltString(int length) {
         StringBuilder salt = new StringBuilder();
@@ -80,6 +75,17 @@ public final class Crypto {
 	
 	public static PublicKey unencode(byte[] publicKey) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
 		return KeyFactory.getInstance(ALGORITHM, PROVIDER).generatePublic(new X509EncodedKeySpec(publicKey));
+	}
+	
+	public static byte[] encryptFields(PublicKey publicKey, Object... fields) throws Exception {
+		final byte[] fieldsBytes = DeSerializer.encodeObjects(fields);
+		return encrypt(fieldsBytes, publicKey);
+	}
+	
+	public static Object[] decryptFields(byte[] fieldsInBytes, PrivateKey privateKey) throws Exception {
+		final byte[] decryptedBytes = decrypt(fieldsInBytes, privateKey);
+		return DeSerializer.decodeObjects(decryptedBytes);
+		
 	}
 	
 }

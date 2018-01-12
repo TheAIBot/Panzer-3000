@@ -30,11 +30,13 @@ public class Client {
 				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
 				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
 				
+				/*
 				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
 					System.out.println("The game has been won!!!");
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
 				}
+				*/
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above

@@ -35,9 +35,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	private final DefaultListModel<ServerInfo> listData = new DefaultListModel<ServerInfo>();
 	private final JList<ServerInfo> list = new JList<ServerInfo>(listData);
 	
-	private final DefaultListModel<String> listPlayersData = new DefaultListModel<String>();
-	private final JList<String> listPlayers = new JList<String>(listPlayersData);
-	
 	private final JLabel lblServerName = new JLabel("");
 	private final JLabel lblPlayerCount = new JLabel("");
 	
@@ -82,9 +79,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		
 		lblPlayerCount.setBounds(334, 40, 123, 15);
 		add(lblPlayerCount);
-		
-		listPlayers.setBounds(223, 67, 160, 188);
-		add(listPlayers);
 		
 		
 		btnStartGame.setBounds(457, 192, 222, 63);
@@ -148,14 +142,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	{
 		lblPlayerCount.setText("" + playerCount);
 	}
-	
-	private void setPlayersList(String[] playerNames)
-	{
-		listPlayersData.clear();
-		for (String playerName : playerNames) {
-			listPlayersData.addElement(playerName);
-		}
-	}
 
 	@Override
 	public synchronized void valueChanged(ListSelectionEvent arg0) {
@@ -173,23 +159,22 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		}		
 	}
 	
-	public void updateServerInfo() throws UnknownHostException, InterruptedException, IOException
+	public void updateServerInfo() throws Exception
 	{
 		if (selectedInfo != null) {
 			updateServerInfo(selectedInfo);	
 		}
 	}
 	
-	private synchronized void updateServerInfo(ServerInfo info) throws UnknownHostException, InterruptedException, IOException
+	private synchronized void updateServerInfo(ServerInfo info) throws Exception
 	{
-		String[] playerNames = serverPage.getPlayerNames(info);
-		setPlayersList(playerNames);
+		final int playerCount = serverPage.getPlayerCount(info);
 		
-		//only set selectedInfo if getPlayerNames doesn't crash because
+		//only set selectedInfo if getPlayerCount doesn't crash because
 		//that means the server is still running for the moment
 		selectedInfo = info;
-		selectedInfo.clientsConnected = playerNames.length;
+		selectedInfo.clientsConnected = playerCount;
 		setServerName(selectedInfo.name);
-		setPlayerCount(playerNames.length);
+		setPlayerCount(playerCount);
 	}
 }

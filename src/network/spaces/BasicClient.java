@@ -1,23 +1,27 @@
 package network.spaces;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
-import engine.Crypto;
 import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
 import logger.Log;
+import security.Crypto;
+import security.SecureRemoteSpace;
 
 public class BasicClient {
 	private ServerInfo serverInfo;
-	private RemoteSpace serverConnection;
+	private SecureRemoteSpace serverConnection;
 	private RemoteSpace serverStartSpace;
 	private RemoteSpace serverStartAcceptedSpace;
 	private MenuController menu;
@@ -36,26 +40,18 @@ public class BasicClient {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 	
-	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
+	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws Exception {
 		this.serverInfo = info;
 		this.username = username;
 		if (salt == null) {
 			this.salt = Crypto.getSaltString(18);
 		}
 		//join the game -- connect to servers 
-		serverConnection = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
+		serverConnection = new SecureRemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn", info.publicKey);
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
-
 		
-		Log.message("Encrypting salt");
-		try {
-			encryptedSalt = Crypto.encrypt(salt, info.publicKey);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		serverConnection.put(username, encryptedSalt);
+		serverConnection.put(username, salt);
 		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
@@ -72,9 +68,9 @@ public class BasicClient {
 		listenForGameStart.start();
 	}
 	
-	public void leaveGame() throws InterruptedException, IOException
+	public void leaveGame() throws Exception
 	{
-		serverConnection.get(new ActualField(username), new FormalField(byte[].class));
+		serverConnection.getEncryptedTuple(new ActualField(username));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
 		serverConnection.close();
@@ -87,14 +83,7 @@ public class BasicClient {
 		return hasJoinedAGame;
 	}
 	
-	public String[] getPlayerNames(ServerInfo info) throws InterruptedException, UnknownHostException, IOException {
-		final List<Object[]> tuples = serverConnection.queryAll(new FormalField(String.class));
-		
-		final String[] playerNames = new String[tuples.size()];
-		for (int i = 0; i < playerNames.length; i++) {
-			playerNames[i] = (String) tuples.get(i)[0];
-		}
-		
-		return playerNames;
+	public int getPlayerCount(ServerInfo info) throws Exception {
+		return serverConnection.size();
 	}
 }

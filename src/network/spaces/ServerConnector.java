@@ -43,7 +43,7 @@ public class ServerConnector implements Runnable {
 		for (int i = 0; i < clientSpaces.length; i++) {
 			clientSpaces[i] = new SequentialSpace();
 			repository.add(INITIAL_CLIENT_SPACE_NAME + i + salts[i], clientSpaces[i]);
-			Log.message("Created: " + i + salts[i]);
+			//Log.message("Created: " + i + salts[i]);
 		}
 		
 		//Some initial information for all the clients:

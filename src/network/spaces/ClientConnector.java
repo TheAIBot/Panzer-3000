@@ -24,7 +24,7 @@ public class ClientConnector implements Runnable{
 		Object[] tuple 	= updateSpace.get(new FormalField(Integer.class), new ActualField(username));
 		connectionId   	= (int) tuple[0];
 		privateServerConnections = new RemoteSpace("tcp://" + ipaddress + ":" + port + "/clientSpace" + connectionId + salt + "?keep");
-		Log.message("Listening on: " + connectionId + salt);
+		//Log.message("Listening on: " + connectionId + salt);
 		privateServerConnections.put("connected", connectionId);
 	}
 	
