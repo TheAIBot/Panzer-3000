@@ -43,7 +43,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	public void startPage() {		
 		serverFinder.startListeningForServers();
 		try {
-			Log.message("Starting to search for servers");
+			//Log.message("Starting to search for servers");
 			serverFinder.searchForServers();
 		} catch (IOException e1) {
 			Log.exception(e1);
@@ -54,7 +54,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			@Override
 			public void run() {
 				try {
-					//serverFinder.searchForServers();
+					serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
 				} catch (Exception e) {
