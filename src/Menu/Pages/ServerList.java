@@ -1,4 +1,4 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import javax.swing.JPanel;
 import javax.swing.JList;

@@ -1,10 +1,10 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import graphics.Menu.MenuController;
+import Menu.MenuController;
 import logger.Log;
 
 public abstract class SuperPage {

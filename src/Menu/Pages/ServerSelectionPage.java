@@ -1,4 +1,4 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -11,7 +11,7 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import graphics.Menu.MenuController;
+import Menu.MenuController;
 import logger.Log;
 import network.spaces.BasicClient;
 import network.spaces.BasicServer;

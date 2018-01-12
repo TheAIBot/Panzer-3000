@@ -12,9 +12,10 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
-import graphics.Menu.MenuController;
-import graphics.Menu.Pages.GamePage;
-import graphics.Menu.Pages.ServerSelectionPage;
+import Menu.InputHandler;
+import Menu.MenuController;
+import Menu.Pages.GamePage;
+import Menu.Pages.ServerSelectionPage;
 import logger.Log;
 import security.Crypto;
 import security.SecureRemoteSpace;
@@ -24,14 +25,14 @@ public class BasicClient {
 	private SecureRemoteSpace serverConnection;
 	private RemoteSpace serverStartSpace;
 	private RemoteSpace serverStartAcceptedSpace;
-	private MenuController menu;
+	private InputHandler inputHandler;
 	private Thread listenForGameStart;
 	private String username;
 	private String salt;
 	private boolean hasJoinedAGame = false;
 	
-	public BasicClient(MenuController menu) {
-		this.menu = menu;
+	public BasicClient(InputHandler inputHandler) {
+		this.inputHandler = inputHandler;
 	}
 	
 	
@@ -60,7 +61,7 @@ public class BasicClient {
 			}
 			page.gameStarted();
 			
-			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, salt, menu, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, salt, inputHandler, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();
 	}

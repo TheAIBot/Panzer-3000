@@ -1,11 +1,11 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
 
 import graphics.GraphicsPanel;
-import graphics.Menu.MenuController;
+import Menu.MenuController;
 
 public class GamePage extends SuperPage {
 	private static final GraphicsPanel graphicsPanel = new GraphicsPanel();

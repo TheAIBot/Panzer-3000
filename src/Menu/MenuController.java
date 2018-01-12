@@ -1,4 +1,4 @@
-package graphics.Menu;
+package Menu;
 
 
 import java.awt.Dimension;
@@ -14,13 +14,13 @@ import java.util.Stack;
 import javax.swing.JFrame;
 
 import engine.Input;
-import graphics.Menu.Pages.GamePage;
-import graphics.Menu.Pages.PageRequestsListener;
-import graphics.Menu.Pages.ServerSelectionPage;
-import graphics.Menu.Pages.SuperPage;
+import Menu.Pages.GamePage;
+import Menu.Pages.PageRequestsListener;
+import Menu.Pages.ServerSelectionPage;
+import Menu.Pages.SuperPage;
 import logger.Log;
 
-public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
+public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener, InputHandler {
 	private final JFrame mainMenu;
 	private final ServerSelectionPage MAIN_PAGE = new ServerSelectionPage(this, this);
 	private SuperPage currentPage;
