@@ -5,17 +5,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 
 import com.sun.corba.se.spi.legacy.interceptor.UnknownType;
 
+import network.spaces.ClientInfo;
 import security.Crypto;
 
-public abstract class DeSerializer {
+public abstract class DeSerializer {	
 	public byte[] toBytes() throws IOException {
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
 			try (DataOutputStream out = new DataOutputStream(stream)) {
@@ -35,7 +33,7 @@ public abstract class DeSerializer {
 			}
 		}
 	}
-	protected abstract void toBytes(DataOutputStream out) throws IOException;
+	public abstract void toBytes(DataOutputStream out) throws IOException;
 	
 	public void fromBytes(byte[] bytes) throws IOException {
 		try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
@@ -59,7 +57,7 @@ public abstract class DeSerializer {
 		
 		return list;		
 	}
-	protected abstract void fromBytes(DataInputStream in) throws IOException;
+	public abstract void fromBytes(DataInputStream in) throws IOException;
 	
 	public static byte[] encodeObjects(Object... objects) throws Exception {
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
@@ -121,6 +119,12 @@ public abstract class DeSerializer {
 			out.writeInt(dataBytes.length);
 			out.write(dataBytes);
 		}
+		else if (object instanceof ClientInfo) {
+			out.writeByte(4);
+			
+			final ClientInfo data = (ClientInfo)object;
+			data.toBytes(out);
+		}
 		else {
 			throw new UnknownType("Type is not supported to be encoded. Type: " + object.getClass().getName());
 		}
@@ -144,9 +148,14 @@ public abstract class DeSerializer {
 		else if (type == 3) {
 			final int length = in.readInt();
 			
-			byte[] data = new byte[length];
+			final byte[] data = new byte[length];
 			in.readFully(data, 0, length);
 			return Crypto.unencode(data);
+		}
+		else if (type == 4) {
+			final ClientInfo data = new ClientInfo();
+			data.fromBytes(in);
+			return data;
 		}
 		else {
 			throw new UnknownType("Type is not supported to be decoded");

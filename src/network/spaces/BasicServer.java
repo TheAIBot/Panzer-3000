@@ -78,18 +78,16 @@ public class BasicServer implements UDPPacketListener {
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 	}
 	
-	public void startGame() throws Exception {
-		final ArrayList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(String.class));
+	private void startGame() throws Exception {
+		final ArrayList<Object[]> users = clientConnectSpace.getAll(new FormalField(ClientInfo.class));
 		
-		final String[] usernames = new String[users.size()]; 
-		final String[] salts = new String[users.size()]; 
-		for (int i = 0; i < usernames.length; i++) {
-			usernames[i] = (String) users.get(i)[0];
-			salts[i] = (String)users.get(i)[1];
+		final ClientInfo[] clientInfos = new ClientInfo[users.size()];
+		for (int i = 0; i < clientInfos.length; i++) {
+			clientInfos[i] = (ClientInfo)users.get(i)[0];
 		}
 		
 		new Thread(() -> {
-			new GameEngine().startGame(info.port , usernames.length, usernames, salts, startAcceptedSpace);
+			new GameEngine().startGame(info.port , clientInfos, startAcceptedSpace);
 		}).start();
 	}
 

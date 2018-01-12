@@ -36,14 +36,14 @@ public class Powerup extends DeSerializer {
 	}
 
 	@Override
-	protected void toBytes(DataOutputStream out) throws IOException {
+	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeFloat((float) x);
 		out.writeFloat((float) y);
 		
 	}
 
 	@Override
-	protected void fromBytes(DataInputStream in) throws IOException {
+	public void fromBytes(DataInputStream in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		

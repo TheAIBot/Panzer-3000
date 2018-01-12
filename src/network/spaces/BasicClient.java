@@ -1,22 +1,12 @@
 package network.spaces;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-
 import org.jspace.ActualField;
-import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
 import Menu.GUIControl;
 import Menu.InputHandler;
-import Menu.MenuController;
 import Menu.Pages.GamePage;
-import Menu.Pages.ServerSelectionPage;
 import logger.Log;
 import security.Crypto;
 import security.SecureRemoteSpace;
@@ -31,6 +21,7 @@ public class BasicClient {
 	private String username;
 	private String salt;
 	private boolean hasJoinedAGame = false;
+	private ClientInfo clientInfo;
 	
 	public BasicClient(InputHandler inputHandler) {
 		this.inputHandler = inputHandler;
@@ -50,7 +41,9 @@ public class BasicClient {
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 		
-		serverConnection.put(username, salt);
+		clientInfo.username = username;
+		clientInfo.salt = salt;
+		serverConnection.put(clientInfo);
 		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
@@ -68,7 +61,7 @@ public class BasicClient {
 	
 	public void leaveGame() throws Exception
 	{
-		serverConnection.getEncryptedTuple(new ActualField(username));
+		serverConnection.getEncryptedTuple(new ActualField(clientInfo));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
 		serverConnection.close();
