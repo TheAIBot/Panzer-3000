@@ -23,11 +23,11 @@ public class GameEngine {
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
+	public boolean gameIsWon 			= false;
 	
 	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
 	public static final double BOARD_MAX_Y 		= 1;
-	public static boolean gameIsWon 			= false;
 	public static final boolean LOAD_LEVEL 		= true;
 	public static final String LEVEL_NAME 		= "basic";
 	public static final String LEVEL_DIRECTORY 	= "src/levels/";

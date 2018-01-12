@@ -27,13 +27,19 @@ public class PeerServerConnector extends SuperServerConnector{
 			ArrayList<String> privateIDTuple = privateIDTuples[i];
 			//Only one of the two clients that receive the same server ID, should create the space/repository.
 			//This is assured with the boolean array below: true means create the space, false to simply connect.
-			boolean[] createSpaceTuple = new boolean[numClients - 1];
+			boolean[] createSpaceTuple 	= new boolean[numClients - 1];
+			String[] privateIDArray 	= new  String[numClients - 1];
+			String[] ipAddresses		= new  String[numClients - 1];
 			for (int j = i; j < createSpaceTuple.length; j++) {
 				createSpaceTuple[j] = true;
 			}
-			sharedSpace.put( (String[]) privateIDTuple.toArray(), createSpaceTuple);
+			for (int j = 0; j < ipAddresses.length; j++) {
+				privateIDArray[j] 	= privateIDTuple.get(j);
+				ipAddresses[j] 		= "localhost";
+			}
+			sharedSpace.put( privateIDArray, createSpaceTuple, ipAddresses);
 		}
-		
+		System.out.println("All id tuples have been placed in the shared space.");
 	}
 
 	public ArrayList<String>[] createPrivateIDs(int numClients) {

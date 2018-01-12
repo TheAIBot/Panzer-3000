@@ -25,10 +25,11 @@ import network.spaces.SuperServerConnector;
 
 public class connectorTests {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		final int numberOfClients = 2;
-		String[] usernames = new String[] {"a", "b"};
+		String[] usernames = new String[] {"a", "b", "c", "d"};
 		PeerServerConnector serverConnector = new PeerServerConnector();
+		serverConnector.forcedIPAdress = "localhost";
 		new Thread(() -> {
 			try {
 				serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
@@ -36,12 +37,18 @@ public class connectorTests {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-		}).start();;
-		
-		for (int i = 0; i < args.length; i++) {
+		}).start();
+		Thread.sleep(1000);
+		for (int i = 0; i < numberOfClients; i++) {
+			final int k = i;
 			new Thread(() -> {
 				try {
-					new PeerClientConnector().connectToServer("localhost", 9001, usernames[i]);
+					PeerClientConnector clientConnector = new PeerClientConnector();
+					clientConnector.connectToServer("localhost", 9001, usernames[k]);
+					Input input = new Input();
+					input.id = k;
+					clientConnector.sendUserInput(input);
+					clientConnector.recieveUpdates();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
