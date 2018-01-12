@@ -78,7 +78,7 @@ public abstract class DeSerializer {
 	public static Object[] decodeObjects(byte[] encoded) throws Exception {
 		try (ByteArrayInputStream stream = new ByteArrayInputStream(encoded)) {
 			try (DataInputStream in = new DataInputStream(stream)) {
-				final int objectCount = in.read();
+				final int objectCount = in.readInt();
 				final Object[] objects = new Object[objectCount];
 				for (int i = 0; i < objects.length; i++) {
 					objects[i] = bytesToObject(in);

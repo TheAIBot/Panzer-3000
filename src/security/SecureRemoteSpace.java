@@ -24,6 +24,7 @@ public class SecureRemoteSpace {
 	private final RemoteSpace remote;
 	private final PublicKey repositoryPublicKey;
 	private final KeyPair encryptionKeys;
+	private boolean isOpen = true;
 	
 	public SecureRemoteSpace(String uri, PublicKey repositoryPublicKey) throws UnknownHostException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
 		this.remote = new RemoteSpace(uri);
@@ -31,12 +32,12 @@ public class SecureRemoteSpace {
 		this.encryptionKeys = Crypto.getPair();
 	}
 
-	public int size() {
-		return remote.size();
+	public int size() throws InterruptedException {
+		return remote.queryAll(new FormalField(byte[].class)).size();
 	}
 
 	public boolean put(Object... fields) throws Exception {
-		return remote.put(Crypto.encryptFields(encryptionKeys.getPublic(), fields));
+		return SecureSpaceTools.encryptAndPut(remote, repositoryPublicKey, fields);
 	}
 	
 	public Object[] getEncryptedTuple(ActualField... fields) throws Exception {
@@ -53,47 +54,23 @@ public class SecureRemoteSpace {
 	
 	//This is not a blocking call.
 	//The tuple needs to be in the space already for this to work.
-	public Object[] getDecryptableTuple(ActualField... fields) throws Exception {
-		return findAllMatchingTuples(true, true, fields).get(0);
+	public Object[] getDecryptableTuple(TemplateField... fields) throws Exception {
+		return SecureSpaceTools.findAllMatchingTuples(remote, encryptionKeys.getPrivate(), true, true, fields).get(0);
 	}
 
-	public ArrayList<Object[]> getAllDecryptableTuples(ActualField... fields) throws Exception {
-		return findAllMatchingTuples(true, false, fields);
+	public ArrayList<Object[]> getAllDecryptableTuples(TemplateField... fields) throws Exception {
+		return SecureSpaceTools.findAllMatchingTuples(remote, encryptionKeys.getPrivate(), true, false, fields);
 	}
 
-	public Object[] queryDecryptableTuple(ActualField... fields) throws Exception {
-		return findAllMatchingTuples(false, true, fields).get(0);
+	public Object[] queryDecryptableTuple(TemplateField... fields) throws Exception {
+		return SecureSpaceTools.findAllMatchingTuples(remote, encryptionKeys.getPrivate(), false, true, fields).get(0);
 	}
 
-	public List<Object[]> queryAllDecryptableTuples(ActualField... fields) throws Exception {
-		return findAllMatchingTuples(false, false, fields);
+	public ArrayList<Object[]> queryAllDecryptableTuples(TemplateField... fields) throws Exception {
+		return SecureSpaceTools.findAllMatchingTuples(remote, encryptionKeys.getPrivate(), false, false, fields);
 	}
 	
-	private ArrayList<Object[]> findAllMatchingTuples(boolean removeWhenFound, boolean onlyOne, ActualField... fields) throws Exception
-	{
-		final Template template = new Template(fields);		
-		final ArrayList<Object[]> matchingTuples = new ArrayList<Object[]>();
-		final List<Object[]> tupleList = remote.queryAll(new FormalField(byte[].class));
-		for (Object[] encryptedObjects : tupleList) {
-			final byte[] encryptedObjectBytes = (byte[])encryptedObjects[0];
-			final byte[] decryptedObjectBytes = Crypto.decrypt(encryptedObjectBytes, encryptionKeys.getPrivate());
-			final Object[] decryptedObject = DeSerializer.decodeObjects(decryptedObjectBytes);
-			final Tuple tuple = new Tuple(decryptedObject);
-			
-			if (template.match(tuple)) {
-				matchingTuples.add(decryptedObject);
-				if (removeWhenFound) {
-					remote.get(new ActualField(encryptedObjectBytes));
-				}
-				if (onlyOne) {
-					break;
-				}
-			}
-		}
-		if (onlyOne && matchingTuples.size() == 0) {
-			throw new Exception("Failed to find a matching decryptable tuple");
-		}
-		
-		return matchingTuples;
+	public void close() throws IOException {
+		//remote.close();
 	}
 }

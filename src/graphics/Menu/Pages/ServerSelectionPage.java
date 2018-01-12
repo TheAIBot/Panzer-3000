@@ -53,7 +53,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			@Override
 			public void run() {
 				try {
-					//serverFinder.searchForServers();
+					serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
 				} catch (Exception e) {
@@ -81,11 +81,11 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		}
 	}
 	
-	public String[] getPlayerNames(ServerInfo info) throws UnknownHostException, InterruptedException, IOException {
-		return client.getPlayerNames(info);
+	public int getPlayerCount(ServerInfo info) throws Exception {
+		return client.getPlayerCount(info);
 	}
 	
-	public void joinGame(ServerInfo info, String username) throws UnknownHostException, IOException, InterruptedException 
+	public void joinGame(ServerInfo info, String username) throws Exception 
 	{
 		if (client.hasJoinedAGame()) {
 			client.leaveGame();
@@ -96,6 +96,8 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	
 	public void requestStartGame()
 	{
+		serverUpdateTimer.cancel();
+		serverFinder.stopListeningForServers();
 		client.requestStartGame();
 	}
 	
