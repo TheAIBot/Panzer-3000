@@ -85,33 +85,19 @@ public class BasicServer implements UDPPacketListener {
 			repository.closeGate(serverUri);
 			try {
 				startGame();
-			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalBlockSizeException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (BadPaddingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchPaddingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchProviderException e) {
+			} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException
+					| NoSuchPaddingException | InvalidKeySpecException | NoSuchProviderException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
 		
+		
+		Log.message("Lisitening start");
 		UDPConnector.startListeningForBroadcasts(ServerFinder.UDP_PORT_ASK);
 		UDPConnector.addUDPPacketListener(ServerFinder.UDP_PORT_ASK, this);
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
+		Log.message("Lisitening execute");
 	}
 	
 	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, NoSuchProviderException {

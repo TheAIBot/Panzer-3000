@@ -1,6 +1,13 @@
 package logger;
 
+import java.net.DatagramPacket;
+
 public class Log {
+		public static void message(DatagramPacket receivePacket) {
+			System.out.println(receivePacket);
+		}
+		
+
 		public static void message(String message) {
 			System.out.println(message);
 		}
