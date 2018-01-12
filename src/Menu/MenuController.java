@@ -46,7 +46,6 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 		mainMenu.addKeyListener(this);
 		mainMenu.addMouseListener(this);
 		mainMenu.addMouseMotionListener(this);
-		
 	}
 	
 	public void showWindow()
@@ -105,7 +104,12 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void setFullScreen() {
-		mainMenu.setExtendedState(JFrame.MAXIMIZED_BOTH); 		
+		mainMenu.setExtendedState(JFrame.MAXIMIZED_BOTH); 	
+	}
+	
+	@Override
+	public void exitFullScreen() {
+		mainMenu.setExtendedState(JFrame.NORMAL);
 	}
 
 	@Override

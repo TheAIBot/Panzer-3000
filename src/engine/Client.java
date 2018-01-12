@@ -32,13 +32,15 @@ public class Client {
 				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
 				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
 				
-				/*
 				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
 					System.out.println("The game has been won!!!");
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
+					
+					Thread.sleep(2000);
+					guiControl.gameEnded();
+					return;
 				}
-				*/
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
@@ -57,8 +59,8 @@ public class Client {
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
+			guiControl.gameEnded();
 		}
-		
 	}
 
 	private boolean hasTankWonGame(ArrayList<Tank> tanks) {

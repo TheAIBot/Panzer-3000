@@ -13,6 +13,8 @@ public interface PageRequestsListener {
 	
 	public void setFullScreen();
 	
+	public void exitFullScreen();
+	
 	public void hideScreen();
 	
 	public void showScreen();

@@ -34,6 +34,7 @@ public class GamePage extends SuperPage {
 
 	@Override
 	public void closePage() {
+		exitFullScreen();
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			client.leaveGame();
 			serverListPage.updateServerInfo();
 		}
-		client.joinGame(info, username, this);
+		client.joinGame(info, username, controller);
 	}
 	
 	public void requestStartGame()
@@ -96,10 +96,6 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		serverUpdateTimer.cancel();
 		serverFinder.stopListeningForServers();
 		client.requestStartGame();
-	}
-	
-	public void gameStarted() {
-		
 	}
 	
 	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
