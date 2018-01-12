@@ -1,9 +1,7 @@
 package starters;
 
-import engine.Client;
-import graphics.GraphicsPanel;
+
 import graphics.Menu.MenuController;
-import graphics.Menu.Pages.GamePage;
 
 public class ClientStarter {
 	
@@ -12,4 +10,9 @@ public class ClientStarter {
 		menu.showWindow();
 		//new Client().startGame("localhost", "Derp", menu, panel);
 	}
+	
+	
+	
+	
+	
 }
