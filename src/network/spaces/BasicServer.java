@@ -100,6 +100,9 @@ public class BasicServer implements UDPPacketListener {
 			} catch (InvalidKeySpecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (NoSuchProviderException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}).start();
 		
@@ -108,7 +111,7 @@ public class BasicServer implements UDPPacketListener {
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 	}
 	
-	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException {
+	public void startGame() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, NoSuchProviderException {
 		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(byte[].class));
 		
 		final String[] usernames = new String[users.size()]; 

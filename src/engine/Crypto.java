@@ -24,6 +24,7 @@ import javax.crypto.NoSuchPaddingException;
 public final class Crypto {
 	
     private static final String ALGORITHM = "RSA";
+    private static final String CYPHER_ALGORITHM = "RSA/ECB/PKCS1Padding";
     private static final String PROVIDER = "SunRsaSign";
     private static final String RAND_PROVIDER = "SUN";
     private static final String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -46,7 +47,7 @@ public final class Crypto {
 	
 	public static byte[] encrypt(String data, PublicKey publicKey) throws Exception {
 		
-		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
 		byte[] encryptedBytes = cipher.doFinal(data.getBytes());
@@ -54,9 +55,9 @@ public final class Crypto {
 		return encryptedBytes;
 	}
 	
-	public static String decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+	public static String decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException {
 		
-		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
 		byte[] decryptedBytes = cipher.doFinal(data);
