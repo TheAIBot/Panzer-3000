@@ -26,12 +26,13 @@ public abstract class SuperServerConnector implements Runnable {
 	public int numClients;
 	public int numConnectedClients;
 	public String ipAddress;
+	public String forcedIPAdress = "";
 	
 	
 	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
-		this.ipAddress = NetworkTools.getIpAddress();
+		this.ipAddress = (forcedIPAdress.equals(""))? NetworkTools.getIpAddress() : forcedIPAdress;
 		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();

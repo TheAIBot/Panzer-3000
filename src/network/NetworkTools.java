@@ -85,4 +85,8 @@ public class NetworkTools {
 			}
 		}
 	}
+
+	public static int getRandomPort() {
+		return (int)(Math.random() * Short.MAX_VALUE) + 1025;
+	}
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,37 @@ import engine.Input;
 import engine.Powerup;
 import engine.Tank;
 import engine.Wall;
+import network.spaces.PeerClientConnector;
+import network.spaces.PeerServerConnector;
 import network.spaces.SuperClientConnector;
 import network.spaces.SuperServerConnector;
 
 public class connectorTests {
+	
+	public static void main(String[] args) {
+		final int numberOfClients = 2;
+		String[] usernames = new String[] {"a", "b"};
+		PeerServerConnector serverConnector = new PeerServerConnector();
+		new Thread(() -> {
+			try {
+				serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}).start();;
+		
+		for (int i = 0; i < args.length; i++) {
+			new Thread(() -> {
+				try {
+					new PeerClientConnector().connectToServer("localhost", 9001, usernames[i]);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}).start();
+		}
+	}
 	/*
 	SuperServerConnector server;
 	SuperClientConnector[] clients;
