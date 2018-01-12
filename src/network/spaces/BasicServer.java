@@ -18,6 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -43,6 +44,7 @@ public class BasicServer implements UDPPacketListener {
 	private SequentialSpace startAcceptedSpace;
 	private ServerInfo info;
 	private KeyPair keyPair;
+	private PrivateKey privateKey;
 	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
@@ -53,6 +55,7 @@ public class BasicServer implements UDPPacketListener {
 	public BasicServer(String serverName) throws UnknownHostException, SocketException, NoSuchAlgorithmException, NoSuchProviderException {
 		info = new ServerInfo();
 		keyPair = Crypto.getPair();
+		privateKey = keyPair.getPrivate();
 		info.publicKey = keyPair.getPublic();
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
@@ -119,7 +122,7 @@ public class BasicServer implements UDPPacketListener {
 		for (int i = 0; i < usernames.length; i++) {
 			usernames[i] = (String) users.get(i)[0];
 			byte[] encSalt = (byte[]) users.get(i)[1];
-			salts[i] = Crypto.decrypt(encSalt, keyPair.getPrivate());
+			salts[i] = Crypto.decrypt(encSalt, privateKey);
 		}
 		
 		new Thread(() -> {

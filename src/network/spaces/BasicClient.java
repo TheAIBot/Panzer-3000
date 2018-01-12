@@ -24,6 +24,7 @@ public class BasicClient {
 	private Thread listenForGameStart;
 	private String username;
 	private String salt;
+	private byte[] encryptedSalt;
 	private boolean hasJoinedAGame = false;
 	
 	public BasicClient(MenuController menu) {
@@ -47,7 +48,7 @@ public class BasicClient {
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
 
 		
-		byte[] encryptedSalt = null;
+		Log.message("Encrypting salt");
 		try {
 			encryptedSalt = Crypto.encrypt(salt, info.publicKey);
 		} catch (Exception e) {
@@ -60,7 +61,6 @@ public class BasicClient {
 		//listen for when to call startGame
 		listenForGameStart = new Thread(() -> {
 			try {
-				Log.message("Starting START_GAME_ACCEPTED thread");
 				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
 				Log.exception(e);
@@ -74,7 +74,7 @@ public class BasicClient {
 	
 	public void leaveGame() throws InterruptedException, IOException
 	{
-		serverConnection.get(new ActualField(username));
+		serverConnection.get(new ActualField(username), new FormalField(byte[].class));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
 		serverConnection.close();
