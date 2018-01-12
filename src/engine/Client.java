@@ -3,6 +3,7 @@ package engine;
 import java.util.ArrayList;
 
 import graphics.GraphicsPanel;
+import Menu.GUIControl;
 import Menu.InputHandler;
 import logger.Log;
 import network.spaces.ClientConnector;
@@ -10,11 +11,12 @@ import network.spaces.ClientConnector;
 public class Client {
 	boolean hasPlayerWon = false;
 
-	public void startGame(String ipaddress, int port, String username, String salt, InputHandler inputHandler, GraphicsPanel panel) {
+	public void startGame(String ipaddress, int port, String username, String salt, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
 			connection.connectToServer(ipaddress, port, username, salt);
+			guiControl.gameStarted();
 			Log.message("Client connected");
 			
 			

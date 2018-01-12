@@ -20,9 +20,10 @@ import Menu.Pages.ServerSelectionPage;
 import Menu.Pages.SuperPage;
 import logger.Log;
 
-public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener, InputHandler {
+public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener, InputHandler, GUIControl {
 	private final JFrame mainMenu;
 	private final ServerSelectionPage MAIN_PAGE = new ServerSelectionPage(this, this);
+	private final GamePage gamePage = new GamePage(this, this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();
@@ -215,5 +216,15 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 			input.x = x;
 			input.y = y;
 		}
+	}
+
+	@Override
+	public void gameStarted() {
+		switchPage(gamePage, false);
+	}
+
+	@Override
+	public void gameEnded() {
+		switchPage(MAIN_PAGE, false);
 	}
 }

@@ -12,6 +12,7 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
+import Menu.GUIControl;
 import Menu.InputHandler;
 import Menu.MenuController;
 import Menu.Pages.GamePage;
@@ -40,7 +41,7 @@ public class BasicClient {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 	
-	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws Exception {
+	public void joinGame(ServerInfo info, String username, final GUIControl switchPage(gamePage, false);) throws Exception {
 		this.serverInfo = info;
 		this.username = username;
 		this.salt = Crypto.getSaltString(18);
@@ -59,7 +60,6 @@ public class BasicClient {
 			} catch (InterruptedException e) {
 				Log.exception(e);
 			}
-			page.gameStarted();
 			
 			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, salt, inputHandler, GamePage.GetGraphicsPanel());
 		});

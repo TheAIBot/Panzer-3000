@@ -1,8 +1,6 @@
 package Menu.Pages;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import network.spaces.ServerInfo;
 import network.udp.ServerFinder;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
-	GamePage gamePage = new GamePage(controller, controller);
 	BasicClient client = new BasicClient(controller);
 	ServerFinder serverFinder = new ServerFinder();
 	ArrayList<BasicServer> createdServers = new ArrayList<BasicServer>();
@@ -102,7 +99,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	}
 	
 	public void gameStarted() {
-		switchPage(gamePage);
+		
 	}
 	
 	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {

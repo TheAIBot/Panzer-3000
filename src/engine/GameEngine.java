@@ -53,8 +53,6 @@ public class GameEngine {
 			connection.sendUpdates(tanks, bullets, powerups);
 			Log.message("Sent first update");
 
-			Thread.sleep(2000);
-
 			// Then the main loop can begin:
 
 			while (true) { // Game loop
