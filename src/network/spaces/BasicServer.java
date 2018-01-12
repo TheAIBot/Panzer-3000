@@ -73,9 +73,12 @@ public class BasicServer implements UDPPacketListener {
 			}
 		}).start();
 		
+		
+		Log.message("Lisitening start");
 		UDPConnector.startListeningForBroadcasts(ServerFinder.UDP_PORT_ASK);
 		UDPConnector.addUDPPacketListener(ServerFinder.UDP_PORT_ASK, this);
 		UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
+		Log.message("Lisitening execute");
 	}
 	
 	public void startGame() throws Exception {

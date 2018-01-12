@@ -28,6 +28,7 @@ public class BasicClient {
 	private Thread listenForGameStart;
 	private String username;
 	private String salt;
+	private byte[] encryptedSalt;
 	private boolean hasJoinedAGame = false;
 	
 	public BasicClient(MenuController menu) {
@@ -42,7 +43,9 @@ public class BasicClient {
 	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws Exception {
 		this.serverInfo = info;
 		this.username = username;
-		this.salt = Crypto.getSaltString(18);
+		if (salt == null) {
+			this.salt = Crypto.getSaltString(18);
+		}
 		//join the game -- connect to servers 
 		serverConnection = new SecureRemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn", info.publicKey);
 		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");

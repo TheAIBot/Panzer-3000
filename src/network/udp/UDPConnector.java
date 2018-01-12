@@ -49,6 +49,7 @@ public class UDPConnector {
 				while (true) {
 					byte[] receiveData = new byte[1024];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+					//Log.message(receivePacket);
 					socket.receive(receivePacket);
 					final ArrayList<UDPPacketListener> listeners = listenersByPort.get(listenPort);
 					if (listeners != null) {

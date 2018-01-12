@@ -26,6 +26,7 @@ import engine.DeSerializer;
 public final class Crypto {
 	
     private static final String ALGORITHM = "RSA";
+    private static final String CYPHER_ALGORITHM = "RSA/ECB/PKCS1Padding";
     private static final String PROVIDER = "SunRsaSign";
     private static final String RAND_PROVIDER = "SUN";
     private static final String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -47,14 +48,14 @@ public final class Crypto {
 	}
 	
 	public static byte[] encrypt(byte[] data, PublicKey publicKey) throws Exception {
-		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
 		return cipher.doFinal(data);
 	}
 	
 	public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		Cipher cipher = Cipher.getInstance(CYPHER_ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
 		return cipher.doFinal(data);
