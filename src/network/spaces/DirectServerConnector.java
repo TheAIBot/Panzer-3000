@@ -22,7 +22,7 @@ public class DirectServerConnector extends SuperServerConnector{
 			byte[] bulletBytes = DeSerializer.toBytes(bullets);
 			byte[] powerupBytes = DeSerializer.toBytes(powerups);
 			//Log.message("Package size: " + (tankBytes.length + bulletBytes.length));
-			updateSpace.put(i, tankBytes, bulletBytes, powerupBytes);
+			sharedSpace.put(i, tankBytes, bulletBytes, powerupBytes);
 		}
 	}
 	
@@ -39,8 +39,6 @@ public class DirectServerConnector extends SuperServerConnector{
 		return recievedInputs;
 	}
 	
-	
-
 	public void closeConnections() {
 		repository.remove(UPDATE_SPACE_NAME);
 		for (int i = 0; i < clientSpaces.length; i++) {

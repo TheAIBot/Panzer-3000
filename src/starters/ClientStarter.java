@@ -1,9 +1,6 @@
 package starters;
 
-import engine.Client;
-import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
-import graphics.Menu.Pages.GamePage;
 
 public class ClientStarter {
 	

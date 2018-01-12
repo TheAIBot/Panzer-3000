@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import graphics.GraphicsPanel;
 import graphics.Menu.MenuController;
 import logger.Log;
+import network.spaces.DirectClientConnector;
 import network.spaces.SuperClientConnector;
 
 public class Client {
 	boolean hasPlayerWon = false;
+	int numberOfClients = -1;
 
 	public void startGame(String ipaddress, int port, String username, MenuController menu, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
-			SuperClientConnector connection = new SuperClientConnector();
+			SuperClientConnector connection = new DirectClientConnector();
 			connection.connectToServer(ipaddress, port, username);
 			Log.message("Client connected");
 			
@@ -26,15 +28,19 @@ public class Client {
 				
 				//The call is blocking, so it won't continue before the update is given
 				Object[] updatedObjects 	= connection.recieveUpdates(); 
-				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
-				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
-				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
+				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[]) updatedObjects[1], Tank.class);
+				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[]) updatedObjects[2], Bullet.class);
+				ArrayList<Powerup> powerups = DeSerializer.toList((byte[]) updatedObjects[3], Powerup.class);
 				
-				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
+				if (numberOfClients == -1) { //TODO hacky solution, do it inside the connectors later.
+					numberOfClients = tanks.size();
+				}
+				if (GameEngine.hasTankWonGame(tanks, numberOfClients)) {
 					System.out.println("The game has been won!!!");
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
 				}
+				
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above

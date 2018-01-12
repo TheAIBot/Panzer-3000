@@ -14,10 +14,11 @@ import org.jspace.SequentialSpace;
 
 import logger.Log;
 import network.spaces.BasicServer;
+import network.spaces.DirectServerConnector;
 import network.spaces.SuperServerConnector;
 
 public class GameEngine {
-	SuperServerConnector connection;
+	DirectServerConnector connection;
 	ArrayList<Tank> tanks = new ArrayList<Tank>();
 	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
@@ -38,7 +39,7 @@ public class GameEngine {
 			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(tankCount);
-			connection = new SuperServerConnector();			
+			connection = new DirectServerConnector();			
 			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
 			Log.message("Clients connected");
 			

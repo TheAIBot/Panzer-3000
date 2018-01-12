@@ -19,8 +19,8 @@ public class DirectClientConnector extends SuperClientConnector{
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {
-		return sharedSpace.get(new ActualField(connectionId), new FormalField(byte[].class), 
-				new FormalField(byte[].class), new FormalField(byte[].class));
+		return sharedSpace.get(	new ActualField(connectionId), new FormalField(byte[].class), 
+								new FormalField(byte[].class), new FormalField(byte[].class));
 	}
 
 	@Override

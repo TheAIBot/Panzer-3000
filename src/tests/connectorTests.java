@@ -21,6 +21,7 @@ import network.spaces.SuperClientConnector;
 import network.spaces.SuperServerConnector;
 
 public class connectorTests {
+	/*
 	SuperServerConnector server;
 	SuperClientConnector[] clients;
 	String[] clientNames = new String[] {"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
@@ -117,5 +118,5 @@ public class connectorTests {
 		
 		
 	}
-
+*/
 }

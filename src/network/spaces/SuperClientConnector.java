@@ -15,7 +15,7 @@ public abstract class SuperClientConnector implements Runnable{
 	public RemoteSpace 	sharedSpace;
 	public int 			connectionId;
 	public String		username;
-	//public int 			numberOfClients;
+	public int 			numberOfClients;
 	
 	public void connectToServer(String ipaddress, int port, String username) throws UnknownHostException, IOException, InterruptedException {
 		this.username = username;
@@ -36,7 +36,11 @@ public abstract class SuperClientConnector implements Runnable{
 		}
 	}
 
-	public abstract void sendUserInput(Input input); 
+	public abstract void sendUserInput(Input input) throws InterruptedException; 
+	
+	public abstract Object[] recieveUpdates() throws InterruptedException;
+
+	public abstract Object[] receiveWalls() throws InterruptedException;
 	
 	
 

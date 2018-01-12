@@ -5,20 +5,21 @@ import java.net.UnknownHostException;
 
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
+import org.jspace.Space;
 
 import engine.Input;
 
 public class PeerClientConnector extends SuperClientConnector {
 
 
-	public RemoteSpace 	privateClientConnections[];
+	public Space privateClientConnections[];
 	
 	
 	@Override
-	public void sendUserInput(Input input) {
+	public void sendUserInput(Input input) throws InterruptedException {
 		input.id = connectionId;
 		//TODO discern between who is inputting what.
-		for (RemoteSpace privateClientConnection : privateClientConnections) {
+		for (Space privateClientConnection : privateClientConnections) {
 			privateClientConnection.put(input);
 		}		
 	}
@@ -26,13 +27,30 @@ public class PeerClientConnector extends SuperClientConnector {
 
 	@Override
 	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
-		Object[] tuple = sharedSpace.get(new FormalField(String[].class));
-		String[] privateConnectionIDs = (String[]) tuple[0];
+		//As it is the peer-to-peer version, it 
+		Object[]  privateConnectionTuple = sharedSpace.get(new FormalField(String[].class), new FormalField(boolean[].class));
+		String[]  privateConnectionIDs 	 = (String[])  privateConnectionTuple[0];
+		boolean[] shouldCreateSpaces	 = (boolean[]) privateConnectionTuple[1];
 		privateClientConnections = new RemoteSpace[privateConnectionIDs.length];
 		for (int i = 0; i < privateClientConnections.length; i++) {
-			privateClientConnections[i] = new RemoteSpace("tcp://" + ipaddress + ":" + port + "/" + privateConnectionIDs[i] + "?keep");
+			if (shouldCreateSpaces[i]) {
+				privateClientConnections[i] = new RemoteSpace("tcp://" + ipaddress + ":" + port + "/" + privateConnectionIDs[i] + "?keep");
+			}
 		}
-		//As it is the peer-to-peer version, it 
+	}
+
+
+	@Override
+	public Object[] recieveUpdates() throws InterruptedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Object[] receiveWalls() throws InterruptedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

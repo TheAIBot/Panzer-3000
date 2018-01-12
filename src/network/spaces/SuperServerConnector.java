@@ -16,7 +16,7 @@ import network.NetworkTools;
 public abstract class SuperServerConnector implements Runnable {	
 	public SpaceRepository 	repository;
 	public String[] usernames;
-	SequentialSpace		updateSpace;
+	SequentialSpace		sharedSpace;
 	SequentialSpace[] 	clientSpaces;
 	String UPDATE_SPACE_NAME = "updateSpace";
 	String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
@@ -35,13 +35,13 @@ public abstract class SuperServerConnector implements Runnable {
 		this.usernames = usernames;
 		
 		repository 	 = new SpaceRepository();
-		updateSpace  = new SequentialSpace();
+		sharedSpace  = new SequentialSpace();
 		clientSpaces = new SequentialSpace[numClients];
 		this.usernames = usernames;
 		
 		repositioryGateURI = "tcp://" + ipAddress + ":" + port + "/?keep";
 		repository.addGate(repositioryGateURI);
-		repository.add(UPDATE_SPACE_NAME, updateSpace);
+		repository.add(UPDATE_SPACE_NAME, sharedSpace);
 		
 		
 		for (int i = 0; i < clientSpaces.length; i++) {
@@ -53,10 +53,10 @@ public abstract class SuperServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			updateSpace.put(id, usernames[id]);
+			sharedSpace.put(id, usernames[id]);
 		}
 		
-		initilizePrivateConnections();		
+		initilizePrivateConnections(startServerSpace);		
 	}
 	
 	protected abstract void initilizePrivateConnections(SequentialSpace startServerSpace) throws InterruptedException;
@@ -64,7 +64,7 @@ public abstract class SuperServerConnector implements Runnable {
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < numClients; i++) {
 			byte[] wallBytes = DeSerializer.toBytes(walls);
-			updateSpace.put("walls", wallBytes);
+			sharedSpace.put("walls", wallBytes);
 		}
 	}
 	
@@ -77,5 +77,7 @@ public abstract class SuperServerConnector implements Runnable {
 		repository.closeGate(repositioryGateURI);
 		
 	}
+	
+	
 
 }
