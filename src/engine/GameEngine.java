@@ -38,43 +38,28 @@ public class GameEngine {
 		try {
 			Log.message("Starting server");
 			initializeWalls();
-			initializeTanks(clientInfos.length);
+			initializeTanks(clientInfos);
 			connection = new ServerConnector();			
 			connection.initializeServerConnection(port, clientInfos, startServerSpace);
 			Log.message("Clients connected");
-			
-			for (int i = 0; i < tanks.size(); i++) {
-				tanks.get(i).userName = clientInfos[tanks.get(i).id].username;
-			}	
 
 			// The server will send the initial information first, such that the clients
 			// have something to display:
-
 			connection.sendWalls(walls);
 			connection.sendUpdates(tanks, bullets, powerups);
 			Log.message("Sent first update");
 
 			// Then the main loop can begin:
-
-			while (true) { // Game loop
+			do {
 				final long startTime = System.currentTimeMillis();
-				Input[] userInputs = connection.reciveUserInputs();
-				// Log.message(userInputs[0].toString());
-				// Log.message("Received inputs from clients");
-				update(userInputs);
-
-				// Log.message("Updated game");
+				
+				update(connection.reciveUserInputs());
 				connection.sendUpdates(tanks, bullets, powerups);
-				// Log.message("Sent game state update");
-				if (hasTankWonGame(tanks, clientInfos.length)) {
-					// Victory!!!
-					System.out.println("The game has been won!!!");
-					break;
-				}
+
 				final long timePassed = System.currentTimeMillis() - startTime;
 				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
 				Thread.sleep(timeToSleep);
-			}
+			} while (!hasTankWonGame(tanks, clientInfos.length));
 		} catch (Exception e) {
 			Log.exception(e);
 		}
@@ -84,14 +69,14 @@ public class GameEngine {
 		return tanks.size() <= 1 && tanks.size() != numberOfClients;
 	}
 
-	private void initializeTanks(int tankCount) {
-		for (int i = 0; i < tankCount; i++) {
+	private void initializeTanks(ClientInfo[] clientInfos) {
+		for (int i = 0; i < clientInfos.length; i++) {
 			Tank newTank;
 
 			do {
 				final double xNew = Math.random();
 				final double yNew = Math.random();
-				newTank = new Tank(xNew, yNew, 0, 0, i);
+				newTank = new Tank(xNew, yNew, 0, 0, i, clientInfos[i].username);
 				// tank shouldn't spawn inside a wall
 			} while (isTankInsideAnyWall(newTank));
 

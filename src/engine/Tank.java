@@ -35,16 +35,17 @@ public class Tank extends DeSerializer {
 	public static final int 	TIME_BETWEEN_SHOTS 	= 25;
 	public static final double 	TURNING_ANGLE 		= 1.5;
 	
-	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew) {
-		x = xNew;
-		y = yNew;
-		bodyWidth = TANK_WIDTH;
-		bodyHeight = TANK_HEIGHT;
-		bodyAngle = bodyAngleNew;
-		gunAngle = gunAngleNew;
-		id = idNew;
-		health = TANK_HEALTH;
-		powerups = new ArrayList<Powerup>();
+	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew, String username) {
+		this.x = xNew;
+		this.y = yNew;
+		this.bodyWidth = TANK_WIDTH;
+		this.bodyHeight = TANK_HEIGHT;
+		this.bodyAngle = bodyAngleNew;
+		this.gunAngle = gunAngleNew;
+		this.id = idNew;
+		this.health = TANK_HEALTH;
+		this.powerups = new ArrayList<Powerup>();
+		this.userName  = username;
 	}
 	
 	public void updatePowerups() {

@@ -59,8 +59,8 @@ public class connectorTests {
 		ArrayList<Tank> tanks = new ArrayList<Tank>();
 		ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 		ArrayList<Powerup> powerups = new ArrayList<Powerup>();
-		tanks.add(new Tank(0, 0, 0, 0, 0));
-		tanks.add(new Tank(0, 0, 0, 0, 0));
+		tanks.add(new Tank(0, 0, 0, 0, 0, ""));
+		tanks.add(new Tank(0, 0, 0, 0, 0, ""));
 		bullets.add(new Bullet(0, 0, 1, 0, 10));
 		bullets.add(new Bullet(0, 0, 2, 0, 10));
 		powerups.add(new Powerup(0.5, 0.5, 1));
