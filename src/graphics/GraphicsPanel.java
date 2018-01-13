@@ -26,7 +26,6 @@ public class GraphicsPanel extends JPanel {
 	
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
-		
 	}
 	
 
@@ -51,23 +50,34 @@ public class GraphicsPanel extends JPanel {
 	}
 	
 	private void drawWinnerMessage(Graphics g) {
-		int fontSize;
 		if (playerHasWon) {
 			String message;
 			if (tanks.size() == 0) { //Initially zero
 				message = "切腹";
-				fontSize = 200;
 			} else if (tanks.size() == 1) {
 				message = "Player " + tanks.get(0).userName + " has won.";
-				fontSize = 100;
 			} else {
 				throw new Error("The game has ended with a number of tanks alive, different from 0 or 1");
 			}
+			
+			//find a font size that allows the whole sring to be shown
+			Font sizedFont;
+			FontMetrics metrics;
+			int fontSize = 210;
+			final String fontName = g.getFont().getFontName();
+			do {
+				fontSize -= 10;
+				sizedFont = new Font(fontName, Font.PLAIN, fontSize);
+				metrics = g.getFontMetrics(sizedFont);
+			} while (metrics.stringWidth(message) > this.getWidth() && fontSize > 10);
+			
+			//start position of the string
+			final int xCoordinate = (this.getWidth() / 2) - metrics.stringWidth(message) / 2;
+			final int yCoordinate = (this.getHeight() / 2);
+			
+			//draw string
+			g.setFont(sizedFont); 
 			g.setColor(Color.BLACK);
-			g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, fontSize)); 
-		    FontMetrics metrics = g.getFontMetrics(g.getFont());
-			int xCoordinate = this.getWidth()/2 - metrics.stringWidth(message)/2;
-			int yCoordinate = this.getHeight()/2;
 			g.drawString(message, xCoordinate, yCoordinate);
 			
 		}		
@@ -89,13 +99,10 @@ public class GraphicsPanel extends JPanel {
 			drawTankGun(tank, g);
 		}
 		
-		g.setColor(Color.BLACK);
 		for (Tank tank : tanks) {
 			drawUserName(tank, g);
 		}
 	}
-
-
 
 	private void drawPowerups(Graphics g) {
 		g.setColor(Color.CYAN);
@@ -104,7 +111,6 @@ public class GraphicsPanel extends JPanel {
 		}
 		
 	}
-
 	
 	private void drawPowerup(Powerup powerup, Graphics g) {
 		final int x = (int)((powerup.x - Powerup.POWERUP_WIDTH / 2) * this.getWidth());
@@ -115,7 +121,6 @@ public class GraphicsPanel extends JPanel {
 		g.fillOval(x, y, width, height);
 		
 	}
-
 
 	private void drawTankHealth(Tank tank, Graphics g) {
 		Polygon healthBar = tank.getHealthBar(this.getWidth(), this.getHeight());
@@ -128,7 +133,6 @@ public class GraphicsPanel extends JPanel {
 		int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
 		g.drawString(tank.userName, xCoordinate, yCoordinate);
 	}
-
 
 	private void drawTankBody(Tank tank, Graphics g)
 	{
@@ -197,7 +201,6 @@ public class GraphicsPanel extends JPanel {
 	{
 		this.walls = walls;
 	}
-
 
 	public void setPlayerHasWon() {
 		playerHasWon = true;

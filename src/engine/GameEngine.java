@@ -28,7 +28,7 @@ public class GameEngine {
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
 	
-	public static final int FPS 				= 60;
+	public static final int FPS 				= 70;
 	public static final double BOARD_MAX_X 		= 1;
 	public static final double BOARD_MAX_Y 		= 1;
 	public static boolean gameIsWon 			= false;

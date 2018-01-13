@@ -41,7 +41,7 @@ public class Client {
 					clientCount = tanks.size();
 				}
 				
-				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
+				if (GameEngine.hasTankWonGame(tanks, -1)) {
 					System.out.println("The game has been won!!!");
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
