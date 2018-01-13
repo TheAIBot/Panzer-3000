@@ -40,9 +40,10 @@ public class GameEngine {
 	 
 	public void startGame(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) {
 		try {
-			Log.message("Starting server");
 			initializeWalls();
 			initializeTanks(clientInfos);
+			
+			Log.message("Starting server");
 			connection = new ServerConnector();			
 			connection.initializeServerConnection(port, clientInfos, startServerSpace);
 			Log.message("Clients connected");
@@ -102,50 +103,28 @@ public class GameEngine {
 		if (LOAD_LEVEL) {
 			loadLevel(LEVEL_NAME);
 		} else {
-			
 			for (int i = 0; i < 10; i++) {
 				walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
 			}
-			
-			byte[] levelBytes;
-			try {
-				levelBytes = DeSerializer.toBytes(walls);
-				Path path = Paths.get(LEVEL_DIRECTORY + "random.lvl");
-				Files.write(path, levelBytes);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-		
-
-
-
-
 	}
 
 	public void loadLevel(String levelName) {
-		byte[] levelBytes;
 		try {
-			Path path = Paths.get(LEVEL_DIRECTORY + levelName + ".lvl");
-			levelBytes = Files.readAllBytes(path);
+			final Path path = Paths.get(LEVEL_DIRECTORY + levelName + ".lvl");
+			final byte[] levelBytes = Files.readAllBytes(path);
 			walls = DeSerializer.toList(levelBytes, Wall.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			Log.exception(e);
 		}
 	}
 	
 	private void createPowerup() {
 		// chance of power up happening is 1/100 [possibly too much?]
-		
 		if ((int) Math.ceil(Math.random() * 100) == Powerup.LUCKY_POWERUP_NUMBER) {
-			Powerup curr = getNewPowerup();
-			powerups.add(curr);
+			powerups.add(getNewPowerup());
 		}
-		
 	}
-
 
 	private Powerup getNewPowerup() {
 		Powerup newPowerup;
@@ -213,7 +192,6 @@ public class GameEngine {
 	}
 	
 	public void update(Input[] inputs) {
-
 		for (int i = 0; i < tanks.size(); i++) {
 			final Tank tank = tanks.get(i);
 			
