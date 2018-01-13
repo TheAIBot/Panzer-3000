@@ -53,9 +53,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 					serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
-				} catch (Exception e) {
-					Log.exception(e);
-				}
+				} catch (Exception e) {	}
 			}
 		}, 0, 1000);
 	}

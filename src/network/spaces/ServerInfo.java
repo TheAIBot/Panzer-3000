@@ -23,14 +23,13 @@ public class ServerInfo {
 	public byte[] toByteArray() throws IOException
 	{
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-			try (DataOutputStream out = new DataOutputStream(stream)) {
-				byte[] publicKeyBytes = publicKey.getEncoded();
-				
+			try (DataOutputStream out = new DataOutputStream(stream)) {				
 				out.writeUTF(name);
 				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
 				out.writeInt(port);
-				Log.message("ServerInfo writing: " + publicKeyBytes.length);
+				
+				final byte[] publicKeyBytes = publicKey.getEncoded();
 				out.writeInt(publicKeyBytes.length);
 				out.write(publicKeyBytes);
 				
@@ -49,10 +48,8 @@ public class ServerInfo {
 				info.clientsConnected = in.readInt();
 				info.port = in.readInt();
 
-				int publicKeyLength = in.readInt();
-				
-				Log.message("ServerInfo reading: " + publicKeyLength);
-				byte[] publicKey = new byte[publicKeyLength];
+				final int publicKeyLength = in.readInt();
+				final byte[] publicKey = new byte[publicKeyLength];
 				in.readFully(publicKey, 0, publicKeyLength);
 				info.publicKey = Crypto.unencode(publicKey);
 				
