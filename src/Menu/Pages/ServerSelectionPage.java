@@ -41,7 +41,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		serverFinder.startListeningForServers();
 		try {
 			serverFinder.searchForServers();
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			Log.exception(e1);
 		}
 		

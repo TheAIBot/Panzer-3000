@@ -1,21 +1,15 @@
 package network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-
-import logger.Log;
-import network.spaces.ServerInfo;
 
 public class NetworkTools {
 	private static String ownIP = null;
@@ -68,21 +62,8 @@ public class NetworkTools {
 		broadcastAddresses = validBroadcastAddresses;
 		return broadcastAddresses;
 	}
-
-	public static byte[] stringToBytes(String message) throws IOException {
-		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-			try (DataOutputStream out = new DataOutputStream(stream)) {
-				out.writeUTF(message);
-				return stream.toByteArray();
-			}
-		}
-	}
-
-	public static String bytesToString(byte[] bytes) throws IOException {
-		try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
-			try (DataInputStream in = new DataInputStream(stream)) {
-				return in.readUTF();
-			}
-		}
+	
+	public static URI createURI(NetworkProtocol protocol, String ipAddress, int port, String spaceName, String mode) throws URISyntaxException {
+		return new URI(protocol.toString() + "://" + ipAddress + ":" + port + "/" + spaceName + "?" + mode);
 	}
 }

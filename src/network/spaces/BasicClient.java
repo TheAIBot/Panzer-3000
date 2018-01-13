@@ -1,5 +1,7 @@
 package network.spaces;
 
+import java.net.URI;
+
 import org.jspace.ActualField;
 import org.jspace.RemoteSpace;
 
@@ -8,6 +10,8 @@ import Menu.GUIControl;
 import Menu.InputHandler;
 import Menu.Pages.GamePage;
 import logger.Log;
+import network.NetworkProtocol;
+import network.NetworkTools;
 import security.Crypto;
 import security.SecureRemoteSpace;
 
@@ -18,10 +22,8 @@ public class BasicClient {
 	private RemoteSpace serverStartAcceptedSpace;
 	private InputHandler inputHandler;
 	private Thread listenForGameStart;
-	private String username;
-	private String salt;
 	private boolean hasJoinedAGame = false;
-	private ClientInfo clientInfo;
+	private ClientInfo clientInfo = new ClientInfo();
 	
 	public BasicClient(InputHandler inputHandler) {
 		this.inputHandler = inputHandler;
@@ -34,15 +36,17 @@ public class BasicClient {
 	
 	public void joinGame(ServerInfo info, String username, final GUIControl guiControl) throws Exception {
 		this.serverInfo = info;
-		this.username = username;
-		this.salt = Crypto.getSaltString(18);
-		//join the game -- connect to servers 
-		serverConnection = new SecureRemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn", info.publicKey);
-		serverStartSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME + "?conn");
-		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
+		this.clientInfo.username = username;
+		this.clientInfo.salt =  Crypto.getSaltString(18);
 		
-		clientInfo.username = username;
-		clientInfo.salt = salt;
+		final URI serverConnectionURI    = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.CLIENT_CONNECT_SPACE_NAME, "conn");
+		final URI serverStartSpaceURI    = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.START_SPACE_NAME         , "conn");
+		final URI serverStartAcceptedURI = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.START_ACCEPTED_SPACE_NAME, "conn");
+		
+		this.serverConnection = new SecureRemoteSpace(serverConnectionURI, info.publicKey);
+		this.serverStartSpace = new RemoteSpace(serverStartSpaceURI);
+		this.serverStartAcceptedSpace = new RemoteSpace(serverStartAcceptedURI);
+		
 		serverConnection.put(clientInfo);
 		hasJoinedAGame = true;
 		
@@ -54,7 +58,7 @@ public class BasicClient {
 				Log.exception(e);
 			}
 			
-			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, salt, inputHandler, guiControl, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo.ipAddress, serverInfo.port, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();
 	}

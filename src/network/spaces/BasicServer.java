@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 
+import engine.DeSerializer;
 import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
@@ -94,7 +95,7 @@ public class BasicServer implements UDPPacketListener {
 	@Override
 	public void packetReceived(byte[] packetData) {
 		try {
-			final String message = NetworkTools.bytesToString(packetData);
+			final String message = (String)DeSerializer.decodeObjects(packetData)[0];
 			if (message.equals(ServerFinder.BROADCAST_MESSAGE)) {
 				UDPConnector.broadcastData(info.toByteArray(), ServerFinder.UDP_PORT_ANSWER);
 			}

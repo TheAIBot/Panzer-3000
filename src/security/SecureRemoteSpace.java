@@ -1,32 +1,28 @@
 package security;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
-import org.jspace.Space;
-import org.jspace.Template;
 import org.jspace.TemplateField;
-import org.jspace.Tuple;
 
 import engine.DeSerializer;
-import logger.Log;
 
 public class SecureRemoteSpace {
 	private final RemoteSpace remote;
 	private final PublicKey repositoryPublicKey;
 	private final KeyPair encryptionKeys;
-	private boolean isOpen = true;
 	
-	public SecureRemoteSpace(String uri, PublicKey repositoryPublicKey) throws UnknownHostException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+	public SecureRemoteSpace(URI uri, PublicKey repositoryPublicKey) throws UnknownHostException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
 		this.remote = new RemoteSpace(uri);
 		this.repositoryPublicKey = repositoryPublicKey;
 		this.encryptionKeys = Crypto.getPair();

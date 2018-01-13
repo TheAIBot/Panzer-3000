@@ -7,15 +7,16 @@ import Menu.GUIControl;
 import Menu.InputHandler;
 import logger.Log;
 import network.spaces.ClientConnector;
+import network.spaces.ClientInfo;
 
 public class Client {
 	boolean hasPlayerWon = false;
 
-	public void startGame(String ipaddress, int port, String username, String salt, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
+	public void startGame(String ipaddress, int port, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, port, username, salt);
+			connection.connectToServer(ipaddress, port, clientInfo);
 			guiControl.gameStarted();
 			Log.message("Client connected");
 			
@@ -28,10 +29,11 @@ public class Client {
 				
 				//The call is blocking, so it won't continue before the update is given
 				Object[] updatedObjects 	= connection.recieveUpdates(); 
-				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
-				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
-				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
+				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[0], Tank.class);
+				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[1], Bullet.class);
+				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[2], Powerup.class);
 				
+				/*
 				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
 					System.out.println("The game has been won!!!");
 					hasPlayerWon = true;
@@ -41,6 +43,7 @@ public class Client {
 					guiControl.gameEnded();
 					return;
 				}
+				*/
 				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
@@ -61,9 +64,5 @@ public class Client {
 			Log.exception(e);
 			guiControl.gameEnded();
 		}
-	}
-
-	private boolean hasTankWonGame(ArrayList<Tank> tanks) {
-		return tanks.size() <= 1;
 	}
 }

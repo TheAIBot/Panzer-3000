@@ -44,7 +44,7 @@ public class GameEngine {
 			Log.message("Clients connected");
 			
 			for (int i = 0; i < tanks.size(); i++) {
-				tanks.get(i).userName = usernames[tanks.get(i).id];
+				tanks.get(i).userName = clientInfos[tanks.get(i).id].username;
 			}	
 
 			// The server will send the initial information first, such that the clients
@@ -66,7 +66,7 @@ public class GameEngine {
 				// Log.message("Updated game");
 				connection.sendUpdates(tanks, bullets, powerups);
 				// Log.message("Sent game state update");
-				if (hasTankWonGame(tanks, tankCount)) {
+				if (hasTankWonGame(tanks, clientInfos.length)) {
 					// Victory!!!
 					System.out.println("The game has been won!!!");
 					break;
