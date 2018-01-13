@@ -1,10 +1,12 @@
-package engine;
+package engine.entities;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import engine.DeSerializer;
 
 public class Bullet extends DeSerializer {
 	public double x;

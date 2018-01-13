@@ -1,4 +1,4 @@
-package engine;
+package engine.entities;
 
 import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
@@ -6,6 +6,8 @@ import java.awt.geom.Line2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import engine.DeSerializer;
 
 public class Wall extends DeSerializer {
 	public double x;

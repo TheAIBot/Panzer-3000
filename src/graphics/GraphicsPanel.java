@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import engine.Bullet;
-import engine.Powerup;
-import engine.Tank;
-import engine.Wall;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 
 public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank>   tanks 	= new ArrayList<Tank>();

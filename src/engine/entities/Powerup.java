@@ -1,9 +1,11 @@
-package engine;
+package engine.entities;
 
 import java.awt.geom.Ellipse2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import engine.DeSerializer;
 
 public class Powerup extends DeSerializer {
 	public double x;

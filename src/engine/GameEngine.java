@@ -12,6 +12,10 @@ import java.util.List;
 import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
 
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 import logger.Log;
 import network.spaces.BasicServer;
 import network.spaces.ClientInfo;

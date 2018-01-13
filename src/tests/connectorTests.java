@@ -11,12 +11,12 @@ import java.util.List;
 
 import org.junit.*;
 
-import engine.Bullet;
 import engine.DeSerializer;
 import engine.Input;
-import engine.Powerup;
-import engine.Tank;
-import engine.Wall;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 import network.spaces.ClientConnector;
 import network.spaces.ServerConnector;
 

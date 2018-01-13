@@ -10,6 +10,10 @@ import java.util.*;
 import org.jspace.*;
 
 import engine.*;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 import network.NetworkProtocol;
 import network.NetworkTools;
 

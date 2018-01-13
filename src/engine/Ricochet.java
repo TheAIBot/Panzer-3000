@@ -4,6 +4,9 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import engine.entities.Bullet;
+import engine.entities.Wall;
+
 public class Ricochet {
 	
 	public static boolean simpleBounce(Bullet bullet, ArrayList<Wall> walls)
