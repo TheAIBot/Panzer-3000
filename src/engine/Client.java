@@ -22,7 +22,7 @@ public class Client {
 			
 			
 			Object[] wallObjects = connection.receiveWalls();
-			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[1], Wall.class);
+			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[0], Wall.class);
 			panel.setWalls(walls);
 			
 			while (!hasPlayerWon) {

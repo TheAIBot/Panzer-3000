@@ -27,7 +27,7 @@ public class ClientConnector {
 	}
 	
 	public Object[] receiveWalls() throws InterruptedException {
-		return privateServerConnections.get(new ActualField("walls"), new FormalField(byte[].class));
+		return privateServerConnections.get(new FormalField(byte[].class));
 	}
 	
 	public Object[] recieveUpdates() throws InterruptedException {

@@ -48,7 +48,7 @@ public class ServerConnector {
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < clientInfos.length; i++) {
 			final byte[] wallBytes = DeSerializer.toBytes(walls);
-			clientSpaces[i].put("walls", wallBytes);
+			clientSpaces[i].put(wallBytes);
 		}
 	}
 	
