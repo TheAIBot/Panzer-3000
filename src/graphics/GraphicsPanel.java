@@ -176,10 +176,10 @@ public class GraphicsPanel extends JPanel {
 	{
 		final int x = (int)((wall.x) * this.getWidth());
 		final int y = (int)((wall.y) * this.getHeight());
-		final int width = (int)(wall.width * this.getWidth());
-		final int height = (int)(wall.height * this.getHeight());
+		final int width = (int)Math.ceil(wall.width * this.getWidth());
+		final int height = (int)Math.ceil(wall.height * this.getHeight());
 		
-		g.fillRect(x, y, width + 1, height + 1);
+		g.fillRect(x, y, width, height);
 	}
 	
 	public void setTanks(ArrayList<Tank> tanks)
