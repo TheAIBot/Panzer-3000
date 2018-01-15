@@ -22,7 +22,7 @@ public class GraphicsPanel extends JPanel {
 	private ArrayList<Bullet> bullets 	= new ArrayList<Bullet>();
 	private ArrayList<Powerup>powerups 	= new ArrayList<Powerup>();
 	private ArrayList<Wall>   walls 	= new ArrayList<Wall>();
-	boolean playerHasWon 				= false;
+	public boolean playerHasWon = false;
 	
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
@@ -41,13 +41,12 @@ public class GraphicsPanel extends JPanel {
 		drawWinnerMessage(g);
 	}
 	
-
-
 	@Override
 	public Dimension getPreferredSize() {
-		int min = Math.min(this.getParent().getWidth(), this.getParent().getHeight());
+		final int min = Math.min(this.getParent().getWidth(), this.getParent().getHeight());
 	    return new Dimension(min, min);
 	}
+
 	
 	private void drawWinnerMessage(Graphics g) {
 		if (playerHasWon) {
@@ -123,27 +122,24 @@ public class GraphicsPanel extends JPanel {
 	}
 
 	private void drawTankHealth(Tank tank, Graphics g) {
-		Polygon healthBar = tank.getHealthBar(this.getWidth(), this.getHeight());
-		g.fillPolygon(healthBar);
+		g.fillPolygon(tank.getHealthBar(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawUserName(Tank tank, Graphics g) {
-	    FontMetrics metrics = g.getFontMetrics(g.getFont());
-		int xCoordinate = (int) (tank.x * this.getWidth() - metrics.stringWidth(tank.userName)/2);
-		int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
+	    final FontMetrics metrics = g.getFontMetrics(g.getFont());
+		final int xCoordinate = (int) (tank.x * this.getWidth() - metrics.stringWidth(tank.userName)/2);
+		final int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
 		g.drawString(tank.userName, xCoordinate, yCoordinate);
 	}
 
 	private void drawTankBody(Tank tank, Graphics g)
 	{
-		Polygon tankBody = tank.getTankRectangle(this.getWidth(), this.getHeight());
-		g.fillPolygon(tankBody);
+		g.fillPolygon(tank.getTankRectangle(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawTankGun(Tank tank, Graphics g)
 	{
-		Polygon gunBody = tank.getGunRectangle(this.getWidth(), this.getHeight());
-		g.fillPolygon(gunBody);
+		g.fillPolygon(tank.getGunRectangle(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawBullets(Graphics g)

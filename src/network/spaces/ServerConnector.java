@@ -66,7 +66,7 @@ public class ServerConnector {
 	}
 	
 	
-	public Input[] reciveUserInputs() throws InterruptedException {
+	public Input[] reciveUserInputs() throws InterruptedException, IOException {
 		Input[] recievedInputs = new Input[clientInfos.length];
 		for (int i = 0; i < clientInfos.length; i++) {
 			final Object[] tuple = clientSpaces[i].get(new FormalField(Input.class));
