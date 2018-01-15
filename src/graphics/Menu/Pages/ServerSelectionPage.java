@@ -94,7 +94,11 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	
 	public void requestStartGame()
 	{
-		client.requestStartGame();
+		try {
+			client.requestStartGame();			
+		} catch (Exception e) {
+			Log.exception(e);
+		}
 	}
 	
 	public void gameStarted() {

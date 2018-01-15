@@ -26,7 +26,7 @@ public class DirectServerConnector extends SuperServerConnector{
 		}
 	}
 	
-	public Input[] reciveUserInputs() throws InterruptedException {
+	public Input[] receiveUserInputs() throws InterruptedException {
 		Input[] recievedInputs = new Input[numClients];
 		for (int i = 0; i < numClients; i++) {
 			//Log.message("Input count: " + clientSpaces[i].size());

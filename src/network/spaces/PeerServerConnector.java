@@ -40,6 +40,15 @@ public class PeerServerConnector extends SuperServerConnector{
 			sharedSpace.put( privateIDArray, createSpaceTuple, ipAddresses);
 		}
 		System.out.println("All id tuples have been placed in the shared space.");
+		
+		//Sending a random seed:
+		
+		sharedSpace.put("Random seed", 9001); //Its over 9000!
+		
+
+		for (int i = 0; i < usernames.length; i++) {
+			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
+		}
 	}
 
 	public ArrayList<String>[] createPrivateIDs(int numClients) {

@@ -24,13 +24,13 @@ public class DirectClientConnector extends SuperClientConnector{
 	}
 
 	@Override
-	public void sendUserInput(Input input) {
+	public void sendUserInput(Input input) throws InterruptedException {
 		input.id = connectionId;
 		privateServerConnections.put(input);		
 	}
 
 	@Override
-	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException {
+	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
 		//As it is the server edition, it makes a private connection with the server.
 		privateServerConnections = new RemoteSpace("tcp://" + ipaddress + ":" + port + "/clientSpace" + connectionId + "?keep");
 		privateServerConnections.put("connected", connectionId);		

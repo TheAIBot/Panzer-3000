@@ -2,6 +2,7 @@ package network.spaces;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -10,8 +11,9 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
-import engine.GameEngine;
+import engine.SuperGameEngine;
 import engine.Input;
+import engine.PeerGameEngine;
 import network.NetworkTools;
 
 public class PeerClientConnector extends SuperClientConnector {
@@ -19,9 +21,9 @@ public class PeerClientConnector extends SuperClientConnector {
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
-	private GameEngine engine = new GameEngine();
+	private PeerGameEngine engine = new PeerGameEngine();
+	private Input currentInput;
 	
-
 
 	@Override
 	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
@@ -84,9 +86,29 @@ public class PeerClientConnector extends SuperClientConnector {
 			}
 			
 		}
+		
+		syncronizeGame(privateClientConnections.length + 1);
 	}
 
 	
+	private void syncronizeGame(int tankCount) throws InterruptedException {
+		//Include some code for sending out the random seed.
+		Object[] randomSeedTuple = sharedSpace.query(new ActualField("Random seed"), new FormalField(Integer.class));
+		int randomSeed = (int) randomSeedTuple[1];
+		engine.setRandomSeed(randomSeed);
+		String[] usernames = new String[associatedUserNames.length + 1];
+		for (int i = 0; i < associatedUserNames.length; i++) {
+			usernames[i] = associatedUserNames[i];
+		}
+		usernames[usernames.length - 1] = username;
+		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
+		engine.initializeGame(tankCount, usernames);
+		//Initial inputs needs to be send. 
+		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
+		sendUserInput(new Input()); 
+	}
+
+
 	@Override
 	public void sendUserInput(Input input) throws InterruptedException {
 		input.id = connectionId;
@@ -94,24 +116,28 @@ public class PeerClientConnector extends SuperClientConnector {
 		for (Space privateClientConnection : privateClientConnections) {
 			privateClientConnection.put(username, input);
 		}		
+		currentInput = input;
 	}
 
 	@Override
 	public Object[] recieveUpdates() throws InterruptedException {
-		Input[] otherPlayerInputs = new Input[privateClientConnections.length];
+		Input[] playerInputs = new Input[privateClientConnections.length + 1];
 		for (int i = 0; i < privateClientConnections.length; i++) {
 			Space privateClientConnection = privateClientConnections[i];
 			Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[i]), new FormalField(Input.class));
+			playerInputs[i] = (Input) tuple[1];
 			System.out.println(((Input) tuple[1]).id);
 		}
-		return null;
+		//Also include the inputs from player, that is using the machine the program is running on!
+		playerInputs[privateClientConnections.length] = currentInput; 
+		
+		return engine.getUpdates(playerInputs);
 	}
 
 
 	@Override
 	public Object[] receiveWalls() throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		return engine.getWalls();
 	}
 
 }

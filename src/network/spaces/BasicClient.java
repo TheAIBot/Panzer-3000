@@ -29,11 +29,11 @@ public class BasicClient {
 	}
 	
 	
-	public void requestStartGame() {
+	public void requestStartGame() throws InterruptedException {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 	
-	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException {
+	public void joinGame(ServerInfo info, String username, final ServerSelectionPage page) throws UnknownHostException, IOException, InterruptedException {
 		this.serverInfo = info;
 		this.username = username;
 		//join the game -- connect to servers 
@@ -51,7 +51,7 @@ public class BasicClient {
 				Log.exception(e);
 			}
 			page.gameStarted();
-			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, menu, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo.ipAddress, serverInfo.port, username, menu, GamePage.GetGraphicsPanel(), true);
 		});
 		listenForGameStart.start();
 	}

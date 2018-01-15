@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
@@ -17,13 +18,14 @@ import network.spaces.BasicServer;
 import network.spaces.DirectServerConnector;
 import network.spaces.SuperServerConnector;
 
-public class GameEngine {
-	DirectServerConnector connection;
-	ArrayList<Tank> tanks = new ArrayList<Tank>();
-	ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-	ArrayList<Wall> walls = new ArrayList<Wall>();
-	ArrayList<Powerup> powerups = new ArrayList<Powerup>();
-	public boolean gameIsWon 			= false;
+public abstract class SuperGameEngine {
+	protected SuperServerConnector connection;
+	protected Random random 				= new Random();
+	protected ArrayList<Tank> tanks 		= new ArrayList<Tank>();
+	protected ArrayList<Bullet> bullets 	= new ArrayList<Bullet>();
+	protected ArrayList<Wall> walls 		= new ArrayList<Wall>();
+	protected ArrayList<Powerup> powerups 	= new ArrayList<Powerup>();
+	public boolean gameHasBeenWon 			= false;
 	
 	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
@@ -34,65 +36,29 @@ public class GameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public void startGame(int port, int tankCount, String[] usernames, SequentialSpace startServerSpace) {
-		try {
-			Log.message("Starting server");
-			initializeWalls();
-			initializeTanks(tankCount);
-			connection = new DirectServerConnector();			
-			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
-			Log.message("Clients connected");
-			
-			for (int i = 0; i < tanks.size(); i++) {
-				tanks.get(i).userName = usernames[tanks.get(i).id];
-			}	
-
-			// The server will send the initial information first, such that the clients
-			// have something to display:
-
-			connection.sendWalls(walls);
-			connection.sendUpdates(tanks, bullets, powerups);
-			Log.message("Sent first update");
-
-			Thread.sleep(2000);
-
-			// Then the main loop can begin:
-
-			while (true) { // Game loop
-				final long startTime = System.currentTimeMillis();
-				Input[] userInputs = connection.reciveUserInputs();
-				// Log.message(userInputs[0].toString());
-				// Log.message("Received inputs from clients");
-				update(userInputs);
-
-				// Log.message("Updated game");
-				connection.sendUpdates(tanks, bullets, powerups);
-				// Log.message("Sent game state update");
-				if (hasTankWonGame(tanks, tankCount)) {
-					// Victory!!!
-					System.out.println("The game has been won!!!");
-					break;
-				}
-				final long timePassed = System.currentTimeMillis() - startTime;
-				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
-				Thread.sleep(timeToSleep);
-			}
-		} catch (Exception e) {
-			Log.exception(e);
-		}
-	}
+	public abstract void startGame(int port, int tankCount, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace);
 
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
 		return tanks.size() <= 1 && tanks.size() != numberOfClients;
 	}
+	
+	
+	public void initializeGame(int tankCount, String[] usernames) {
+		initializeWalls();
+		initializeTanks(tankCount);
 
-	private void initializeTanks(int tankCount) {
+		for (int i = 0; i < tanks.size(); i++) {
+			tanks.get(i).userName = usernames[tanks.get(i).id];
+		}	
+	}
+
+	protected void initializeTanks(int tankCount) {
 		for (int i = 0; i < tankCount; i++) {
 			Tank newTank;
 
 			do {
-				final double xNew = Math.random();
-				final double yNew = Math.random();
+				final double xNew = random.nextDouble();
+				final double yNew = random.nextDouble();
 				newTank = new Tank(xNew, yNew, 0, 0, i);
 				// tank shouldn't spawn inside a wall
 			} while (isTankInsideAnyWall(newTank));
@@ -101,7 +67,7 @@ public class GameEngine {
 		}
 	}
 
-	private void initializeWalls() {
+	protected void initializeWalls() {
 		// top wall
 		walls.add(new Wall(0, -1, 1, 1));
 		// left wall
@@ -117,7 +83,7 @@ public class GameEngine {
 		} else {
 			
 			for (int i = 0; i < 10; i++) {
-				walls.add(new Wall(Math.random(), Math.random(), 0.1, 0.1));
+				walls.add(new Wall(random.nextDouble(), random.nextDouble(), 0.1, 0.1));
 			}
 			
 			byte[] levelBytes;
@@ -130,11 +96,6 @@ public class GameEngine {
 				e.printStackTrace();
 			}
 		}
-		
-
-
-
-
 	}
 
 	public void loadLevel(String levelName) {
@@ -149,10 +110,10 @@ public class GameEngine {
 		}
 	}
 	
-	private void createPowerup() {
+	protected void createPowerup() {
 		// chance of power up happening is 1/100 [possibly too much?]
 		
-		if ((int) Math.ceil(Math.random() * 100) == Powerup.LUCKY_POWERUP_NUMBER) {
+		if ((int) Math.ceil(random.nextDouble() * 100) == Powerup.LUCKY_POWERUP_NUMBER) {
 			Powerup curr = getNewPowerup();
 			powerups.add(curr);
 		}
@@ -160,11 +121,11 @@ public class GameEngine {
 	}
 
 
-	private Powerup getNewPowerup() {
+	protected Powerup getNewPowerup() {
 		Powerup newPowerup;
 		do {
-			final double xNew = Math.random();
-			final double yNew = Math.random();
+			final double xNew = random.nextDouble();
+			final double yNew = random.nextDouble();
 			newPowerup = new Powerup(xNew, yNew, Powerup.POWERUP_HALF_DAMAGE);
 			
 			//Power up shouldn't spawn inside a wall
@@ -192,7 +153,7 @@ public class GameEngine {
 		} 
 	}
 
-	private boolean isPowerupCollected(Powerup powerup) {
+	protected boolean isPowerupCollected(Powerup powerup) {
 		final Point2D.Double powerupLoc = new Point2D.Double(powerup.x * Tank.SCALAR, powerup.y * Tank.SCALAR);
 
 		final Iterator<Tank> tankIterator = tanks.iterator();
@@ -201,7 +162,7 @@ public class GameEngine {
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
 			if (tankPolygon.contains(powerupLoc)) {
-				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType()));
+				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType(random)));
 				return true;
 			}
 			
@@ -209,7 +170,7 @@ public class GameEngine {
 		return false;
 	}
 
-	private List<Wall> wallsFromMatrix(boolean[][] levelMatrix){
+	protected List<Wall> wallsFromMatrix(boolean[][] levelMatrix){
 		List<Wall> level  = new ArrayList<Wall>();
 		double wallHeight = 1/(double) levelMatrix[0].length;
 		double wallWidth  = 1/(double) levelMatrix.length;//BasicClient.MENU_WIDTH /levelMatrix.length;
@@ -289,7 +250,7 @@ public class GameEngine {
 	}
 
 	// returns false if bullet must be deleted
-	private Boolean updateBulletLocation(Bullet bullet) {
+	protected Boolean updateBulletLocation(Bullet bullet) {
 		bullet.move();
 
 		final boolean isBulletDead = Ricochet.simpleBounce(bullet, walls);
@@ -301,7 +262,7 @@ public class GameEngine {
 	}
 
 	// returns true if bullet hits
-	private Boolean checkDamage(Bullet bullet) {
+	protected Boolean checkDamage(Bullet bullet) {
 		final Point2D.Double bulletPos = new Point2D.Double(bullet.x * Tank.SCALAR, bullet.y * Tank.SCALAR);
 
 		final Iterator<Tank> tankIterator = tanks.iterator();
@@ -325,7 +286,7 @@ public class GameEngine {
 		return false;
 	}
 
-	private void updateGunAngle(Tank currTank, double pointerX, double pointerY) {
+	protected void updateGunAngle(Tank currTank, double pointerX, double pointerY) {
 		final double x = pointerX - currTank.x;
 		final double y = pointerY - currTank.y;
 
@@ -333,7 +294,7 @@ public class GameEngine {
 	}
 
 	// true: clockwise, false: counterclockwise
-	private void angleTank(Tank currTank, boolean angle) {
+	protected void angleTank(Tank currTank, boolean angle) {
 		final double angleAddition = angle ? Math.toRadians(Tank.TURNING_ANGLE) : -Math.toRadians(Tank.TURNING_ANGLE);
 
 		currTank.bodyAngle += angleAddition;
@@ -343,7 +304,7 @@ public class GameEngine {
 	}
 
 	// true: forward, false: backward
-	private void moveTank(Tank currTank, Boolean direction) {
+	protected void moveTank(Tank currTank, Boolean direction) {
 		final double x = Math.cos(currTank.bodyAngle) * Tank.TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
 		final double y = Math.sin(currTank.bodyAngle) * Tank.TANK_MOVEMENT_DISTANCE * (direction ? -1 : 1);
 		currTank.x += x;
@@ -358,7 +319,7 @@ public class GameEngine {
 	}
 	
 
-	private boolean isTankInsideAnyWall(Tank tank) {
+	protected boolean isTankInsideAnyWall(Tank tank) {
 		for (Wall wall : walls) {
 			if (wall.collidesWith(tank)) {
 				return true;
@@ -367,7 +328,7 @@ public class GameEngine {
 		return false;
 	}
 	
-	private boolean isPowerupInsideAnyWall(Powerup powerup)
+	protected boolean isPowerupInsideAnyWall(Powerup powerup)
 	{
 		for (Wall wall : walls) {
 			if (wall.collidesWith(powerup)) {

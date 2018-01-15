@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.junit.*;
 
+
 import engine.Bullet;
+import engine.Client;
 import engine.DeSerializer;
 import engine.Input;
 import engine.Powerup;
@@ -27,6 +29,10 @@ public class connectorTests {
 	
 	public static void main(String[] args) throws InterruptedException {
 		final int numberOfClients = 2;
+		
+		
+		
+		
 		String[] usernames = new String[] {"a", "b", "c", "d"};
 		PeerServerConnector serverConnector = new PeerServerConnector();
 		serverConnector.forcedIPAdress = "localhost";
@@ -39,6 +45,19 @@ public class connectorTests {
 			} 
 		}).start();
 		Thread.sleep(1000);
+		
+		Client[] clients  = new Client[numberOfClients];		
+		for (int i = 0; i < clients.length; i++) {
+			final int k = i;
+			clients[k] = new Client();
+			String ipaddress = "localhost";
+			new Thread(() -> {
+				clients[k].startGame(ipaddress, 9001, usernames[k], null, null, true);
+			}).start();
+		}
+		
+		
+		/*
 		for (int i = 0; i < numberOfClients; i++) {
 			final int k = i;
 			new Thread(() -> {
@@ -55,6 +74,8 @@ public class connectorTests {
 				} 
 			}).start();
 		}
+		*/
+		
 	}
 	/*
 	SuperServerConnector server;

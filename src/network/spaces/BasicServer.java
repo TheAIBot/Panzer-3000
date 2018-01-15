@@ -19,7 +19,9 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 
 import engine.Client;
-import engine.GameEngine;
+import engine.PeerGameEngine;
+import engine.ServerGameEngine;
+import engine.SuperGameEngine;
 import logger.Log;
 import network.NetworkTools;
 import network.udp.ServerFinder;
@@ -31,7 +33,7 @@ public class BasicServer implements UDPPacketListener {
 	private SequentialSpace	clientConnectSpace;
 	private SequentialSpace startSpace;
 	private SequentialSpace startAcceptedSpace;
-	private ServerInfo info;
+	public  ServerInfo info;
 	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
@@ -48,7 +50,8 @@ public class BasicServer implements UDPPacketListener {
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
 	}
 	
-	public void startServer() throws IOException {		
+	public void startServer() throws IOException {	
+		
 		clientConnectSpace = new SequentialSpace();
 		startSpace 		   = new SequentialSpace();
 		startAcceptedSpace = new SequentialSpace();
@@ -83,7 +86,7 @@ public class BasicServer implements UDPPacketListener {
 		}
 		
 		new Thread(() -> {
-			new GameEngine().startGame(info.port , usernames.length, usernames, startAcceptedSpace);
+			new PeerGameEngine().startGame(info.port , usernames.length, usernames, new PeerServerConnector(), startAcceptedSpace);
 		}).start();
 	}
 
