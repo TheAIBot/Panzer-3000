@@ -239,6 +239,7 @@ public class GameEngine {
 			bullet.timeAlive--;
 			if (!bullet.stillAlive()) {
 				bulletIterator.remove();
+				continue;
 			}
 
 			if (!updateBulletLocation(bullet)) {
