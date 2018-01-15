@@ -19,8 +19,8 @@ public class Bullet extends DeSerializer {
 	public int bulletDamage;
 	
 	public static final double BULLET_SIZE = 0.01;
-	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
-	public static final int BULLET_TIME_ALIVE = 170;
+	public static final double BULLET_MOVEMENT_DISTANCE = 0.005;
+	public static final int BULLET_TIME_ALIVE = 400;
 	
 	public Bullet(double xNew, double yNew, double sizeNew, double angleNew, int damage) {
 		x = xNew;
