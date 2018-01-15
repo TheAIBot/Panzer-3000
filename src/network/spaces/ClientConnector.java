@@ -18,26 +18,26 @@ import network.NetworkTools;
 import security.SecureRemoteSpace;
 
 public class ClientConnector {
-	public SecureRemoteSpace 	privateServerConnections;
+	public RemoteSpace 	privateServerConnections;
 	
 	public void connectToServer(ServerInfo info, ClientInfo clientInfo) throws Exception {
 		//first connect to server through private connection
 		final URI privateServerConnectionURI = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, clientInfo.salt, "keep");
-		this.privateServerConnections = new SecureRemoteSpace(privateServerConnectionURI, info.publicKey);
+		this.privateServerConnections = new RemoteSpace(privateServerConnectionURI);
 		
 		//then tell the server that the connection has been created
-		privateServerConnections.putWithIdentifier("connected");
+		privateServerConnections.put("connected");
 	}
 	
 	public Object[] receiveWalls() throws Exception {
-		return privateServerConnections.getWithIdentifier(new ActualField("walls"));
+		return privateServerConnections.get(new FormalField(byte[].class));
 	}
 	
 	public Object[] recieveUpdates() throws Exception {
-		return privateServerConnections.getWithIdentifier(new ActualField("update"));
+		return privateServerConnections.get(new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
 	}	
 	
 	public void sendUserInput(Input input) throws Exception {
-		privateServerConnections.putWithIdentifier("input", input); 
+		privateServerConnections.put(input); 
 	}
 }

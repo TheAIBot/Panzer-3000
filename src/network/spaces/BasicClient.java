@@ -1,8 +1,10 @@
 package network.spaces;
 
 import java.net.URI;
+import java.security.PublicKey;
 
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import engine.Client;
@@ -58,7 +60,7 @@ public class BasicClient {
 				Log.exception(e);
 			}
 			
-			new Client().startGame(serverInfo.ipAddress, serverInfo.port, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel());
 		});
 		listenForGameStart.start();
 	}

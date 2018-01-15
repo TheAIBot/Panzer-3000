@@ -12,15 +12,16 @@ import engine.entities.Wall;
 import logger.Log;
 import network.spaces.ClientConnector;
 import network.spaces.ClientInfo;
+import network.spaces.ServerInfo;
 
 public class Client {
 	boolean hasPlayerWon = false;
 
-	public void startGame(String ipaddress, int port, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
+	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
 		try {
 			Log.message("Starting client");
 			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, port, clientInfo);
+			connection.connectToServer(serverInfo, clientInfo);
 			guiControl.gameStarted();
 			Log.message("Client connected");
 			

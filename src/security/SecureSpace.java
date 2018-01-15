@@ -26,6 +26,14 @@ public class SecureSpace {
 		return SecureSpaceTools.findAllMatchingTuples(space, encryptionKeys.getPrivate(), true, true, fields).get(0);
 	}
 	
+	public boolean putWithIdentifier(PublicKey publicKey, Object identifier, Object... fields) throws Exception {
+		return SecureSpaceTools.encryptAndPutWithIdentifier(space, publicKey, identifier, fields);
+	}
+	
+	public Object[] getWithIdentifier(TemplateField identifierField) throws Exception {
+		return SecureSpaceTools.getAndDecryptWithIdentifier(space, encryptionKeys.getPrivate(), identifierField);
+	}
+	
 	public ArrayList<Object[]> getAll(TemplateField...fields) throws Exception {
 		return SecureSpaceTools.findAllMatchingTuples(space, encryptionKeys.getPrivate(), true, false, fields);
 	}

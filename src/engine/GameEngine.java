@@ -60,7 +60,7 @@ public class GameEngine {
 				
 				update(connection.reciveUserInputs());
 				connection.sendUpdates(tanks, bullets, powerups);
-
+				
 				final long timePassed = System.currentTimeMillis() - startTime;
 				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
 				Thread.sleep(timeToSleep);

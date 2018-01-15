@@ -21,13 +21,13 @@ import security.SecureSpace;
 public class ServerConnector {	
 	private SpaceRepository repository;
 	private ClientInfo[] clientInfos;
-	private SecureSpace[] clientSpaces;
+	private SequentialSpace[] clientSpaces;
 	
 	
 	public void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException, URISyntaxException {
 		this.clientInfos = clientInfos;		
 		this.repository = new SpaceRepository();
-		this.clientSpaces = new SecureSpace[clientInfos.length];
+		this.clientSpaces = new SequentialSpace[clientInfos.length];
 		
 		//all clients will communicate with the server through this gate
 		final URI gateURI = NetworkTools.createURI(NetworkProtocol.TCP, NetworkTools.getIpAddress(), port, "", "keep");
@@ -35,9 +35,8 @@ public class ServerConnector {
 		
 		//add a private space for each client
 		for (int i = 0; i < clientSpaces.length; i++) {
-			final SequentialSpace space = new SequentialSpace();
-			repository.add(clientInfos[i].salt, space);
-			clientSpaces[i] = new SecureSpace(space);
+			clientSpaces[i] = new SequentialSpace();
+			repository.add(clientInfos[i].salt, clientSpaces[i]);
 		}
 		
 		//tell the clients that they can now connect
@@ -47,7 +46,7 @@ public class ServerConnector {
 		
 		//waits for all clients to connect
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].(new ActualField("connected"));
+				clientSpaces[id].get(new ActualField("connected"));
 		}
 	}
 	
