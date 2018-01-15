@@ -36,15 +36,21 @@ public class SecureRemoteSpace {
 		return SecureSpaceTools.encryptAndPut(remote, repositoryPublicKey, fields);
 	}
 	
+	public boolean putWithIdentifier(Object identifier, Object... fields) throws Exception {
+		return SecureSpaceTools.encryptAndPutWithIdentifier(remote, repositoryPublicKey, identifier, fields);
+	}
+	
+	public Object[] getWithIdentifier(TemplateField identifierField) throws Exception {
+		return SecureSpaceTools.getAndDecryptWithIdentifier(remote, encryptionKeys.getPrivate(), identifierField);
+	}
+	
 	public Object[] getEncryptedTuple(ActualField... fields) throws Exception {
 		final Object[] objectFields = new Object[fields.length];
 		for (int i = 0; i < objectFields.length; i++) {
 			objectFields[i] = fields[i].getValue();
 		}
 		
-		final byte[] unencryptedBytes = DeSerializer.encodeObjects(objectFields);
-		final byte[] encryptedBytes = Crypto.encrypt(unencryptedBytes, repositoryPublicKey);
-		
+		final byte[] encryptedBytes = Crypto.encryptFields(repositoryPublicKey, objectFields);		
 		return remote.get(new ActualField(encryptedBytes));
 	}
 	
