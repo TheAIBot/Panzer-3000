@@ -71,7 +71,7 @@ public class BasicClient {
 	}
 	
 	public String[] getPlayerNames(ServerInfo info) throws InterruptedException, UnknownHostException, IOException {
-		final List<Object[]> tuples = serverConnection.queryAll(new FormalField(String.class));
+		final List<Object[]> tuples = serverConnection.queryAll(new FormalField(String.class), new FormalField(String.class));
 		
 		final String[] playerNames = new String[tuples.size()];
 		for (int i = 0; i < playerNames.length; i++) {

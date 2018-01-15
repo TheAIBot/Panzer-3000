@@ -43,11 +43,11 @@ public class PeerServerConnector extends SuperServerConnector{
 				String id = privateIDTuple.get(j);
 				privateIDArray[j] 	= id;				
 				if (j >= i) {
-					createSpaceTuple[i] = true;
+					createSpaceTuple[j] = true;
 					idToIP.put(id, allIPAddresses[i]); //Notice that it is ip i, not j.	
-					associatedIPAddresses[i] = allIPAddresses[i]; //If it should create the space, its own ip address is needed.
+					associatedIPAddresses[j] = allIPAddresses[i]; //If it should create the space, its own ip address is needed.
 				} else {
-					associatedIPAddresses[i] = idToIP.get(id); //If the other client should create the space, its ip address is needed.
+					associatedIPAddresses[j] = idToIP.get(id); //If the other client should create the space, its ip address is needed.
 				}
 			}
 			
