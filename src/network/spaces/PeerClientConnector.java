@@ -32,6 +32,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	private PeerGameEngine engine = new PeerGameEngine();
 	private Input currentInput;
 	private CompletableFuture<Void>[] runningTasks;
+	boolean firstTick = true;
 
 	@Override
 	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
@@ -119,8 +120,6 @@ public class PeerClientConnector extends SuperClientConnector {
 		
 		//Initial inputs needs to be send. 
 		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
-		
-		sendUserInput(new Input()); 
 	}
 
 
@@ -144,37 +143,48 @@ public class PeerClientConnector extends SuperClientConnector {
 	@Override
 	public Object[] recieveUpdates() throws InterruptedException {
 		Input[] playerInputs = new Input[privateClientConnections.length + 1];
-		try {
-			CompletableFuture.allOf(runningTasks).get();
-			
-			for (int i = 0; i < privateClientConnections.length; i++) {
-				final int k = i;
-				runningTasks[i] = CompletableFuture.runAsync(() -> {
-					try {
-						Space privateClientConnection = privateClientConnections[k];
-						Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
-						Input receivedInput = (Input) tuple[1];
-						playerInputs[receivedInput.id] = receivedInput;							
-					} catch (Exception e) {
-						Log.exception(e);					
-					}
-				});
+		if (firstTick) {
+			firstTick = false;
+			for (int i = 0; i < playerInputs.length; i++) {
+				playerInputs[i] = new Input();
+				playerInputs[i].id = i;
+			}
+			return engine.getUpdates(playerInputs);
+		} else {
+			try {
+				CompletableFuture.allOf(runningTasks).get();
+				
+				for (int i = 0; i < privateClientConnections.length; i++) {
+					final int k = i;
+					runningTasks[i] = CompletableFuture.runAsync(() -> {
+						try {
+							Space privateClientConnection = privateClientConnections[k];
+							Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
+							Input receivedInput = (Input) tuple[1];
+							//Sorting them:
+							playerInputs[receivedInput.id] = receivedInput;							
+						} catch (Exception e) {
+							Log.exception(e);					
+						}
+					});
+				}
+				
+			} catch (ExecutionException e) {
+				Log.exception(e);
 			}
 			
-		} catch (ExecutionException e) {
-			Log.exception(e);
+			//Also include the inputs from player, that is using the machine the program is running on!
+			playerInputs[currentInput.id] = currentInput; 		
+			
+			try {
+				CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!
+			} catch (Exception e) {
+				Log.exception(e);
+			}			
+			return engine.getUpdates(playerInputs);
 		}
 		
-		//Also include the inputs from player, that is using the machine the program is running on!
-		playerInputs[currentInput.id] = currentInput; 		
 		
-		try {
-			CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!
-		} catch (Exception e) {
-			Log.exception(e);
-		}
-		
-		return engine.getUpdates(playerInputs);
 	}
 
 
