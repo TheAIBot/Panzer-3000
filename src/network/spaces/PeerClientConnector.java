@@ -11,6 +11,7 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
+
 import engine.SuperGameEngine;
 import engine.Input;
 import engine.PeerGameEngine;
@@ -34,6 +35,10 @@ public class PeerClientConnector extends SuperClientConnector {
 		String[]  privateConnectionIDs 	 = (String[])  privateConnectionTuple[0];
 		boolean[] shouldCreateSpaces	 = (boolean[]) privateConnectionTuple[1];
 		String[]  ipAddresses			 = (String[])  privateConnectionTuple[2];
+		System.out.println("The ip addresses:");
+		for (int i = 0; i < ipAddresses.length; i++) {
+			System.out.println(ipAddresses[i]);			
+		}
 		
 		privateRepositories 			 = new SpaceRepository[privateConnectionIDs.length];
 		privateClientConnections 		 = new Space[privateConnectionIDs.length];
@@ -76,6 +81,7 @@ public class PeerClientConnector extends SuperClientConnector {
 			} 
 			//If the other client is making the private space:
 			else {				
+				Thread.sleep(500); //TODOHack: needs to be removed
 				//It needs to get the port for the private space:
 				int privatePort = (int) sharedSpace.get(new ActualField("port"), new ActualField(privateConnectionIDs[i]), new FormalField(Integer.class))[2];
 				
