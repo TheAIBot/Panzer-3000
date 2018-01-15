@@ -50,9 +50,9 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			@Override
 			public void run() {
 				try {
-					//serverFinder.searchForServers();
+					serverFinder.searchForServers();
 					
-					//serverListPage.updateServerInfo();
+					serverListPage.updateServerInfo();
 				} catch (Exception e) {	}
 			}
 		}, 0, 1000);
@@ -89,7 +89,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		client.joinGame(info, username, controller);
 	}
 	
-	public void requestStartGame()
+	public void requestStartGame() throws InterruptedException
 	{
 		serverUpdateTimer.cancel();
 		serverFinder.stopListeningForServers();

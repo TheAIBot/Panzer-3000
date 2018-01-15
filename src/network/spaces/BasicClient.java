@@ -30,7 +30,7 @@ public class BasicClient {
 	}
 	
 	
-	public void requestStartGame() {
+	public void requestStartGame() throws InterruptedException {
 		serverStartSpace.put(BasicServer.REQUEST_START_GAME, 1);
 	}
 	

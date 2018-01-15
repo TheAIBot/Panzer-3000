@@ -34,7 +34,7 @@ public class ClientConnector {
 		return privateServerConnections.get(new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
 	}	
 	
-	public void sendUserInput(Input input) throws IOException {
+	public void sendUserInput(Input input) throws IOException, InterruptedException {
 		privateServerConnections.put(input);		
 	}
 }

@@ -87,7 +87,11 @@ public class ServerList extends JPanel implements ListSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (selectedInfo != null) {
-					serverPage.requestStartGame();
+					try {
+						serverPage.requestStartGame();
+					} catch (InterruptedException e1) {
+						Log.exception(e1);
+					}
 				}
 			}
 		});
