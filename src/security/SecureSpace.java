@@ -5,7 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.jspace.FormalField;
 import org.jspace.Space;
 import org.jspace.TemplateField;
 
@@ -36,6 +38,18 @@ public class SecureSpace {
 	
 	public ArrayList<Object[]> getAll(TemplateField...fields) throws Exception {
 		return SecureSpaceTools.findAllMatchingTuples(space, encryptionKeys.getPrivate(), true, false, fields);
+	}
+	
+	public ArrayList<Object[]> getAllWithIdentifier(TemplateField identifier) throws Exception {
+		final List<Object[]> result = space.getAll(identifier, new FormalField(byte[].class));
+		
+		final ArrayList<Object[]> unencrypted = new ArrayList<Object[]>();
+		for (Object[] objects : result) {
+			final byte[] encryptedBytes = (byte[])objects[1];
+			unencrypted.add(Crypto.decryptFields(encryptedBytes, encryptionKeys.getPrivate()));
+		}
+		
+		return unencrypted;
 	}
 	
 	public PublicKey getPublicKey() {

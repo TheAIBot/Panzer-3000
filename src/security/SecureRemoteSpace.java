@@ -27,9 +27,9 @@ public class SecureRemoteSpace {
 		this.repositoryPublicKey = repositoryPublicKey;
 		this.encryptionKeys = Crypto.getPair();
 	}
-
-	public int size() throws InterruptedException {
-		return remote.queryAll(new FormalField(byte[].class)).size();
+	
+	public int tuplesWithIdentifierCount(TemplateField identifier) throws InterruptedException {
+		return remote.queryAll(identifier, new FormalField(byte[].class)).size();
 	}
 
 	public boolean put(Object... fields) throws Exception {
@@ -44,14 +44,8 @@ public class SecureRemoteSpace {
 		return SecureSpaceTools.getAndDecryptWithIdentifier(remote, encryptionKeys.getPrivate(), identifierField);
 	}
 	
-	public Object[] getEncryptedTuple(ActualField... fields) throws Exception {
-		final Object[] objectFields = new Object[fields.length];
-		for (int i = 0; i < objectFields.length; i++) {
-			objectFields[i] = fields[i].getValue();
-		}
-		
-		final byte[] encryptedBytes = Crypto.encryptFields(repositoryPublicKey, objectFields);		
-		return remote.get(new ActualField(encryptedBytes));
+	public void removeWithIdentifier(TemplateField identiferField) throws InterruptedException {
+		remote.get(identiferField, new FormalField(byte[].class));
 	}
 	
 	//This is not a blocking call.

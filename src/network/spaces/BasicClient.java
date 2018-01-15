@@ -49,7 +49,7 @@ public class BasicClient {
 		this.serverStartSpace = new RemoteSpace(serverStartSpaceURI);
 		this.serverStartAcceptedSpace = new RemoteSpace(serverStartAcceptedURI);
 		
-		serverConnection.put(clientInfo);
+		serverConnection.putWithIdentifier(clientInfo.username, clientInfo);
 		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
@@ -57,7 +57,8 @@ public class BasicClient {
 			try {
 				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
-				Log.exception(e);
+				//Log.exception(e);
+				return;
 			}
 			
 			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel());
@@ -67,7 +68,8 @@ public class BasicClient {
 	
 	public void leaveGame() throws Exception
 	{
-		serverConnection.getEncryptedTuple(new ActualField(clientInfo));
+		//serverConnection.getEncryptedTuple(new ActualField(clientInfo));
+		serverConnection.removeWithIdentifier(new ActualField(clientInfo.username));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
 		serverConnection.close();
@@ -81,6 +83,6 @@ public class BasicClient {
 	}
 	
 	public int getPlayerCount(ServerInfo info) throws Exception {
-		return serverConnection.size();
+		return serverConnection.tuplesWithIdentifierCount(new FormalField(String.class));
 	}
 }

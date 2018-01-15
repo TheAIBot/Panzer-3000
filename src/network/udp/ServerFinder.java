@@ -2,7 +2,6 @@ package network.udp;
 
 import engine.DeSerializer;
 import logger.Log;
-import network.spaces.ServerFoundListener;
 import network.spaces.ServerInfo;
 
 public class ServerFinder implements UDPPacketListener {	

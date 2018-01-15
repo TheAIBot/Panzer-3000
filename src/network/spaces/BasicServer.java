@@ -80,7 +80,7 @@ public class BasicServer implements UDPPacketListener {
 	}
 	
 	private void startGame() throws Exception {
-		final ArrayList<Object[]> users = clientConnectSpace.getAll(new FormalField(ClientInfo.class));
+		final ArrayList<Object[]> users = clientConnectSpace.getAllWithIdentifier(new FormalField(String.class));
 		
 		final ClientInfo[] clientInfos = new ClientInfo[users.size()];
 		for (int i = 0; i < clientInfos.length; i++) {
@@ -88,7 +88,7 @@ public class BasicServer implements UDPPacketListener {
 		}
 		
 		new Thread(() -> {
-			new GameEngine().startGame(info.port , clientInfos, startAcceptedSpace);
+			new GameEngine().startGame(info.port, clientInfos, startAcceptedSpace);
 		}).start();
 	}
 

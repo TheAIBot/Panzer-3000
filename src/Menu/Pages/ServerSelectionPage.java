@@ -13,9 +13,9 @@ import Menu.MenuController;
 import logger.Log;
 import network.spaces.BasicClient;
 import network.spaces.BasicServer;
-import network.spaces.ServerFoundListener;
 import network.spaces.ServerInfo;
 import network.udp.ServerFinder;
+import network.udp.ServerFoundListener;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
 	BasicClient client = new BasicClient(controller);
