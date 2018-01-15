@@ -55,7 +55,7 @@ public class DirectServerConnector extends SuperServerConnector{
 	}
 
 	@Override
-	protected void initilizePrivateConnections(SequentialSpace startServerSpace) throws InterruptedException {
+	protected void initilizePrivateConnections(SequentialSpace startServerSpace, String[] ipaddresses) throws InterruptedException {
 		//Adds all the user ID's
 		for (int i = 0; i < usernames.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	

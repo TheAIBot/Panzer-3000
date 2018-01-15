@@ -31,10 +31,10 @@ public class PeerClientConnector extends SuperClientConnector {
 		
 		//As it is the peer-to-peer version, it needs to make a private connection with every client.
 		
-		Object[]  privateConnectionTuple = sharedSpace.get(new FormalField(String[].class), new FormalField(boolean[].class), new FormalField(String[].class));
-		String[]  privateConnectionIDs 	 = (String[])  privateConnectionTuple[0];
-		boolean[] shouldCreateSpaces	 = (boolean[]) privateConnectionTuple[1];
-		String[]  ipAddresses			 = (String[])  privateConnectionTuple[2];
+		Object[]  privateConnectionTuple = sharedSpace.get(new ActualField(connectionId), new FormalField(String[].class), new FormalField(boolean[].class), new FormalField(String[].class));
+		String[]  privateConnectionIDs 	 = (String[])  privateConnectionTuple[1];
+		boolean[] shouldCreateSpaces	 = (boolean[]) privateConnectionTuple[2];
+		String[]  ipAddresses			 = (String[])  privateConnectionTuple[3];
 		System.out.println("The ip addresses:");
 		for (int i = 0; i < ipAddresses.length; i++) {
 			System.out.println(ipAddresses[i]);			
@@ -81,7 +81,7 @@ public class PeerClientConnector extends SuperClientConnector {
 			} 
 			//If the other client is making the private space:
 			else {				
-				Thread.sleep(500); //TODOHack: needs to be removed
+				Thread.sleep(500); //TODO Hack: needs to be removed
 				//It needs to get the port for the private space:
 				int privatePort = (int) sharedSpace.get(new ActualField("port"), new ActualField(privateConnectionIDs[i]), new FormalField(Integer.class))[2];
 				

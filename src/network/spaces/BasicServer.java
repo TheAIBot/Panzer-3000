@@ -5,6 +5,8 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -78,15 +80,17 @@ public class BasicServer implements UDPPacketListener {
 	}
 	
 	public void startGame() {
-		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class));
+		final LinkedList<Object[]> users = clientConnectSpace.getAll(new FormalField(String.class), new FormalField(String.class));
 		
 		final String[] usernames = new String[users.size()]; 
+		final String[] ipaddresses = new String[users.size()];
 		for (int i = 0; i < usernames.length; i++) {
 			usernames[i] = (String) users.get(i)[0];
+			ipaddresses[i] = (String) users.get(i)[1];
 		}
 		
 		new Thread(() -> {
-			new PeerGameEngine().startGame(info.port , usernames.length, usernames, new PeerServerConnector(), startAcceptedSpace);
+			new PeerGameEngine().startGame(info.port , usernames.length, ipaddresses, usernames, new PeerServerConnector(), startAcceptedSpace);
 		}).start();
 	}
 

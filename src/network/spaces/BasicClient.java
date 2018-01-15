@@ -13,6 +13,7 @@ import graphics.Menu.MenuController;
 import graphics.Menu.Pages.GamePage;
 import graphics.Menu.Pages.ServerSelectionPage;
 import logger.Log;
+import network.NetworkTools;
 
 public class BasicClient {
 	private ServerInfo serverInfo;
@@ -40,7 +41,7 @@ public class BasicClient {
 		serverConnection 		 = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.CLIENT_CONNECT_SPACE_NAME + "?conn");
 		serverStartSpace 		 = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_SPACE_NAME 		 + "?conn");
 		serverStartAcceptedSpace = new RemoteSpace("tcp://" + info.ipAddress + ":" + info.port + "/" + BasicServer.START_ACCEPTED_SPACE_NAME + "?conn");
-		serverConnection.put(username);
+		serverConnection.put(username, NetworkTools.getIpAddress());
 		hasJoinedAGame = true;
 		
 		//listen for when to call startGame
@@ -57,7 +58,7 @@ public class BasicClient {
 	}
 	
 	public void leaveGame() throws InterruptedException, IOException {
-		serverConnection.get(new ActualField(username));
+		serverConnection.get(new ActualField(username), new ActualField(NetworkTools.getIpAddress()));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
 		serverConnection.close();

@@ -29,7 +29,7 @@ public abstract class SuperServerConnector implements Runnable {
 	public String forcedIPAdress = "";
 	
 	
-	public void initializeServerConnection(int port, int numClients, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
+	public void initializeServerConnection(int port, int numClients, String[] ipaddresses, String[] usernames, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException {
 		this.numClients = numClients;
 		this.numConnectedClients = 0;
 		this.ipAddress = (forcedIPAdress.equals(""))? NetworkTools.getIpAddress() : forcedIPAdress;
@@ -57,10 +57,10 @@ public abstract class SuperServerConnector implements Runnable {
 			sharedSpace.put(id, usernames[id]);
 		}
 		
-		initilizePrivateConnections(startServerSpace);		
+		initilizePrivateConnections(startServerSpace, ipaddresses);		
 	}
 	
-	protected abstract void initilizePrivateConnections(SequentialSpace startServerSpace) throws InterruptedException;
+	protected abstract void initilizePrivateConnections(SequentialSpace startServerSpace, String [] ipaddresses) throws InterruptedException;
 
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < numClients; i++) {

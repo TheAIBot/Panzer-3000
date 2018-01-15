@@ -2,6 +2,7 @@ package network.spaces;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.jspace.SequentialSpace;
@@ -20,25 +21,41 @@ public class PeerServerConnector extends SuperServerConnector{
 	}
 
 	@Override
-	protected void initilizePrivateConnections(SequentialSpace startServerSpace) throws InterruptedException {
+	protected void initilizePrivateConnections(SequentialSpace startServerSpace, String[] allIPAddresses) throws InterruptedException {
 		//It creates the different tuples with private id's (every client should take exactly one):
 		ArrayList<String>[] privateIDTuples = createPrivateIDs(numClients);
-		for (int i = 0; i < privateIDTuples.length; i++) {
+		TreeMap<String, String> idToIP 		= new TreeMap<String, String>();
+		
+		for (int i = 0; i < privateIDTuples.length; i++) { //Client i gets tuple i.
+			
+			
 			ArrayList<String> privateIDTuple = privateIDTuples[i];
+			
 			//Only one of the two clients that receive the same server ID, should create the space/repository.
 			//This is assured with the boolean array below: true means create the space, false to simply connect.
-			boolean[] createSpaceTuple 	= new boolean[numClients - 1];
-			String[] privateIDArray 	= new  String[numClients - 1];
-			String[] ipAddresses		= new  String[numClients - 1];
-			for (int j = i; j < createSpaceTuple.length; j++) {
-				createSpaceTuple[j] = true;
+			
+			boolean[] createSpaceTuple 		= new boolean[numClients - 1];
+			String[]  privateIDArray 		= new  String[numClients - 1];
+			String[]  associatedIPAddresses = new  String[numClients - 1];
+			
+			for (int j = 0; j < privateIDArray.length; j++) {
+
+				String id = privateIDTuple.get(j);
+				privateIDArray[j] 	= id;				
+				if (j >= i) {
+					createSpaceTuple[i] = true;
+					idToIP.put(id, allIPAddresses[i]); //Notice that it is ip i, not j.	
+					associatedIPAddresses[i] = allIPAddresses[i]; //If it should create the space, its own ip address is needed.
+				} else {
+					associatedIPAddresses[i] = idToIP.get(id); //If the other client should create the space, its ip address is needed.
+				}
 			}
-			for (int j = 0; j < ipAddresses.length; j++) {
-				privateIDArray[j] 	= privateIDTuple.get(j);
-				ipAddresses[j] 		= "localhost";
-			}
-			sharedSpace.put( privateIDArray, createSpaceTuple, ipAddresses);
+			
+			//The i corresponds to the connection id.
+			sharedSpace.put(i, privateIDArray, createSpaceTuple, associatedIPAddresses);
+			
 		}
+		
 		System.out.println("All id tuples have been placed in the shared space.");
 		
 		//Sending a random seed:

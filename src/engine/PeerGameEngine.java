@@ -14,10 +14,11 @@ public class PeerGameEngine extends SuperGameEngine {
 	long startTime;
 	
 	@Override
-	public void startGame(int port, int tankCount, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace) {
+	public void startGame(int port, int tankCount, String[] ipaddresses, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace) {
 
 		try {
-			connection.initializeServerConnection(port, tankCount, usernames, startServerSpace);
+			
+			connection.initializeServerConnection(port, tankCount, ipaddresses, usernames, startServerSpace);
 		} catch (UnknownHostException | SocketException | InterruptedException e) {
 			Log.exception(e);
 		}
