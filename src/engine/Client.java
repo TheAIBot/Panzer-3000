@@ -40,6 +40,7 @@ public class Client {
 				
 				if (firstUpdate) {
 					clientCount = tanks.size();
+					firstUpdate = false;
 				}
 				
 				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
