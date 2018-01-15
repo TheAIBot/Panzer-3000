@@ -131,12 +131,11 @@ public class PeerClientConnector extends SuperClientConnector {
 		for (int i = 0; i < privateClientConnections.length; i++) {
 			Space privateClientConnection = privateClientConnections[i];
 			Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[i]), new FormalField(Input.class));
-			playerInputs[i] = (Input) tuple[1];
-			System.out.println(((Input) tuple[1]).id);
+			Input receivedInput = (Input) tuple[1];
+			playerInputs[receivedInput.id] = receivedInput;
 		}
 		//Also include the inputs from player, that is using the machine the program is running on!
-		playerInputs[privateClientConnections.length] = currentInput; 
-		
+		playerInputs[currentInput.id] = currentInput; 		
 		return engine.getUpdates(playerInputs);
 	}
 
