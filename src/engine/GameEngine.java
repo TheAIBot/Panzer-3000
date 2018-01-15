@@ -68,6 +68,7 @@ public class GameEngine {
 		} catch (Exception e) {
 			Log.exception(e);
 		}
+		connection.close();
 	}
 
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {

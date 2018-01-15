@@ -79,4 +79,8 @@ public class ServerConnector {
 		
 		return recievedInputs;
 	}
+	
+	public void close() {
+		repository.closeGates();
+	}
 }
