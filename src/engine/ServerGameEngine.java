@@ -6,10 +6,10 @@ import logger.Log;
 import network.spaces.DirectServerConnector;
 import network.spaces.SuperServerConnector;
 
-public class ServerGameEngine extends SuperGameEngine{
+public class ServerGameEngine extends SuperGameEngine {
 
 	@Override
-	public void startGame(int port, int tankCount. String[] ipaddresses, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace) {
+	public void startGame(int port, int tankCount, String[] ipaddresses, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace) {
 		try {
 			Log.message("Starting server");
 			

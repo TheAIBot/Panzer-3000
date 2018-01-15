@@ -3,6 +3,10 @@ package network.spaces;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -13,18 +17,21 @@ import org.jspace.SpaceRepository;
 
 
 import engine.SuperGameEngine;
+import logger.Log;
 import engine.Input;
 import engine.PeerGameEngine;
 import network.NetworkTools;
+import sun.util.logging.resources.logging;
 
 public class PeerClientConnector extends SuperClientConnector {
 
+	
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
 	private PeerGameEngine engine = new PeerGameEngine();
 	private Input currentInput;
-	
+	private CompletableFuture<Void>[] runningTasks;
 
 	@Override
 	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
@@ -92,7 +99,7 @@ public class PeerClientConnector extends SuperClientConnector {
 			}
 			
 		}
-		
+		runningTasks = new CompletableFuture[privateClientConnections.length];
 		syncronizeGame(privateClientConnections.length + 1);
 	}
 
@@ -109,8 +116,10 @@ public class PeerClientConnector extends SuperClientConnector {
 		usernames[usernames.length - 1] = username;
 		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
 		engine.initializeGame(tankCount, usernames);
+		
 		//Initial inputs needs to be send. 
 		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
+		
 		sendUserInput(new Input()); 
 	}
 
@@ -118,24 +127,53 @@ public class PeerClientConnector extends SuperClientConnector {
 	@Override
 	public void sendUserInput(Input input) throws InterruptedException {
 		input.id = connectionId;
-		//TODO discern between who is inputting what.
-		for (Space privateClientConnection : privateClientConnections) {
-			privateClientConnection.put(username, input);
-		}		
+		
+		for (int i = 0; i < associatedUserNames.length; i++) {
+			final int k = i;
+			runningTasks[i] = CompletableFuture.runAsync(() -> {
+				try {
+					privateClientConnections[k].put(username, input);
+				} catch (InterruptedException e) {
+					Log.exception(e);
+				}
+			});
+		}
 		currentInput = input;
 	}
 
 	@Override
 	public Object[] recieveUpdates() throws InterruptedException {
 		Input[] playerInputs = new Input[privateClientConnections.length + 1];
-		for (int i = 0; i < privateClientConnections.length; i++) {
-			Space privateClientConnection = privateClientConnections[i];
-			Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[i]), new FormalField(Input.class));
-			Input receivedInput = (Input) tuple[1];
-			playerInputs[receivedInput.id] = receivedInput;
+		try {
+			CompletableFuture.allOf(runningTasks).get();
+			
+			for (int i = 0; i < privateClientConnections.length; i++) {
+				final int k = i;
+				runningTasks[i] = CompletableFuture.runAsync(() -> {
+					try {
+						Space privateClientConnection = privateClientConnections[k];
+						Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
+						Input receivedInput = (Input) tuple[1];
+						playerInputs[receivedInput.id] = receivedInput;							
+					} catch (Exception e) {
+						Log.exception(e);					
+					}
+				});
+			}
+			
+		} catch (ExecutionException e) {
+			Log.exception(e);
 		}
+		
 		//Also include the inputs from player, that is using the machine the program is running on!
 		playerInputs[currentInput.id] = currentInput; 		
+		
+		try {
+			CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!
+		} catch (Exception e) {
+			Log.exception(e);
+		}
+		
 		return engine.getUpdates(playerInputs);
 	}
 

@@ -38,7 +38,7 @@ public class connectorTests {
 		serverConnector.forcedIPAdress = "localhost";
 		new Thread(() -> {
 			try {
-				serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
+				//serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

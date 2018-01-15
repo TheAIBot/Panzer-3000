@@ -36,7 +36,7 @@ public abstract class SuperGameEngine {
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
 	 
 	 
-	public abstract void startGame(int port, int tankCount, String[] usernames, String[] ipaddresses, SuperServerConnector connection, SequentialSpace startServerSpace);
+	public abstract void startGame(int port, int tankCount, String[] ipaddresses, String[] usernames, SuperServerConnector connection, SequentialSpace startServerSpace);
 
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
 		return tanks.size() <= 1 && tanks.size() != numberOfClients;
