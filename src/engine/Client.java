@@ -43,21 +43,21 @@ public class Client {
 					firstUpdate = false;
 				}
 				
-				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
-					System.out.println("The game has been won!!!");
-					hasPlayerWon = true;
-					panel.setPlayerHasWon();
-					
-					Thread.sleep(2000);
-					guiControl.gameEnded();
-					return;
-				}
-				
 				//Here the graphics needs to render the things seen above
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
 				panel.setPowerups(powerups);
 				panel.repaint();
+				
+				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
+					hasPlayerWon = true;
+					panel.setPlayerHasWon();
+					panel.repaint();
+					
+					Thread.sleep(2000);
+					guiControl.gameEnded();
+					return;
+				}
 				
 				//finally send the inputs to the server.			
 				connection.sendUserInput(inputHandler.getInput());
