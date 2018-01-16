@@ -14,6 +14,20 @@ public class Input extends DeSerializer {
 	public double x = 0;
 	public double y = 0;
 	
+	public Input(boolean w, boolean a, boolean s, boolean d, boolean click, double x, double y) {
+		this.w = w;
+		this.a = a;
+		this.s = s;
+		this.d = d;
+		this.click = click;
+		this.x = x;
+		this.y = y;
+	}
+	
+	public Input() {
+		
+	}
+	
 	@Override
 	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeInt(id);
@@ -58,5 +72,9 @@ public class Input extends DeSerializer {
 		b.append(y);
 		
 		return b.toString();
-	}	
+	}
+	
+	public Input copy() {
+		return new Input(w, a, s, d, click, x, y);
+	}
 }

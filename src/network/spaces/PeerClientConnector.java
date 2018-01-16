@@ -33,9 +33,19 @@ public class PeerClientConnector extends SuperClientConnector {
 	private Input currentInput;
 	private CompletableFuture<Void>[] runningTasks;
 	boolean firstTick = true;
+	
+	@Override
+	public void connectToServer(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException {
+		this.clientInfo = clientInfo;
+		
+		sharedSpace		= new RemoteSpace("tcp://" + serverInfo.ipAddress + ":" + serverInfo.port + "/updateSpace?keep");
+		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
+		connectionId   	= (int) tuple[0];
+		initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
+	}
 
 	@Override
-	protected void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
+	public void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
 		
 		//As it is the peer-to-peer version, it needs to make a private connection with every client.
 		
@@ -182,15 +192,11 @@ public class PeerClientConnector extends SuperClientConnector {
 				Log.exception(e);
 			}			
 			return engine.getUpdates(playerInputs);
-		}
-		
-		
+		}	
 	}
-
 
 	@Override
 	public Object[] receiveWalls() throws InterruptedException {
 		return engine.getWalls();
 	}
-
 }

@@ -1,11 +1,21 @@
 package network.spaces;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.jspace.SequentialSpace;
+import org.jspace.SpaceRepository;
+
+import engine.DeSerializer;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
+import network.NetworkProtocol;
+import network.NetworkTools;
 
 
 public class PeerServerConnector extends SuperServerConnector {
@@ -13,15 +23,40 @@ public class PeerServerConnector extends SuperServerConnector {
 	public static final String SALTCHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	public static final int RANDOM_STRING_LENGTH = 12;
 	private TreeSet<String> privateIDs = new TreeSet<String>();
+	protected SequentialSpace		sharedSpace;
+	protected SequentialSpace[] 	clientSpaces;
+	protected String UPDATE_SPACE_NAME = "updateSpace";
+	protected String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
 	
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
+	public void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws Exception {
+		this.clientInfos = clientInfos;
+		this.repository 	 = new SpaceRepository();
+		this.sharedSpace  = new SequentialSpace();
+		this.clientSpaces = new SequentialSpace[clientInfos.length];
 		
+		final URI gateURI = NetworkTools.createURI(NetworkProtocol.TCP, NetworkTools.getIpAddress(), port, "", "keep");
+		repository.addGate(gateURI);
+		repository.add(UPDATE_SPACE_NAME, sharedSpace);
+		
+		
+		for (int i = 0; i < clientSpaces.length; i++) {
+			clientSpaces[i] = new SequentialSpace();
+			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
+		}
+		
+		//Some initial information for all the clients:
+		
+		//The server delegates the id's
+		for (int id = 0; id < clientSpaces.length; id++) {
+			sharedSpace.put(id, clientInfos[id].username);
+		}
+		
+		initilizePrivateConnections(startServerSpace, clientInfos);		
 	}
 
 	@Override
-	protected void initilizePrivateConnections(SequentialSpace startServerSpace, ClientInfo[] clientInfos) throws InterruptedException {
+	public void initilizePrivateConnections(SequentialSpace startServerSpace, ClientInfo[] clientInfos) throws InterruptedException {
 		//It creates the different tuples with private id's (every client should take exactly one):
 		ArrayList<String>[] privateIDTuples = createPrivateIDs(clientInfos.length);
 		TreeMap<String, String> idToIP 		= new TreeMap<String, String>();
@@ -89,7 +124,6 @@ public class PeerServerConnector extends SuperServerConnector {
 		}
 		return graphOfRandomStrings;
 	}
-
 	
 	public static String getRandomString() {
 		StringBuilder salt = new StringBuilder();
@@ -100,4 +134,28 @@ public class PeerServerConnector extends SuperServerConnector {
         }
         return salt.toString();
 	}
+
+	@Override
+	public void sendWalls(ArrayList<Wall> walls) throws Exception {
+		for (int i = 0; i < clientInfos.length; i++) {
+			byte[] wallBytes = DeSerializer.toBytes(walls);
+			sharedSpace.put("walls", wallBytes);
+		}
+	}
+
+	@Override
+	public void sendUpdate(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void closeConnections() {
+		repository.remove(UPDATE_SPACE_NAME);
+		for (int i = 0; i < clientSpaces.length; i++) {
+			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
+		}
+		repository.closeGates();
+	}
+
 }
