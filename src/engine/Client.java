@@ -29,7 +29,8 @@ public class Client {
 				connection = null;
 				//connection = new DirectClientConnector();
 			}
-			connection.connectToServer(serverInfo, clientInfo);
+			connection.connect(serverInfo, clientInfo);
+			connection.initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
 			guiControl.gameStarted();
 			Log.message("Client connected");
 			

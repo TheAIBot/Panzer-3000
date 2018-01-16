@@ -1,5 +1,6 @@
 package network.spaces;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Random;
@@ -10,6 +11,7 @@ import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
 import engine.DeSerializer;
+import engine.Input;
 import engine.entities.Bullet;
 import engine.entities.Powerup;
 import engine.entities.Tank;
@@ -50,13 +52,11 @@ public class PeerServerConnector extends SuperServerConnector {
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
 			sharedSpace.put(id, clientInfos[id].username);
-		}
-		
-		initilizePrivateConnections(startServerSpace, clientInfos);		
+		}	
 	}
 
 	@Override
-	public void initilizePrivateConnections(SequentialSpace startServerSpace, ClientInfo[] clientInfos) throws InterruptedException {
+	public void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException {
 		//It creates the different tuples with private id's (every client should take exactly one):
 		ArrayList<String>[] privateIDTuples = createPrivateIDs(clientInfos.length);
 		TreeMap<String, String> idToIP 		= new TreeMap<String, String>();
@@ -146,7 +146,12 @@ public class PeerServerConnector extends SuperServerConnector {
 	@Override
 	public void sendUpdate(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws Exception {
 		// TODO Auto-generated method stub
-		
+	}
+	
+	@Override
+	public Input[] receiveUserInputs() throws InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -157,5 +162,4 @@ public class PeerServerConnector extends SuperServerConnector {
 		}
 		repository.closeGates();
 	}
-
 }

@@ -19,13 +19,15 @@ import org.jspace.SpaceRepository;
 import engine.GameEngine;
 import logger.Log;
 import engine.Input;
-import engine.PeerGameEngine;
 import network.NetworkTools;
 import sun.util.logging.resources.logging;
 
 public class PeerClientConnector extends SuperClientConnector {
-
 	
+	public RemoteSpace 	sharedSpace;
+	public int 			connectionId;
+	public int 			numberOfClients;
+	public ClientInfo clientInfo;	
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
@@ -35,13 +37,12 @@ public class PeerClientConnector extends SuperClientConnector {
 	boolean firstTick = true;
 	
 	@Override
-	public void connectToServer(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException {
+	public void connect(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException {
 		this.clientInfo = clientInfo;
 		
 		sharedSpace		= new RemoteSpace("tcp://" + serverInfo.ipAddress + ":" + serverInfo.port + "/updateSpace?keep");
 		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
 		connectionId   	= (int) tuple[0];
-		initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
 	}
 
 	@Override

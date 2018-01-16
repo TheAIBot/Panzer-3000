@@ -17,10 +17,11 @@ import network.NetworkProtocol;
 import network.NetworkTools;
 import security.SecureRemoteSpace;
 
-public class ClientConnector {
+public class ClientConnector extends SuperClientConnector {
 	public RemoteSpace 	privateServerConnections;
 	
-	public void connectToServer(ServerInfo info, ClientInfo clientInfo) throws Exception {
+	@Override
+	public void connect(ServerInfo info, ClientInfo clientInfo) throws Exception {
 		//first connect to server through private connection
 		final URI privateServerConnectionURI = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, clientInfo.salt, "keep");
 		this.privateServerConnections = new RemoteSpace(privateServerConnectionURI);
@@ -29,15 +30,22 @@ public class ClientConnector {
 		privateServerConnections.put("connected");
 	}
 	
-	public Object[] receiveWalls() throws Exception {
+	@Override
+	public void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
+	}
+	
+	@Override
+	public void sendUserInput(Input input) throws InterruptedException {
+		privateServerConnections.put(input); 
+	}
+	
+	@Override
+	public Object[] receiveWalls() throws InterruptedException {
 		return privateServerConnections.get(new FormalField(byte[].class));
 	}
 	
-	public Object[] recieveUpdates() throws Exception {
+	@Override
+	public Object[] recieveUpdates() throws InterruptedException {
 		return privateServerConnections.get(new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
-	}	
-	
-	public void sendUserInput(Input input) throws Exception {
-		privateServerConnections.put(input); 
 	}
 }

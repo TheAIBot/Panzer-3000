@@ -48,20 +48,21 @@ public class GameEngine {
 			
 			Log.message("Starting server");	
 			connection.initializeServerConnection(port, clientInfos, startServerSpace);
+			connection.initilizePrivateConnections(clientInfos, startServerSpace);
 			Log.message("Clients connected");
 
 			// The server will send the initial information first, such that the clients
 			// have something to display:
 			connection.sendWalls(walls);
-			((DirectServerConnector) connection).sendUpdates(tanks, bullets, powerups);
+			connection.sendUpdate(tanks, bullets, powerups);
 			Log.message("Sent first update");
 
 			// Then the main loop can begin:
 			do {
 				final long startTime = System.currentTimeMillis();
 				
-				update(((DirectServerConnector) connection).receiveUserInputs());
-				((DirectServerConnector) connection).sendUpdates(tanks, bullets, powerups);
+				update(connection.receiveUserInputs());
+				connection.sendUpdate(tanks, bullets, powerups);
 				
 				final long timePassed = System.currentTimeMillis() - startTime;
 				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
@@ -365,5 +366,14 @@ public class GameEngine {
 
 	public ArrayList<Bullet> getBullets() {
 		return bullets;
+	}
+
+	public ArrayList<Wall> getWalls() {
+		return walls;
+	}
+	
+	public void setRandomSeed(int seed)
+	{
+		random = new Random(seed);
 	}
 }
