@@ -34,9 +34,9 @@ public class PeerServerConnector extends SuperServerConnector {
 			//Only one of the two clients that receive the same server ID, should create the space/repository.
 			//This is assured with the boolean array below: true means create the space, false to simply connect.
 			
-			boolean[] createSpaceTuple 		= new boolean[numClients - 1];
-			String[]  privateIDArray 		= new  String[numClients - 1];
-			String[]  associatedIPAddresses = new  String[numClients - 1];
+			boolean[] createSpaceTuple 		= new boolean[clientInfos.length - 1];
+			String[]  privateIDArray 		= new  String[clientInfos.length - 1];
+			String[]  associatedIPAddresses = new  String[clientInfos.length - 1];
 			
 			for (int j = 0; j < privateIDArray.length; j++) {
 
@@ -44,8 +44,8 @@ public class PeerServerConnector extends SuperServerConnector {
 				privateIDArray[j] 	= id;				
 				if (j >= i) {
 					createSpaceTuple[j] = true;
-					idToIP.put(id, allIPAddresses[i]); //Notice that it is ip i, not j.	
-					associatedIPAddresses[j] = allIPAddresses[i]; //If it should create the space, its own ip address is needed.
+					idToIP.put(id, clientInfos[i].ipaddress); //Notice that it is ip i, not j.	
+					associatedIPAddresses[j] = clientInfos[i].ipaddress; //If it should create the space, its own ip address is needed.
 				} else {
 					associatedIPAddresses[j] = idToIP.get(id); //If the other client should create the space, its ip address is needed.
 				}
@@ -63,7 +63,7 @@ public class PeerServerConnector extends SuperServerConnector {
 		sharedSpace.put("Random seed", 9001); //Its over 9000!
 		
 
-		for (int i = 0; i < usernames.length; i++) {
+		for (int i = 0; i < clientInfos.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
 	}

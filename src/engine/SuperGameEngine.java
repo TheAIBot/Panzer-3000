@@ -44,8 +44,7 @@ public abstract class SuperGameEngine {
 	 
 	public void startGame(int port, ClientInfo[] clientInfos, SuperServerConnector connection, SequentialSpace startServerSpace) throws Exception {
 		try {
-			initializeWalls();
-			initializeTanks(clientInfos);
+			initializeGame(clientInfos);
 			
 			Log.message("Starting server");	
 			connection.initializeServerConnection(port, clientInfos, startServerSpace);
@@ -77,15 +76,28 @@ public abstract class SuperGameEngine {
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
 		return tanks.size() <= 1 && tanks.size() != numberOfClients;
 	}
+	
+	public void initializeGame(ClientInfo[] clientInfos) {
+		final String[] usernames = new String[clientInfos.length];
+		for (int i = 0; i < usernames.length; i++) {
+			usernames[i] = clientInfos[i].username;
+		}
+		initializeGame(usernames);
+	}
+	
+	public void initializeGame(String[] usernames) {
+		initializeWalls();
+		initializeTanks(usernames);
+	}
 
-	protected void initializeTanks(ClientInfo[] clientInfos) {
-		for (int i = 0; i < clientInfos.length; i++) {
+	protected void initializeTanks(String[] usernames) {
+		for (int i = 0; i < usernames.length; i++) {
 			Tank newTank;
 
 			do {
 				final double xNew = random.nextDouble();
 				final double yNew = random.nextDouble();
-				newTank = new Tank(xNew, yNew, 0, 0, i, clientInfos[i].username);
+				newTank = new Tank(xNew, yNew, 0, 0, i, usernames[i]);
 				// tank shouldn't spawn inside a wall
 			} while (isTankInsideAnyWall(newTank));
 

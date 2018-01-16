@@ -14,8 +14,7 @@ public class ServerGameEngine extends SuperGameEngine {
 		try {
 			Log.message("Starting server");
 			
-			initializeWalls();
-			initializeTanks(clientInfos);
+			initializeGame(clientInfos);
 			
 			this.connection = connection;			
 			connection.initializeServerConnection(port, clientInfos, startServerSpace);

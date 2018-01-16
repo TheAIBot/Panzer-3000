@@ -29,7 +29,6 @@ public class Client {
 			} else {
 				connection = new DirectClientConnector();
 			}
-			connection.connectToServer(ipaddress, port, username);
 			connection.connectToServer(serverInfo, clientInfo);
 			guiControl.gameStarted();
 			Log.message("Client connected");
@@ -42,10 +41,10 @@ public class Client {
 			boolean firstUpdate = true;
 			int clientCount = 0;
 			while (true) {
-				final Object[] updatedObjects = connection.recieveUpdates(); 
-				final ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[0], Tank.class);
-				final ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[1], Bullet.class);
-				final ArrayList<Powerup> powerups   = DeSerializer.toList((byte[])updatedObjects[2], Powerup.class);
+				final Object[] updatedObjects = connection.recieveUpdates();
+				final ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
+				final ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
+				final ArrayList<Powerup> powerups   = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
 				
 				if (firstUpdate) {
 					clientCount = tanks.size();

@@ -17,7 +17,7 @@ import engine.entities.Tank;
 public class DirectServerConnector extends SuperServerConnector{
 
 	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws InterruptedException, IOException {
-		for (int i = 0; i < numClients; i++) {
+		for (int i = 0; i < clientInfos.length; i++) {
 			byte[] tankBytes = DeSerializer.toBytes(tanks);
 			byte[] bulletBytes = DeSerializer.toBytes(bullets);
 			byte[] powerupBytes = DeSerializer.toBytes(powerups);
@@ -27,8 +27,8 @@ public class DirectServerConnector extends SuperServerConnector{
 	}
 	
 	public Input[] receiveUserInputs() throws InterruptedException {
-		Input[] recievedInputs = new Input[numClients];
-		for (int i = 0; i < numClients; i++) {
+		Input[] recievedInputs = new Input[clientInfos.length];
+		for (int i = 0; i < clientInfos.length; i++) {
 			//Log.message("Input count: " + clientSpaces[i].size());
 			final Object[] tuple = clientSpaces[i].get(new FormalField(Input.class));
 			//Log.message("Input count: " + clientSpaces[i].size());
@@ -44,7 +44,7 @@ public class DirectServerConnector extends SuperServerConnector{
 		for (int i = 0; i < clientSpaces.length; i++) {
 			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
 		}
-		repository.closeGate(repositioryGateURI);
+		repository.closeGates();;
 		
 	}
 
@@ -55,16 +55,15 @@ public class DirectServerConnector extends SuperServerConnector{
 	}
 
 	@Override
-	protected void initilizePrivateConnections(SequentialSpace startServerSpace, String[] ipaddresses) throws InterruptedException {
+	protected void initilizePrivateConnections(SequentialSpace startServerSpace, ClientInfo[] clientInfos) throws InterruptedException {
 		//Adds all the user ID's
-		for (int i = 0; i < usernames.length; i++) {
+		for (int i = 0; i < clientInfos.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
 		
 		//And waits for all clients to connect:
 		for (int id = 0; id < clientSpaces.length; id++) {				
-				clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
-				numConnectedClients++;
+			clientSpaces[id].get(new ActualField("connected"), new ActualField(id));
 		}
 	}
 }

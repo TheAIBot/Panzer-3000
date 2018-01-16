@@ -13,14 +13,14 @@ import engine.*;
 import engine.entities.Wall;
 import network.NetworkProtocol;
 import network.NetworkTools;
+
 public abstract class SuperServerConnector implements Runnable {	
 	public SpaceRepository 	repository;
-	public String[] usernames;
 	protected SequentialSpace		sharedSpace;
-	private SequentialSpace[] 	clientSpaces;
-	private String UPDATE_SPACE_NAME = "updateSpace";
-	private String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
-	private ClientInfo[] clientInfos;
+	protected SequentialSpace[] 	clientSpaces;
+	protected String UPDATE_SPACE_NAME = "updateSpace";
+	protected String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
+	protected ClientInfo[] clientInfos;
 	
 	
 	public void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException, URISyntaxException {		
@@ -43,7 +43,7 @@ public abstract class SuperServerConnector implements Runnable {
 		
 		//The server delegates the id's
 		for (int id = 0; id < clientSpaces.length; id++) {
-			sharedSpace.put(id, usernames[id]);
+			sharedSpace.put(id, clientInfos[id].username);
 		}
 		
 		initilizePrivateConnections(startServerSpace, clientInfos);		

@@ -14,13 +14,14 @@ public abstract class SuperClientConnector implements Runnable{
 
 	public RemoteSpace 	sharedSpace;
 	public int 			connectionId;
-	public String		username;
 	public int 			numberOfClients;
+	public ClientInfo clientInfo;
 	
 	public void connectToServer(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException {
-		this.username = username;
+		this.clientInfo = clientInfo;
+		
 		sharedSpace		= new RemoteSpace("tcp://" + serverInfo.ipAddress + ":" + serverInfo.port + "/updateSpace?keep");
-		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(username));
+		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
 		connectionId   	= (int) tuple[0];
 		initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
 	}

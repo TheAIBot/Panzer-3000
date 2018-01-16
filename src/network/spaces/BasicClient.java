@@ -41,6 +41,7 @@ public class BasicClient {
 		this.serverInfo = info;
 		this.clientInfo.username = username;
 		this.clientInfo.salt =  Crypto.getSaltString(18);
+		this.clientInfo.ipaddress = NetworkTools.getIpAddress();
 		
 		final URI serverConnectionURI    = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.CLIENT_CONNECT_SPACE_NAME, "conn");
 		final URI serverStartSpaceURI    = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.START_SPACE_NAME         , "conn");

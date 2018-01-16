@@ -15,15 +15,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 
-<<<<<<< HEAD
-import engine.DeSerializer;
-import engine.GameEngine;
-=======
 import engine.Client;
+import engine.DeSerializer;
 import engine.PeerGameEngine;
 import engine.ServerGameEngine;
 import engine.SuperGameEngine;
->>>>>>> refs/remotes/origin/peer_to_peer
 import logger.Log;
 import network.NetworkTools;
 import network.udp.ServerFinder;
@@ -99,7 +95,11 @@ public class BasicServer implements UDPPacketListener {
 		}
 		
 		new Thread(() -> {
-			new GameEngine().startGame(info.port, clientInfos, startAcceptedSpace);
+			try {
+				new PeerGameEngine().startGame(info.port, clientInfos, new PeerServerConnector(), startAcceptedSpace);
+			} catch (Exception e) {
+				Log.exception(e);
+			}
 		}).start();
 	}
 

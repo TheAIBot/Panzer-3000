@@ -82,7 +82,7 @@ public class PeerClientConnector extends SuperClientConnector {
 				//TODO currently it is just taken by the other client, without going through the server.
 				//One might also simply encrypt it using the other clients public key.
 				
-				privateClientConnections[i].put("Creator", username);
+				privateClientConnections[i].put("Creator", clientInfo.username);
 				associatedUserNames[i] = (String) privateClientConnections[i].get(new ActualField("Reciever"), new FormalField(String.class))[1];
 				System.out.println(connectionId + " has connected to " + privateConnectionIDs[i]);
 				
@@ -94,7 +94,7 @@ public class PeerClientConnector extends SuperClientConnector {
 				int privatePort = (int) sharedSpace.get(new ActualField("port"), new ActualField(privateConnectionIDs[i]), new FormalField(Integer.class))[2];
 				
 				privateClientConnections[i] = new RemoteSpace("tcp://" + ipAddresses[i] + ":" + privatePort + "/" + privateConnectionIDs[i] + "?keep");
-				privateClientConnections[i].put("Reciever", username);
+				privateClientConnections[i].put("Reciever", clientInfo.username);
 				associatedUserNames[i] = (String) privateClientConnections[i].get(new ActualField("Creator"), new FormalField(String.class))[1];
 				System.out.println(connectionId + " has connected to " + privateConnectionIDs[i]);
 			}
@@ -114,9 +114,9 @@ public class PeerClientConnector extends SuperClientConnector {
 		for (int i = 0; i < associatedUserNames.length; i++) {
 			usernames[i] = associatedUserNames[i];
 		}
-		usernames[usernames.length - 1] = username;
+		usernames[usernames.length - 1] = clientInfo.username;
 		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
-		engine.initializeGame(tankCount, usernames);
+		engine.initializeGame(usernames);
 		
 		//Initial inputs needs to be send. 
 		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
@@ -131,7 +131,7 @@ public class PeerClientConnector extends SuperClientConnector {
 			final int k = i;
 			runningTasks[i] = CompletableFuture.runAsync(() -> {
 				try {
-					privateClientConnections[k].put(username, input);
+					privateClientConnections[k].put(clientInfo.username, input);
 				} catch (InterruptedException e) {
 					Log.exception(e);
 				}
