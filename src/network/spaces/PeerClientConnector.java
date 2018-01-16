@@ -176,12 +176,12 @@ public class PeerClientConnector extends SuperClientConnector {
 		} catch (ExecutionException e) {
 			Log.exception(e);
 		}
+		playerInputs[currentInput.id] = currentInput; 		
 		
 		sharedSpace.put("Inputs recieved", "Client " + connectionId, playerInputs);
 		sharedSpace.get(new ActualField("Seen inputs"), new ActualField("Client " + connectionId));
 		
 		//Also include the inputs from player, that is using the machine the program is running on!
-		playerInputs[currentInput.id] = currentInput; 		
 		
 		try {
 			CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!

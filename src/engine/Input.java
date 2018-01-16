@@ -40,4 +40,24 @@ public class Input {
 		return b.toString();
 	}
 	
+	public boolean equals(Object o) {
+		
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		} else {
+			Input input = (Input) o;
+			if (this.id != input.id ||
+				this.w != input.w ||
+				this.a != input.a ||
+				this.s != input.a ||
+				this.d != input.a ||
+				this.click != input.click ||
+				this.x != input.x ||
+				this.y != input.y) {
+				return false;
+			}
+		}		
+		return true;		
+	}
+	
 }
