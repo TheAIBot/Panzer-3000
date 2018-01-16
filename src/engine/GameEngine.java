@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
 
 import engine.entities.Bullet;
@@ -18,14 +18,10 @@ import engine.entities.Powerup;
 import engine.entities.Tank;
 import engine.entities.Wall;
 import logger.Log;
-import network.spaces.BasicServer;
 import network.spaces.ClientInfo;
-import network.spaces.DirectServerConnector;
-import network.spaces.ServerConnector;
 import network.spaces.SuperServerConnector;
 
 public class GameEngine {
-	protected SuperServerConnector connection;
 	protected Random random 				= new Random();
 	protected ArrayList<Tank> tanks 		= new ArrayList<Tank>();
 	protected ArrayList<Bullet> bullets 	= new ArrayList<Bullet>();
@@ -40,24 +36,40 @@ public class GameEngine {
 	public static final String LEVEL_NAME 		= "basic";
 	public static final String LEVEL_DIRECTORY 	= "src/levels/";
 	public static final double TANK_MOVEMENT_DISTANCE = 0.006;
-	 
-	 
+	
 	public void startGame(int port, ClientInfo[] clientInfos, SuperServerConnector connection, SequentialSpace startServerSpace) throws Exception {
 		try {
-			initializeGame(clientInfos);
+			final String[] usernames = new String[clientInfos.length];
+			for (int i = 0; i < usernames.length; i++) {
+				usernames[i] = clientInfos[i].username;
+			}
 			
-			Log.message("Starting server");	
-			connection.initializeServerConnection(port, clientInfos, startServerSpace);
-			connection.initilizePrivateConnections(clientInfos, startServerSpace);
-			Log.message("Clients connected");
-
-			// The server will send the initial information first, such that the clients
-			// have something to display:
-			connection.sendWalls(walls);
-			connection.sendUpdate(tanks, bullets, powerups);
-			Log.message("Sent first update");
+			prepareGame(port, usernames, clientInfos, connection, startServerSpace);
 
 			// Then the main loop can begin:
+			runGameLoop(clientInfos.length, connection, false);
+		} catch (Exception e) {
+			Log.exception(e);
+		}
+		connection.closeConnections();
+	}
+	
+	public void prepareGame(int port, String[] usernames, ClientInfo[] clientInfos, SuperServerConnector connection, SequentialSpace startServerSpace) throws Exception {
+		initializeGame(usernames);
+		
+		Log.message("Starting server");	
+		connection.initializeServerConnection(port, clientInfos, startServerSpace);
+		connection.initilizePrivateConnections(clientInfos, startServerSpace);
+		Log.message("Clients connected");
+
+		// The server will send the initial information first, such that the clients
+		// have something to display:
+		connection.sendWalls(walls);
+		connection.sendUpdate(tanks, bullets, powerups);
+		Log.message("Sent first update");
+	}
+	
+	 public void runGameLoop(int playerCount, SuperServerConnector connection, boolean runOnce) throws Exception {
 			do {
 				final long startTime = System.currentTimeMillis();
 				
@@ -67,23 +79,11 @@ public class GameEngine {
 				final long timePassed = System.currentTimeMillis() - startTime;
 				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
 				Thread.sleep(timeToSleep);
-			} while (!hasTankWonGame(tanks, clientInfos.length));
-		} catch (Exception e) {
-			Log.exception(e);
-		}
-		connection.closeConnections();
-	}
+			} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
+	 }
 	
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
 		return tanks.size() <= 1 && tanks.size() != numberOfClients;
-	}
-	
-	public void initializeGame(ClientInfo[] clientInfos) {
-		final String[] usernames = new String[clientInfos.length];
-		for (int i = 0; i < usernames.length; i++) {
-			usernames[i] = clientInfos[i].username;
-		}
-		initializeGame(usernames);
 	}
 	
 	public void initializeGame(String[] usernames) {
@@ -217,6 +217,10 @@ public class GameEngine {
 			
 			Input currInput = inputs[tank.id];
 
+			if (currInput == null) {
+				System.out.println();
+			}
+			
 			// Update gun angle before shooting or moving
 			updateGunAngle(tank, currInput.x, currInput.y);
 

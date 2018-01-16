@@ -10,6 +10,8 @@ import engine.entities.Powerup;
 import engine.entities.Tank;
 import engine.entities.Wall;
 import logger.Log;
+import network.CommunicationType;
+import network.spaces.ClientConnector;
 import network.spaces.ClientInfo;
 import network.spaces.PeerClientConnector;
 import network.spaces.ServerInfo;
@@ -19,33 +21,27 @@ public class Client {
 	boolean hasPlayerWon = false;
 	int numberOfClients = -1;
 
-	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, boolean peerToPeer) {
+	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, CommunicationType comType) {
 		try {
+			final SuperClientConnector connection = (comType == CommunicationType.P2P) ? new PeerClientConnector() : new ClientConnector();
+			
 			Log.message("Starting client");
-			SuperClientConnector connection;
-			if (peerToPeer) {
-				connection = new PeerClientConnector();
-			} else {
-				connection = null;
-				//connection = new DirectClientConnector();
-			}
 			connection.connect(serverInfo, clientInfo);
 			connection.initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
 			guiControl.gameStarted();
 			Log.message("Client connected");
 			
 			
-			Object[] wallObjects  = connection.receiveWalls();
-			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[1], Wall.class);
+			ArrayList<Wall> walls  = connection.receiveWalls();
 			panel.setWalls(walls);
 			
 			boolean firstUpdate = true;
 			int clientCount = 0;
 			while (true) {
 				final Object[] updatedObjects = connection.recieveUpdates();
-				final ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
-				final ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
-				final ArrayList<Powerup> powerups   = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
+				final ArrayList<Tank>    tanks		= (ArrayList<Tank>)updatedObjects[0];
+				final ArrayList<Bullet>  bullets 	= (ArrayList<Bullet>)updatedObjects[1];
+				final ArrayList<Powerup> powerups   = (ArrayList<Powerup>)updatedObjects[2];
 				
 				if (firstUpdate) {
 					clientCount = tanks.size();

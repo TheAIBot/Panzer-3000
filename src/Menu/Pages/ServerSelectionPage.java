@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import Menu.MenuController;
 import logger.Log;
+import network.CommunicationType;
 import network.spaces.BasicClient;
 import network.spaces.BasicServer;
 import network.spaces.ServerInfo;
@@ -97,7 +98,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	}
 	
 	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
-		BasicServer server = new BasicServer(serverName);
+		BasicServer server = new BasicServer(serverName, CommunicationType.P2P);
 		server.startServer();
 		createdServers.add(server);
 	}

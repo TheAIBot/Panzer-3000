@@ -14,7 +14,7 @@ public enum CommunicationType {
 		return type;
 	}
 	
-	public CommunicationType fromType(int type) throws Exception {
+	public static CommunicationType fromType(int type) throws Exception {
 		switch (type) {
 		case 0:
 			return CommunicationType.SERVER_CLIENT;

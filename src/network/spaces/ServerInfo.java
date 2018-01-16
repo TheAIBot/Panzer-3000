@@ -41,7 +41,7 @@ public class ServerInfo {
 		}
 	}
 	
-	public static ServerInfo toServerInfo(byte[] bytes) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException
+	public static ServerInfo toServerInfo(byte[] bytes) throws Exception
 	{
 		try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
 			try (DataInputStream in = new DataInputStream(stream)) {
@@ -50,6 +50,7 @@ public class ServerInfo {
 				info.ipAddress = in.readUTF();
 				info.clientsConnected = in.readInt();
 				info.port = in.readInt();
+				info.comType = CommunicationType.fromType(in.readInt());
 
 				final int publicKeyLength = in.readInt();
 				final byte[] publicKey = new byte[publicKeyLength];

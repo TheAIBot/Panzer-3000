@@ -99,7 +99,7 @@ public class PeerServerConnector extends SuperServerConnector {
 		
 
 		for (int i = 0; i < clientInfos.length; i++) {
-			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
+			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);
 		}
 	}
 

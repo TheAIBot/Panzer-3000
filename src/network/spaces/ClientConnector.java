@@ -7,11 +7,16 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jspace.*;
 
 import engine.*;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 import logger.Log;
 import network.NetworkProtocol;
 import network.NetworkTools;
@@ -31,7 +36,7 @@ public class ClientConnector extends SuperClientConnector {
 	}
 	
 	@Override
-	public void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
+	public void initilizePrivateConnections(String ipaddress, int port) throws Exception {
 	}
 	
 	@Override
@@ -40,12 +45,18 @@ public class ClientConnector extends SuperClientConnector {
 	}
 	
 	@Override
-	public Object[] receiveWalls() throws InterruptedException {
-		return privateServerConnections.get(new FormalField(byte[].class));
+	public ArrayList<Wall> receiveWalls() throws Exception {
+		final Object[] walls = privateServerConnections.get(new FormalField(byte[].class));
+		return DeSerializer.toList((byte[])walls[0], Wall.class);
 	}
 	
 	@Override
-	public Object[] recieveUpdates() throws InterruptedException {
-		return privateServerConnections.get(new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
+	public Object[] recieveUpdates() throws Exception {
+		final Object[] tuple = privateServerConnections.get(new FormalField(byte[].class), new FormalField(byte[].class), new FormalField(byte[].class));
+		final ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])tuple[0], Tank.class);
+		final ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])tuple[1], Bullet.class);
+		final ArrayList<Powerup> powerups   = DeSerializer.toList((byte[])tuple[2], Powerup.class);
+		
+		return new Object[] {tanks, bullets, powerups};
 	}
 }
