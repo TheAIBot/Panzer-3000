@@ -58,7 +58,7 @@ public class Client {
 				panel.setPowerups(powerups);
 				panel.repaint();
 				
-				if (SuperGameEngine.hasTankWonGame(tanks, clientCount)) {
+				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
 					panel.repaint();

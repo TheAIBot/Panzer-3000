@@ -5,27 +5,20 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 
-import engine.Client;
 import engine.DeSerializer;
-import engine.PeerGameEngine;
-import engine.ServerGameEngine;
-import engine.SuperGameEngine;
+import engine.GameEngine;
 import logger.Log;
 import network.NetworkTools;
 import network.udp.ServerFinder;
 import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
-import security.Crypto;
 import security.SecureSpace;
 
 public class BasicServer implements UDPPacketListener {
@@ -96,7 +89,7 @@ public class BasicServer implements UDPPacketListener {
 		
 		new Thread(() -> {
 			try {
-				new PeerGameEngine().startGame(info.port, clientInfos, new PeerServerConnector(), startAcceptedSpace);
+				new GameEngine().startGame(info.port, clientInfos, new PeerServerConnector(), startAcceptedSpace);
 			} catch (Exception e) {
 				Log.exception(e);
 			}

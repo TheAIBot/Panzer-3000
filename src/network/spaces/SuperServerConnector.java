@@ -14,7 +14,7 @@ import engine.entities.Wall;
 import network.NetworkProtocol;
 import network.NetworkTools;
 
-public abstract class SuperServerConnector implements Runnable {	
+public abstract class SuperServerConnector {	
 	public SpaceRepository 	repository;
 	protected SequentialSpace		sharedSpace;
 	protected SequentialSpace[] 	clientSpaces;

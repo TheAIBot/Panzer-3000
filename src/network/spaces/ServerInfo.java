@@ -11,6 +11,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 import logger.Log;
+import network.CommunicationType;
 import security.Crypto;
 
 public class ServerInfo {
@@ -18,6 +19,7 @@ public class ServerInfo {
 	public String ipAddress = "";
 	public int clientsConnected = 0;
 	public int port;
+	public CommunicationType comType;
 	public PublicKey publicKey;
 	
 	public byte[] toByteArray() throws IOException
@@ -28,6 +30,7 @@ public class ServerInfo {
 				out.writeUTF(ipAddress);
 				out.writeInt(clientsConnected);
 				out.writeInt(port);
+				out.writeInt(comType.getType());
 				
 				final byte[] publicKeyBytes = publicKey.getEncoded();
 				out.writeInt(publicKeyBytes.length);

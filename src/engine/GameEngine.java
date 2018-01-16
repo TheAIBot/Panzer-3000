@@ -24,7 +24,7 @@ import network.spaces.DirectServerConnector;
 import network.spaces.ServerConnector;
 import network.spaces.SuperServerConnector;
 
-public abstract class SuperGameEngine {
+public class GameEngine {
 	protected SuperServerConnector connection;
 	protected Random random 				= new Random();
 	protected ArrayList<Tank> tanks 		= new ArrayList<Tank>();

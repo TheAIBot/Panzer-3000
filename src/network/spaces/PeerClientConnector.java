@@ -16,7 +16,7 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 
-import engine.SuperGameEngine;
+import engine.GameEngine;
 import logger.Log;
 import engine.Input;
 import engine.PeerGameEngine;
@@ -29,7 +29,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
-	private PeerGameEngine engine = new PeerGameEngine();
+	private GameEngine engine = new GameEngine();
 	private Input currentInput;
 	private CompletableFuture<Void>[] runningTasks;
 	boolean firstTick = true;
