@@ -149,18 +149,23 @@ public class ServerList extends JPanel implements ListSelectionListener {
 
 	@Override
 	public synchronized void valueChanged(ListSelectionEvent arg0) {
-		try {
-			final ServerInfo info = listData.get(list.getSelectedIndex());
-			if (selectedInfo == null || !selectedInfo.equals(info)) {
-				serverPage.joinGame(info, textFieldUsername.getText());
-				updateServerInfo(info);
-				//data about the server may have changed in the server list
-				//so repaint to show the changes
-				list.repaint();
-			}
-		} catch (Exception e) {
-			Log.exception(e);
-		}		
+		if (!textFieldUsername.getText().isEmpty()) {
+			try {
+				final ServerInfo info = listData.get(list.getSelectedIndex());
+				if (selectedInfo == null || !selectedInfo.equals(info)) {
+					serverPage.joinGame(info, textFieldUsername.getText());
+					updateServerInfo(info);
+					//data about the server may have changed in the server list
+					//so repaint to show the changes
+					list.repaint();
+				}
+			} catch (Exception e) {
+				Log.exception(e);
+			}		
+		}	
+		else {
+			list.clearSelection();
+		}
 	}
 	
 	public void updateServerInfo() throws Exception

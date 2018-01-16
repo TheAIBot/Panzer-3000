@@ -5,27 +5,21 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 
-import engine.Client;
 import engine.DeSerializer;
-import engine.PeerGameEngine;
-import engine.ServerGameEngine;
-import engine.SuperGameEngine;
+import engine.GameEngine;
 import logger.Log;
+import network.CommunicationType;
 import network.NetworkTools;
 import network.udp.ServerFinder;
 import network.udp.UDPConnector;
 import network.udp.UDPPacketListener;
-import security.Crypto;
 import security.SecureSpace;
 
 public class BasicServer implements UDPPacketListener {
@@ -41,13 +35,12 @@ public class BasicServer implements UDPPacketListener {
 	public static final String REQUEST_START_GAME = "startGame";
 	public static final String START_GAME_ACCEPTED = "startGameAccepted";
 	
-	public BasicServer(String serverName) throws UnknownHostException, SocketException, NoSuchAlgorithmException, NoSuchProviderException {
+	public BasicServer(String serverName, CommunicationType type) throws UnknownHostException, SocketException, NoSuchAlgorithmException, NoSuchProviderException {
 		info = new ServerInfo();
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
-		//chose a random port between 1025-2^15. Port starting at 1025
-		//because the first 1024 ports are reserved
-		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
+		info.port = NetworkTools.getRandomPort();
+		info.comType = type;
 	}
 	
 	public void startServer() throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
@@ -96,7 +89,14 @@ public class BasicServer implements UDPPacketListener {
 		
 		new Thread(() -> {
 			try {
-				new PeerGameEngine().startGame(info.port, clientInfos, new PeerServerConnector(), startAcceptedSpace);
+				if (info.comType == CommunicationType.P2P) {
+					final PeerServerConnector peerServer = new PeerServerConnector();
+					peerServer.initializeServerConnection(info.port, clientInfos, startAcceptedSpace);
+					peerServer.initilizePrivateConnections(clientInfos, startAcceptedSpace);
+				}
+				else {
+					new GameEngine().startGame(info.port, clientInfos, new ServerConnector(), startAcceptedSpace);
+				}				
 			} catch (Exception e) {
 				Log.exception(e);
 			}

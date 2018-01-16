@@ -9,7 +9,7 @@ import network.spaces.BasicServer;
 public class ServerStarter {
 	
 	public static void main(String[] args) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
-		new BasicServer("aksdasl").startServer();
+		//new BasicServer("aksdasl").startServer();
 		//new GameEngine().startGame(1, new String[] {"Derp"});
 	}
 }

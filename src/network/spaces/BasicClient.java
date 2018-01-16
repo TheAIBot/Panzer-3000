@@ -12,6 +12,7 @@ import Menu.GUIControl;
 import Menu.InputHandler;
 import Menu.Pages.GamePage;
 import logger.Log;
+import network.CommunicationType;
 import network.NetworkProtocol;
 import network.NetworkTools;
 import security.Crypto;
@@ -59,11 +60,11 @@ public class BasicClient {
 			try {
 				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
 			} catch (InterruptedException e) {
-				//Log.exception(e);
+				Log.exception(e);
 				return;
 			}
 			
-			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel(), true);
+			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel(), info.comType);
 		});
 		listenForGameStart.start();
 	}

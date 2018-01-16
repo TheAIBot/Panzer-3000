@@ -1,7 +1,10 @@
 package network.spaces;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -16,36 +19,44 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 
-import engine.SuperGameEngine;
+import engine.GameEngine;
 import logger.Log;
 import engine.Input;
-import engine.PeerGameEngine;
+import engine.entities.Wall;
+import network.NetworkProtocol;
 import network.NetworkTools;
-import sun.util.logging.resources.logging;
 
 public class PeerClientConnector extends SuperClientConnector {
-
 	
+	public RemoteSpace 	sharedSpace;
+	public int 			connectionId;
+	public int 			numberOfClients;
+	public ClientInfo clientInfo;	
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
-	private PeerGameEngine engine = new PeerGameEngine();
+	private GameEngine engine = new GameEngine();
+	private PeerDummyServerConnector dummyServer = new PeerDummyServerConnector();
 	private Input currentInput;
 	private CompletableFuture<Void>[] runningTasks;
 	boolean firstTick = true;
 	
+	public PeerClientConnector() {
+		
+	}
+	
 	@Override
-	public void connectToServer(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException {
+	public void connect(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException, URISyntaxException {
 		this.clientInfo = clientInfo;
 		
-		sharedSpace		= new RemoteSpace("tcp://" + serverInfo.ipAddress + ":" + serverInfo.port + "/updateSpace?keep");
+		final URI sharedSpaceURI = NetworkTools.createURI(NetworkProtocol.TCP, serverInfo.ipAddress, serverInfo.port, "updateSpace", "keep");
+		sharedSpace		= new RemoteSpace(sharedSpaceURI);
 		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
 		connectionId   	= (int) tuple[0];
-		initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
 	}
 
 	@Override
-	public void initilizePrivateConnections(String ipaddress, int port) throws UnknownHostException, IOException, InterruptedException {
+	public void initilizePrivateConnections(String ipaddress, int port) throws Exception {
 		
 		//As it is the peer-to-peer version, it needs to make a private connection with every client.
 		
@@ -115,7 +126,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	}
 
 	
-	private void syncronizeGame(int tankCount) throws InterruptedException {
+	private void syncronizeGame(int tankCount) throws Exception {
 		//Include some code for sending out the random seed.
 		Object[] randomSeedTuple = sharedSpace.query(new ActualField("Random seed"), new FormalField(Integer.class));
 		int randomSeed = (int) randomSeedTuple[1];
@@ -126,7 +137,7 @@ public class PeerClientConnector extends SuperClientConnector {
 		}
 		usernames[usernames.length - 1] = clientInfo.username;
 		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
-		engine.initializeGame(usernames);
+		engine.prepareGame(-1, usernames, new ClientInfo[usernames.length], dummyServer, null);
 		
 		//Initial inputs needs to be send. 
 		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
@@ -141,6 +152,7 @@ public class PeerClientConnector extends SuperClientConnector {
 			final int k = i;
 			runningTasks[i] = CompletableFuture.runAsync(() -> {
 				try {
+					Log.message("Sent input with id: " + input.id);
 					privateClientConnections[k].put(clientInfo.username, input);
 				} catch (InterruptedException e) {
 					Log.exception(e);
@@ -151,7 +163,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	}
 
 	@Override
-	public Object[] recieveUpdates() throws InterruptedException {
+	public Object[] recieveUpdates() throws Exception {
 		Input[] playerInputs = new Input[privateClientConnections.length + 1];
 		if (firstTick) {
 			firstTick = false;
@@ -159,7 +171,9 @@ public class PeerClientConnector extends SuperClientConnector {
 				playerInputs[i] = new Input();
 				playerInputs[i].id = i;
 			}
-			return engine.getUpdates(playerInputs);
+			dummyServer.setInputs(playerInputs);
+			engine.runGameLoop(playerInputs.length, dummyServer, true);
+			return dummyServer.getUpdate();
 		} else {
 			try {
 				CompletableFuture.allOf(runningTasks).get();
@@ -172,7 +186,7 @@ public class PeerClientConnector extends SuperClientConnector {
 							Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
 							Input receivedInput = (Input) tuple[1];
 							//Sorting them:
-							playerInputs[receivedInput.id] = receivedInput;							
+							playerInputs[receivedInput.id] = receivedInput;			
 						} catch (Exception e) {
 							Log.exception(e);					
 						}
@@ -191,12 +205,14 @@ public class PeerClientConnector extends SuperClientConnector {
 			} catch (Exception e) {
 				Log.exception(e);
 			}			
-			return engine.getUpdates(playerInputs);
+			dummyServer.setInputs(playerInputs);
+			engine.runGameLoop(playerInputs.length, dummyServer, true);
+			return dummyServer.getUpdate();
 		}	
 	}
 
 	@Override
-	public Object[] receiveWalls() throws InterruptedException {
-		return engine.getWalls();
+	public ArrayList<Wall> receiveWalls() throws InterruptedException {
+		return dummyServer.getWalls();
 	}
 }

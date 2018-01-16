@@ -18,12 +18,10 @@ import network.NetworkProtocol;
 import network.NetworkTools;
 import security.SecureSpace;
 
-public class ServerConnector {	
-	private SpaceRepository repository;
-	private ClientInfo[] clientInfos;
+public class ServerConnector extends SuperServerConnector {	
 	private SequentialSpace[] clientSpaces;
 	
-	
+	@Override
 	public void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException, UnknownHostException, SocketException, URISyntaxException {
 		this.clientInfos = clientInfos;		
 		this.repository = new SpaceRepository();
@@ -50,6 +48,12 @@ public class ServerConnector {
 		}
 	}
 	
+	@Override
+	public void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public void sendWalls(ArrayList<Wall> walls) throws IOException, InterruptedException {
 		for (int i = 0; i < clientInfos.length; i++) {
 			final byte[] wallBytes = DeSerializer.toBytes(walls);
@@ -57,7 +61,8 @@ public class ServerConnector {
 		}
 	}
 	
-	public void sendUpdates(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws InterruptedException, IOException {
+	@Override
+	public void sendUpdate(ArrayList<Tank> tanks, ArrayList<Bullet> bullets, ArrayList<Powerup> powerups) throws InterruptedException, IOException {
 		for (int i = 0; i < clientInfos.length; i++) {
 			final byte[] tankBytes = DeSerializer.toBytes(tanks);
 			final byte[] bulletBytes = DeSerializer.toBytes(bullets);
@@ -66,8 +71,8 @@ public class ServerConnector {
 		}
 	}
 	
-	
-	public Input[] reciveUserInputs() throws InterruptedException, IOException {
+	@Override
+	public Input[] receiveUserInputs() throws InterruptedException, IOException {
 		Input[] recievedInputs = new Input[clientInfos.length];
 		for (int i = 0; i < clientInfos.length; i++) {
 			final Object[] tuple = clientSpaces[i].get(new FormalField(Input.class));
@@ -80,7 +85,8 @@ public class ServerConnector {
 		return recievedInputs;
 	}
 	
-	public void close() {
+	@Override
+	public void closeConnections() {
 		repository.closeGates();
 	}
 }
