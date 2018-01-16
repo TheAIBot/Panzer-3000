@@ -4,6 +4,7 @@ import java.awt.geom.Ellipse2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import engine.DeSerializer;
 
@@ -51,8 +52,8 @@ public class Powerup extends DeSerializer {
 		
 	}
 
-	public static int randomizeType() {
-		return(int) Math.ceil(Math.random() * NUM_POWERUPS);
+	public static int randomizeType(Random random) {
+		return(int) Math.ceil(random.nextDouble() * NUM_POWERUPS);
 	}
 
 }

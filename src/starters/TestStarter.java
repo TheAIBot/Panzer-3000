@@ -1,7 +1,7 @@
 package starters;
 
 import engine.Client;
-import engine.GameEngine;
+import engine.SuperGameEngine;
 
 public class TestStarter {
 	public static void main(String[] args) {

@@ -10,24 +10,33 @@ import engine.entities.Powerup;
 import engine.entities.Tank;
 import engine.entities.Wall;
 import logger.Log;
-import network.spaces.ClientConnector;
 import network.spaces.ClientInfo;
+import network.spaces.DirectClientConnector;
+import network.spaces.PeerClientConnector;
 import network.spaces.ServerInfo;
+import network.spaces.SuperClientConnector;
 
 public class Client {
 	boolean hasPlayerWon = false;
+	int numberOfClients = -1;
 
-	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel) {
+	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, boolean peerToPeer) {
 		try {
 			Log.message("Starting client");
-			ClientConnector connection = new ClientConnector();
+			SuperClientConnector connection;
+			if (peerToPeer) {
+				connection = new PeerClientConnector();
+			} else {
+				connection = new DirectClientConnector();
+			}
+			connection.connectToServer(ipaddress, port, username);
 			connection.connectToServer(serverInfo, clientInfo);
 			guiControl.gameStarted();
 			Log.message("Client connected");
 			
 			
-			Object[] wallObjects = connection.receiveWalls();
-			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[0], Wall.class);
+			Object[] wallObjects  = connection.receiveWalls();
+			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[1], Wall.class);
 			panel.setWalls(walls);
 			
 			boolean firstUpdate = true;
@@ -44,12 +53,13 @@ public class Client {
 				}
 				
 				//Here the graphics needs to render the things seen above
+				
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
 				panel.setPowerups(powerups);
 				panel.repaint();
 				
-				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
+				if (SuperGameEngine.hasTankWonGame(tanks, clientCount)) {
 					hasPlayerWon = true;
 					panel.setPlayerHasWon();
 					panel.repaint();

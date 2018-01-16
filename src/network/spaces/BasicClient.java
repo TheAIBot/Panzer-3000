@@ -16,6 +16,7 @@ import network.NetworkProtocol;
 import network.NetworkTools;
 import security.Crypto;
 import security.SecureRemoteSpace;
+import network.NetworkTools;
 
 public class BasicClient {
 	private ServerInfo serverInfo;
@@ -61,14 +62,13 @@ public class BasicClient {
 				return;
 			}
 			
-			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel());
+			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel(), true);
 		});
 		listenForGameStart.start();
 	}
 	
 	public void leaveGame() throws Exception
 	{
-		//serverConnection.getEncryptedTuple(new ActualField(clientInfo));
 		serverConnection.removeWithIdentifier(new ActualField(clientInfo.username));
 		listenForGameStart.interrupt();
 		hasJoinedAGame = false;
@@ -77,8 +77,7 @@ public class BasicClient {
 		serverStartAcceptedSpace.close();
 	}
 	
-	public boolean hasJoinedAGame()
-	{
+	public boolean hasJoinedAGame() {
 		return hasJoinedAGame;
 	}
 	

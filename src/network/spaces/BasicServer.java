@@ -5,6 +5,8 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.SpaceRepository;
 
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -13,8 +15,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 
+<<<<<<< HEAD
 import engine.DeSerializer;
 import engine.GameEngine;
+=======
+import engine.Client;
+import engine.PeerGameEngine;
+import engine.ServerGameEngine;
+import engine.SuperGameEngine;
+>>>>>>> refs/remotes/origin/peer_to_peer
 import logger.Log;
 import network.NetworkTools;
 import network.udp.ServerFinder;
@@ -28,7 +37,7 @@ public class BasicServer implements UDPPacketListener {
 	private SecureSpace	clientConnectSpace;
 	private SequentialSpace startSpace;
 	private SequentialSpace startAcceptedSpace;
-	private ServerInfo info;
+	public  ServerInfo info;
 	
 	public static final String CLIENT_CONNECT_SPACE_NAME = "clientConnectSpace";
 	public static final String START_SPACE_NAME = "startSpace";
@@ -41,7 +50,7 @@ public class BasicServer implements UDPPacketListener {
 		info.ipAddress = NetworkTools.getIpAddress();
 		info.name = serverName;
 		//chose a random port between 1025-2^15. Port starting at 1025
-		//because the first 1024 first 1024 ports are reserved
+		//because the first 1024 ports are reserved
 		info.port = (int)(Math.random() * Short.MAX_VALUE) + 1025;
 	}
 	
@@ -53,9 +62,11 @@ public class BasicServer implements UDPPacketListener {
 		
 		startSpace = new SequentialSpace();
 		startAcceptedSpace = new SequentialSpace();
-		repository = new SpaceRepository();
+		repository         = new SpaceRepository();
+		
 		final String serverUri = "tcp://" + info.ipAddress + ":" + info.port  + "/?conn";
 		repository.addGate(serverUri);
+		
 		repository.add(CLIENT_CONNECT_SPACE_NAME, sharedSpace);
 		repository.add(START_SPACE_NAME, startSpace);
 		repository.add(START_ACCEPTED_SPACE_NAME, startAcceptedSpace);

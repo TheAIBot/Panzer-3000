@@ -66,4 +66,8 @@ public class NetworkTools {
 	public static URI createURI(NetworkProtocol protocol, String ipAddress, int port, String spaceName, String mode) throws URISyntaxException {
 		return new URI(protocol.toString() + "://" + ipAddress + ":" + port + "/" + spaceName + "?" + mode);
 	}
+
+	public static int getRandomPort() {
+		return (int)(Math.random() * Short.MAX_VALUE) + 1025;
+	}
 }

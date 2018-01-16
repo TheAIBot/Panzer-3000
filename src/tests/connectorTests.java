@@ -5,47 +5,115 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.*;
 
-import engine.DeSerializer;
-import engine.Input;
-import engine.entities.Bullet;
-import engine.entities.Powerup;
-import engine.entities.Tank;
-import engine.entities.Wall;
-import network.spaces.ClientConnector;
-import network.spaces.ServerConnector;
+import engine.Client;
+import network.spaces.PeerServerConnector;
 
-public class connectorTests {
-	ServerConnector server;
-	ClientConnector[] clients;
+public class connectorTests { }
+	/*
+	public static void main(String[] args) throws InterruptedException {
+		final int numberOfClients = 2;
+		
+		
+		
+		
+		String[] usernames = new String[] {"a", "b", "c", "d"};
+		PeerServerConnector serverConnector = new PeerServerConnector();
+		serverConnector.forcedIPAdress = "localhost";
+		new Thread(() -> {
+			try {
+				//serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}).start();
+		Thread.sleep(1000);
+		
+		Client[] clients  = new Client[numberOfClients];		
+		for (int i = 0; i < clients.length; i++) {
+			final int k = i;
+			clients[k] = new Client();
+			String ipaddress = "localhost";
+			new Thread(() -> {
+				//clients[k].startGame(ipaddress, 9001, usernames[k], null, null, true);
+			}).start();
+		}
+	}
+	*/
+//}
+		
+		
+		/*
+		for (int i = 0; i < numberOfClients; i++) {
+			final int k = i;
+			new Thread(() -> {
+				try {
+					PeerClientConnector clientConnector = new PeerClientConnector();
+					clientConnector.connectToServer("localhost", 9001, usernames[k]);
+					Input input = new Input();
+					input.id = k;
+					clientConnector.sendUserInput(input);
+					clientConnector.recieveUpdates();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}).start();
+		}
+		*/
+		
+	/*
+	SuperServerConnector server;
+	SuperClientConnector[] clients;
 	String[] clientNames = new String[] {"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
 	
 	@Test
 	public void testSetupInitialClientServerConnection() throws InterruptedException {
 		int numOfClients = 8;
+<<<<<<< HEAD
 		server = new ServerConnector();
 		//server.usernames = clientNames;
 		//server.numClients = numOfClients;
 		//server.ipAddress = "localhost";
 		//new Thread(server).start();
+=======
+		server = new SuperServerConnector();
+		server.usernames = clientNames;
+		server.numClients = numOfClients;
+		server.ipAddress = "localhost";
+		new Thread(server).start();
+>>>>>>> refs/remotes/origin/peer_to_peer
 		
-		clients = new ClientConnector[numOfClients];
+		clients = new SuperClientConnector[numOfClients];
 		Thread.sleep(1000); //The server needs to be set up, before the clients tries to connect.
 		for (int i = 0; i < numOfClients; i++) {
 			final int k = i;
+<<<<<<< HEAD
 			clients[i] =  new ClientConnector();
 			//clients[i].username = clientNames[i];
 			//new Thread(clients[i]).start();;
+=======
+			clients[i] =  new SuperClientConnector();
+			clients[i].username = clientNames[i];
+			new Thread(clients[i]).start();;
+>>>>>>> refs/remotes/origin/peer_to_peer
 		}
 		//As it runs on different threads, and essentially a deadlock will be reached if this doesn't work,
 		//it will instead be checked that after 1 second (2 might be better), all connections are established.
 		Thread.sleep(1500);
+<<<<<<< HEAD
 		//assertEquals(numOfClients, server.numConnectedClients);
+=======
+		assertEquals(numOfClients, server.numConnectedClients);
+		server.closeConnections();
+>>>>>>> refs/remotes/origin/peer_to_peer
 		//server.closeConnections();
 		
 	}
@@ -96,7 +164,7 @@ public class connectorTests {
 		
 		/*
 		for (int i = 0; i < clients.length; i++) {
-			ClientConnector client = clients[i];
+			SuperClientConnector client = clients[i];
 			Input input = new Input(false, false, false, false, false, 0, 0, client.connectionId);
 			client.sendUserInput(input);
 		}		
@@ -113,8 +181,3 @@ public class connectorTests {
 			assertTrue(idExists);
 		}
 		*/
-		
-		
-	}
-
-}
