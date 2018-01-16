@@ -5,7 +5,12 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
+
+import engine.Input;
+import logger.Log;
 
 
 public class PeerServerConnector extends SuperServerConnector{
@@ -66,6 +71,53 @@ public class PeerServerConnector extends SuperServerConnector{
 		for (int i = 0; i < usernames.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);	
 		}
+	
+		new Thread(() ->  {
+			while (true) { //Continuously verify that the inputs are the same
+				verifyInputs();
+			} 
+			
+		}).start();;
+	}
+
+	private void verifyInputs() {
+		Input[][] allInputsDifferentClients = new Input[numClients][numClients];
+		for (int i = 0; i < numClients; i++) {
+			try {
+				allInputsDifferentClients[i] = (Input[]) sharedSpace.get(new ActualField("Inputs recieved"), new ActualField("Client " + i), new FormalField(Input[].class))[2];
+			} catch (Exception e) {
+				Log.exception(e);
+			}
+		}
+		
+		//Returning messages to the clients, saying that the messages have been recieved:
+		
+		for (int i = 0; i < numClients; i++) {
+			try {
+				sharedSpace.put("Seen inputs", "Client " + i);
+			} catch (InterruptedException e) {
+				Log.exception(e);
+			}
+		}
+		
+		//They must be the same:
+		for (int i = 0; i < allInputsDifferentClients.length; i++) {
+			if (allInputsDifferentClients[i].length != numClients) {
+				Log.exception(new Exception("Difference in input lenghts for the different clients!!!"));
+			}
+		}
+		//All sets of inputs must be the same as the first set of inputs:
+		
+		for (int i = 1; i < allInputsDifferentClients.length; i++) {
+			for (int j = 0; j < allInputsDifferentClients[i].length; j++) {
+				boolean sameInput = allInputsDifferentClients[0][j].equals(allInputsDifferentClients[i][j]);
+				if(!sameInput) {
+					Log.exception(new Exception("Different inputs between the clients"));
+				}
+			}
+		}
+		
+		
 	}
 
 	public ArrayList<String>[] createPrivateIDs(int numClients) {

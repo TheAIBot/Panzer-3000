@@ -142,47 +142,54 @@ public class PeerClientConnector extends SuperClientConnector {
 
 	@Override
 	public Object[] recieveUpdates() throws InterruptedException {
+		
 		Input[] playerInputs = new Input[privateClientConnections.length + 1];
-		if (firstTick) {
+		
+		if (firstTick) { //Hackey solution to send inputs for the first tick.
 			firstTick = false;
 			for (int i = 0; i < playerInputs.length; i++) {
 				playerInputs[i] = new Input();
 				playerInputs[i].id = i;
 			}
 			return engine.getUpdates(playerInputs);
-		} else {
-			try {
-				CompletableFuture.allOf(runningTasks).get();
-				
-				for (int i = 0; i < privateClientConnections.length; i++) {
-					final int k = i;
-					runningTasks[i] = CompletableFuture.runAsync(() -> {
-						try {
-							Space privateClientConnection = privateClientConnections[k];
-							Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
-							Input receivedInput = (Input) tuple[1];
-							//Sorting them:
-							playerInputs[receivedInput.id] = receivedInput;							
-						} catch (Exception e) {
-							Log.exception(e);					
-						}
-					});
-				}
-				
-			} catch (ExecutionException e) {
-				Log.exception(e);
+		} 
+		
+		//For all the later ticks, the inputs have already been delivered:
+		try {
+			CompletableFuture.allOf(runningTasks).get();
+			
+			for (int i = 0; i < privateClientConnections.length; i++) {
+				final int k = i;
+				runningTasks[i] = CompletableFuture.runAsync(() -> {
+					try {
+						Space privateClientConnection = privateClientConnections[k];
+						Object[] tuple = privateClientConnection.get(new ActualField(associatedUserNames[k]), new FormalField(Input.class));
+						Input receivedInput = (Input) tuple[1];
+						//Sorting them, to make everything deterministic and so that the game engine gets the inputs in the correct order:
+						playerInputs[receivedInput.id] = receivedInput;							
+					} catch (Exception e) {
+						Log.exception(e);					
+					}
+				});
 			}
 			
-			//Also include the inputs from player, that is using the machine the program is running on!
-			playerInputs[currentInput.id] = currentInput; 		
-			
-			try {
-				CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!
-			} catch (Exception e) {
-				Log.exception(e);
-			}			
-			return engine.getUpdates(playerInputs);
+		} catch (ExecutionException e) {
+			Log.exception(e);
 		}
+		
+		sharedSpace.put("Inputs recieved", "Client " + connectionId, playerInputs);
+		sharedSpace.get(new ActualField("Seen inputs"), new ActualField("Client " + connectionId));
+		
+		//Also include the inputs from player, that is using the machine the program is running on!
+		playerInputs[currentInput.id] = currentInput; 		
+		
+		try {
+			CompletableFuture.allOf(runningTasks).get(); //The engine needs all the inputs!
+		} catch (Exception e) {
+			Log.exception(e);
+		}			
+		return engine.getUpdates(playerInputs);
+		
 		
 		
 	}

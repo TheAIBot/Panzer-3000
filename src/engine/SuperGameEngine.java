@@ -49,6 +49,9 @@ public abstract class SuperGameEngine {
 
 		for (int i = 0; i < tanks.size(); i++) {
 			tanks.get(i).userName = usernames[tanks.get(i).id];
+			System.out.println(tanks.get(i).userName);
+			System.out.println("X pos: " + tanks.get(i).x);
+			System.out.println("Y pos: " + tanks.get(i).y);
 		}	
 	}
 
