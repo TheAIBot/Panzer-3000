@@ -11,7 +11,6 @@ import engine.entities.Tank;
 import engine.entities.Wall;
 import logger.Log;
 import network.spaces.ClientInfo;
-import network.spaces.DirectClientConnector;
 import network.spaces.PeerClientConnector;
 import network.spaces.ServerInfo;
 import network.spaces.SuperClientConnector;
@@ -27,7 +26,8 @@ public class Client {
 			if (peerToPeer) {
 				connection = new PeerClientConnector();
 			} else {
-				connection = new DirectClientConnector();
+				connection = null;
+				//connection = new DirectClientConnector();
 			}
 			connection.connectToServer(serverInfo, clientInfo);
 			guiControl.gameStarted();
@@ -69,7 +69,7 @@ public class Client {
 				}
 				
 				//finally send the inputs to the server.			
-				connection.sendUserInput(inputHandler.getInput());
+				connection.sendUserInput(inputHandler.getInput().copy());
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
