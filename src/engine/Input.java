@@ -49,15 +49,20 @@ public class Input {
 			if (this.id != input.id ||
 				this.w != input.w ||
 				this.a != input.a ||
-				this.s != input.a ||
-				this.d != input.a ||
-				this.click != input.click ||
-				this.x != input.x ||
-				this.y != input.y) {
+				this.s != input.s ||
+				this.d != input.d ||
+				this.click != input.click //||
+				// this.x != input.x ||
+				// this.y != input.y
+				) {
 				return false;
 			}
 		}		
 		return true;		
+	}
+
+	public Input copy() {
+		return new Input(w, a, s, d, click, x, y, id);
 	}
 	
 }

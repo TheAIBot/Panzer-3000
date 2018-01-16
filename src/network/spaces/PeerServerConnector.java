@@ -84,7 +84,8 @@ public class PeerServerConnector extends SuperServerConnector{
 		Input[][] allInputsDifferentClients = new Input[numClients][numClients];
 		for (int i = 0; i < numClients; i++) {
 			try {
-				allInputsDifferentClients[i] = (Input[]) sharedSpace.get(new ActualField("Inputs recieved"), new ActualField("Client " + i), new FormalField(Input[].class))[2];
+				Object[] tuple = sharedSpace.get(new ActualField("Inputs recieved"), new ActualField("Client " + i), new FormalField(Input[].class));
+				allInputsDifferentClients[i] = (Input[]) tuple[2];
 			} catch (Exception e) {
 				Log.exception(e);
 			}
@@ -108,7 +109,7 @@ public class PeerServerConnector extends SuperServerConnector{
 		}
 		//All sets of inputs must be the same as the first set of inputs:
 		
-		for (int i = 1; i < allInputsDifferentClients.length; i++) {
+		for (int i = 0; i < allInputsDifferentClients.length; i++) {
 			for (int j = 0; j < allInputsDifferentClients[i].length; j++) {
 				boolean sameInput = allInputsDifferentClients[0][j].equals(allInputsDifferentClients[i][j]);
 				if(!sameInput) {

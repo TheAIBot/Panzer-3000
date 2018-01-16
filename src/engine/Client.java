@@ -58,7 +58,8 @@ public class Client {
 				
 				//Create a new Input
 				
-				Input userInput = menu.getInput();
+				Input userInput = menu.getInput().copy();
+				
 				
 				//Log.message(userInput.toString());
 				
