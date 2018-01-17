@@ -12,6 +12,22 @@ import java.util.List;
 
 import org.junit.*;
 
+import network.spaces.PeerClientConnector;
+import network.spaces.PeerServerConnector;
+import network.spaces.SuperClientConnector;
+import network.spaces.SuperServerConnector;
+
+/*
+public class connectorTests {
+	
+	public static void main(String[] args) {
+		final int numberOfClients = 2;
+		String[] usernames = new String[] {"a", "b"};
+		PeerServerConnector serverConnector = new PeerServerConnector();
+		new Thread(() -> {
+			try {
+				serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
+=======
 import engine.Client;
 import network.spaces.PeerServerConnector;
 
@@ -29,10 +45,19 @@ public class connectorTests { }
 		new Thread(() -> {
 			try {
 				//serverConnector.initializeServerConnection(9001, numberOfClients, usernames, null);
+>>>>>>> gameFinisher
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
+<<<<<<< HEAD
+		}).start();;
+		
+		for (int i = 0; i < args.length; i++) {
+			new Thread(() -> {
+				try {
+					new PeerClientConnector().connectToServer("localhost", 9001, usernames[i]);
+=======
 		}).start();
 		Thread.sleep(1000);
 		
@@ -61,17 +86,26 @@ public class connectorTests { }
 					input.id = k;
 					clientConnector.sendUserInput(input);
 					clientConnector.recieveUpdates();
+>>>>>>> gameFinisher
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
 			}).start();
 		}
+<<<<<<< HEAD
+	}
+	/*
+	SuperServerConnector server;
+	SuperClientConnector[] clients;
+>>>>>>> Stashed changes
+=======
 		*/
 		
 	/*
 	SuperServerConnector server;
 	SuperClientConnector[] clients;
+>>>>>>> gameFinisher
 	String[] clientNames = new String[] {"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"};
 	
 	@Test

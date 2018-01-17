@@ -1,6 +1,8 @@
 package engine;
 
 import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -77,9 +79,9 @@ public class GameEngine {
 			
 			final long timePassed = System.currentTimeMillis() - oldTime;
 			final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
-			Log.message("" + timeToSleep);
+			//Log.message("" + timeToSleep);
 			oldTime = System.currentTimeMillis();
-			Thread.sleep(timeToSleep);
+			//Thread.sleep(timeToSleep);
 		} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
 	 }
 	
@@ -177,15 +179,19 @@ public class GameEngine {
 		} 
 	}
 
-	protected boolean isPowerupCollected(Powerup powerup) {
-		final Point2D.Double powerupLoc = new Point2D.Double(powerup.x * Tank.SCALAR, powerup.y * Tank.SCALAR);
+	private boolean isPowerupCollected(Powerup powerup) {
+		final Polygon powerupRectangle = powerup.getPowerupRectangle(Tank.SCALAR, Tank.SCALAR);
 
 		final Iterator<Tank> tankIterator = tanks.iterator();
 		while (tankIterator.hasNext()) {
 			Tank tank = tankIterator.next();
 			final Polygon tankPolygon = tank.getTankRectangle();
 			
-			if (tankPolygon.contains(powerupLoc)) {
+			Area ellipseArea = new Area(powerupRectangle);
+			Area tankArea = new Area(tankPolygon);
+			tankArea.intersect(ellipseArea);
+			
+			if (!tankArea.isEmpty()) {
 				tank.powerups.add(new Powerup(0, 0, Powerup.randomizeType(random)));
 				return true;
 			}

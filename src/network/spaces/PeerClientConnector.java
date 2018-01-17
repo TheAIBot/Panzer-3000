@@ -18,7 +18,6 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
-
 import engine.GameEngine;
 import logger.Log;
 import engine.Input;
@@ -131,8 +130,6 @@ public class PeerClientConnector extends SuperClientConnector {
 		engine.prepareGame(-1, usernames, new ClientInfo[usernames.length], dummyServer, null);
 	}
 
-
-	@Override
 	public void sendUserInput(Input input) throws InterruptedException {
 		input.id = connectionId;
 		

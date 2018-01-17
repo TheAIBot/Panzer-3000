@@ -9,4 +9,9 @@ public class ClientStarter {
 		menu.showWindow();
 		//new Client().startGame("localhost", "Derp", menu, panel);
 	}
+	
+	
+	
+	
+	
 }

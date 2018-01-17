@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import engine.DeSerializer;
+import logger.Log;
 
 public class Wall extends DeSerializer {
 	public double x;
@@ -69,7 +70,7 @@ public class Wall extends DeSerializer {
 	
 	public boolean collidesWith(Powerup powerup)
 	{
-		final Ellipse2D ellipse = powerup.getEllipse();
-		return ellipse.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
+		final Polygon powerupBox = powerup.getPowerupRectangle(Tank.SCALAR, Tank.SCALAR);
+		return powerupBox.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
 	}
 }

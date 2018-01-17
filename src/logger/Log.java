@@ -1,6 +1,10 @@
 package logger;
 
 public class Log {
+		public static void message(double d) {
+			System.out.println(d);
+		}
+		
 		public static void message(String message) {
 			System.out.println(message);
 		}
