@@ -30,7 +30,7 @@ public class GraphicsPanel extends JPanel {
 	
 
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected synchronized void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 		   				  RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
@@ -178,22 +178,22 @@ public class GraphicsPanel extends JPanel {
 		g.fillRect(x, y, width, height);
 	}
 	
-	public void setTanks(ArrayList<Tank> tanks)
+	public synchronized void setTanks(ArrayList<Tank> tanks)
 	{
 		this.tanks = tanks;
 	}
 	
-	public void setBullets(ArrayList<Bullet> bullets)
+	public synchronized void setBullets(ArrayList<Bullet> bullets)
 	{
 		this.bullets = bullets;
 	}
 
-	public void setPowerups(ArrayList<Powerup> powerups) {
+	public synchronized void setPowerups(ArrayList<Powerup> powerups) {
 		this.powerups = powerups;
 		
 	}
 	
-	public void setWalls(ArrayList<Wall> walls)
+	public synchronized void setWalls(ArrayList<Wall> walls)
 	{
 		this.walls = walls;
 	}
