@@ -57,72 +57,63 @@ public class PeerClientConnector extends SuperClientConnector {
 
 	@Override
 	public void initilizePrivateConnections(String ipaddress, int port) throws Exception {
-		
 		//As it is the peer-to-peer version, it needs to make a private connection with every client.
+		final Object[]  privateConnectionTuple = sharedSpace.get(new ActualField(connectionId), new FormalField(PeerConnectionInfo[].class));
+		final PeerConnectionInfo[] peerConInfos = (PeerConnectionInfo[])privateConnectionTuple[1];
 		
-		Object[]  privateConnectionTuple = sharedSpace.get(new ActualField(connectionId), new FormalField(String[].class), new FormalField(boolean[].class), new FormalField(String[].class));
-		String[]  privateConnectionIDs 	 = (String[])  privateConnectionTuple[1];
-		boolean[] shouldCreateSpaces	 = (boolean[]) privateConnectionTuple[2];
-		String[]  ipAddresses			 = (String[])  privateConnectionTuple[3];
-		System.out.println("The ip addresses:");
-		for (int i = 0; i < ipAddresses.length; i++) {
-			System.out.println(ipAddresses[i]);			
-		}
-		
-		privateRepositories 			 = new SpaceRepository[privateConnectionIDs.length];
-		privateClientConnections 		 = new Space[privateConnectionIDs.length];
-		associatedUserNames				 = new String[privateConnectionIDs.length];
+		privateRepositories 			 = new SpaceRepository[peerConInfos.length];
+		privateClientConnections 		 = new Space[peerConInfos.length];
+		associatedUserNames				 = new String[peerConInfos.length];
 		
 		for (int i = 0; i < privateClientConnections.length; i++) {
+			final PeerConnectionInfo peerConInfo = peerConInfos[i];
 			
-			//If this is the client that should create the private space:
-			
-			if (shouldCreateSpaces[i]) { 
-				
+			if (peerConInfo.shouldCreateSpace) {
 				//It will create a gate on an unused port, and send that information to the server: 
 				//the server will make sure to share the information to the other clients.
-				
 				privateRepositories[i] 	 = new SpaceRepository();
-				boolean hasFoundFreePort = false;
-				int candidateFreePort = 0;
-				while (!hasFoundFreePort) {
-					candidateFreePort = NetworkTools.getRandomPort();
-					try {
-						privateRepositories[i].addGate("tcp://" + ipAddresses[i] + ":" + candidateFreePort + "/?keep");
-						hasFoundFreePort = true;
-					} catch (Exception e) {
-						//Try again with a new port!!!
-					}					
-				}
-				privateClientConnections[i] = new SequentialSpace();
-				privateRepositories[i].add(privateConnectionIDs[i], privateClientConnections[i]);
+				final int gatePort = createGateWithRandomPort(privateRepositories[i], peerConInfo.ipaddressOfSpaceCreator);
 				
-				System.out.println("Chosen port: " + candidateFreePort);
+				
+				privateClientConnections[i] = new SequentialSpace();
+				privateRepositories[i].add(peerConInfo.spaceName, privateClientConnections[i]);
+				
+				System.out.println("Chosen port: " + gatePort);
 				//The port used must be announced to the server:
-				sharedSpace.put("port", privateConnectionIDs[i], candidateFreePort);
-				//TODO currently it is just taken by the other client, without going through the server.
-				//One might also simply encrypt it using the other clients public key.
+				sharedSpace.put("port", peerConInfo.spaceName, gatePort);
 				
 				privateClientConnections[i].put("Creator", clientInfo.username);
 				associatedUserNames[i] = (String) privateClientConnections[i].get(new ActualField("Reciever"), new FormalField(String.class))[1];
-				System.out.println(connectionId + " has connected to " + privateConnectionIDs[i]);
+			}
+			else {
+				//get the port the SpaceRepository was created on
+				final int privatePort = (int) sharedSpace.get(new ActualField("port"), new ActualField(peerConInfo.spaceName), new FormalField(Integer.class))[2];
 				
-			} 
-			//If the other client is making the private space:
-			else {				
-				Thread.sleep(500); //TODO Hack: needs to be removed
-				//It needs to get the port for the private space:
-				int privatePort = (int) sharedSpace.get(new ActualField("port"), new ActualField(privateConnectionIDs[i]), new FormalField(Integer.class))[2];
+				//connect to other peer with received port
+				final URI spaceRepURI = NetworkTools.createURI(NetworkProtocol.TCP, peerConInfo.ipaddressOfSpaceCreator, privatePort, peerConInfo.spaceName, "keep");
+				privateClientConnections[i] = new RemoteSpace(spaceRepURI);
 				
-				privateClientConnections[i] = new RemoteSpace("tcp://" + ipAddresses[i] + ":" + privatePort + "/" + privateConnectionIDs[i] + "?keep");
+				
 				privateClientConnections[i].put("Reciever", clientInfo.username);
 				associatedUserNames[i] = (String) privateClientConnections[i].get(new ActualField("Creator"), new FormalField(String.class))[1];
-				System.out.println(connectionId + " has connected to " + privateConnectionIDs[i]);
 			}
-			
+			System.out.println(connectionId + " has connected to " + peerConInfo.spaceName);
 		}
+		
 		runningTasks = new CompletableFuture[privateClientConnections.length];
 		syncronizeGame(privateClientConnections.length + 1);
+	}
+	
+	private int createGateWithRandomPort(SpaceRepository repository, String ipaddress) {
+		while (true) {
+			final int candidateFreePort = NetworkTools.getRandomPort();
+			try {
+				repository.addGate("tcp://" + ipaddress + ":" + candidateFreePort + "/?keep");
+				return candidateFreePort;
+			} catch (Exception e) {
+				//port in use. try again
+			}					
+		}
 	}
 
 	
@@ -138,9 +129,6 @@ public class PeerClientConnector extends SuperClientConnector {
 		usernames[usernames.length - 1] = clientInfo.username;
 		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
 		engine.prepareGame(-1, usernames, new ClientInfo[usernames.length], dummyServer, null);
-		
-		//Initial inputs needs to be send. 
-		//TODO this leads to the possibility of there being two inpts from the same user in the same space. This needs to be fixed.
 	}
 
 
@@ -152,7 +140,6 @@ public class PeerClientConnector extends SuperClientConnector {
 			final int k = i;
 			runningTasks[i] = CompletableFuture.runAsync(() -> {
 				try {
-					Log.message("Sent input with id: " + input.id);
 					privateClientConnections[k].put(clientInfo.username, input);
 				} catch (InterruptedException e) {
 					Log.exception(e);

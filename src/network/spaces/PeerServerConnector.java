@@ -59,7 +59,7 @@ public class PeerServerConnector extends SuperServerConnector {
 	public void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException {
 		//It creates the different tuples with private id's (every client should take exactly one):
 		ArrayList<String>[] privateIDTuples = createPrivateIDs(clientInfos.length);
-		TreeMap<String, String> idToIP 		= new TreeMap<String, String>();
+		TreeMap<String, String> ipOfSpaceCreator = new TreeMap<String, String>();
 		
 		for (int i = 0; i < privateIDTuples.length; i++) { //Client i gets tuple i.
 			
@@ -69,25 +69,31 @@ public class PeerServerConnector extends SuperServerConnector {
 			//Only one of the two clients that receive the same server ID, should create the space/repository.
 			//This is assured with the boolean array below: true means create the space, false to simply connect.
 			
-			boolean[] createSpaceTuple 		= new boolean[clientInfos.length - 1];
-			String[]  privateIDArray 		= new  String[clientInfos.length - 1];
-			String[]  associatedIPAddresses = new  String[clientInfos.length - 1];
+			final PeerConnectionInfo[] peerConInfos = new PeerConnectionInfo[clientInfos.length - 1];
 			
-			for (int j = 0; j < privateIDArray.length; j++) {
-
-				String id = privateIDTuple.get(j);
-				privateIDArray[j] 	= id;				
+			for (int j = 0; j < peerConInfos.length; j++) {
+				peerConInfos[j] = new PeerConnectionInfo();
+				final PeerConnectionInfo peerConInfo = peerConInfos[j];
+				
+				peerConInfo.spaceName = privateIDTuple.get(j);
+							
 				if (j >= i) {
-					createSpaceTuple[j] = true;
-					idToIP.put(id, clientInfos[i].ipaddress); //Notice that it is ip i, not j.	
-					associatedIPAddresses[j] = clientInfos[i].ipaddress; //If it should create the space, its own ip address is needed.
+					peerConInfo.shouldCreateSpace = true;
+					peerConInfo.ipaddressOfSpaceCreator = clientInfos[i].ipaddress;
+					
+					//a peer responsible for creating a space was just created so
+					//add it to the list of created spaces to other peers can connecto to it
+					ipOfSpaceCreator.put(peerConInfo.spaceName, clientInfos[i].ipaddress);
 				} else {
-					associatedIPAddresses[j] = idToIP.get(id); //If the other client should create the space, its ip address is needed.
+					peerConInfo.shouldCreateSpace = false;
+					//get the ipaddress of the peer that created the space so
+					//this peer can connect to it
+					peerConInfo.ipaddressOfSpaceCreator = ipOfSpaceCreator.get(peerConInfo.spaceName);
 				}
 			}
 			
 			//The i corresponds to the connection id.
-			sharedSpace.put(i, privateIDArray, createSpaceTuple, associatedIPAddresses);
+			sharedSpace.put(i, peerConInfos);
 			
 		}
 		
