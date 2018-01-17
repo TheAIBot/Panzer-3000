@@ -49,7 +49,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	public void connect(ServerInfo serverInfo, ClientInfo clientInfo) throws UnknownHostException, IOException, InterruptedException, URISyntaxException {
 		this.clientInfo = clientInfo;
 		
-		final URI sharedSpaceURI = NetworkTools.createURI(NetworkProtocol.TCP, serverInfo.ipAddress, serverInfo.port, "updateSpace", "keep");
+		final URI sharedSpaceURI = NetworkTools.createURI(NetworkProtocol.TCP, serverInfo.ipAddress, serverInfo.port, PeerServerConnector.UPDATE_SPACE_NAME, "keep");
 		sharedSpace		= new RemoteSpace(sharedSpaceURI);
 		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
 		connectionId   	= (int) tuple[0];

@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -25,36 +26,23 @@ import security.Crypto;
 
 
 public class PeerServerConnector extends SuperServerConnector {
-
-	public static final String SALTCHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private SequentialSpace sharedSpace;
+	
 	public static final int RANDOM_STRING_LENGTH = 12;
-	private TreeSet<String> privateIDs = new TreeSet<String>();
-	protected SequentialSpace		sharedSpace;
-	protected SequentialSpace[] 	clientSpaces;
-	protected String UPDATE_SPACE_NAME = "updateSpace";
-	protected String INITIAL_CLIENT_SPACE_NAME = "clientSpace";
+	public static final String UPDATE_SPACE_NAME = "updateSpace";
 	
 	@Override
 	public void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws Exception {
 		this.clientInfos = clientInfos;
-		this.repository 	 = new SpaceRepository();
-		this.sharedSpace  = new SequentialSpace();
-		this.clientSpaces = new SequentialSpace[clientInfos.length];
+		this.repository = new SpaceRepository();
+		this.sharedSpace = new SequentialSpace();
 		
 		final URI gateURI = NetworkTools.createURI(NetworkProtocol.TCP, NetworkTools.getIpAddress(), port, "", "keep");
 		repository.addGate(gateURI);
 		repository.add(UPDATE_SPACE_NAME, sharedSpace);
 		
-		
-		for (int i = 0; i < clientSpaces.length; i++) {
-			clientSpaces[i] = new SequentialSpace();
-			repository.add(INITIAL_CLIENT_SPACE_NAME + i, clientSpaces[i]);
-		}
-		
-		//Some initial information for all the clients:
-		
 		//The server delegates the id's
-		for (int id = 0; id < clientSpaces.length; id++) {
+		for (int id = 0; id < clientInfos.length; id++) {
 			sharedSpace.put(id, clientInfos[id].username);
 		}	
 	}
@@ -66,13 +54,7 @@ public class PeerServerConnector extends SuperServerConnector {
 		final HashMap<String, String> ipOfSpaceCreator = new HashMap<String, String>();
 		
 		for (int i = 0; i < privateIDTuples.length; i++) { //Client i gets tuple i.
-			
-			
-			ArrayList<String> privateIDTuple = privateIDTuples[i];
-			
-			//Only one of the two clients that receive the same server ID, should create the space/repository.
-			//This is assured with the boolean array below: true means create the space, false to simply connect.
-			
+			final ArrayList<String> privateIDTuple = privateIDTuples[i];
 			final PeerConnectionInfo[] peerConInfos = new PeerConnectionInfo[clientInfos.length - 1];
 			
 			for (int j = 0; j < peerConInfos.length; j++) {
@@ -80,7 +62,9 @@ public class PeerServerConnector extends SuperServerConnector {
 				final PeerConnectionInfo peerConInfo = peerConInfos[j];
 				
 				peerConInfo.spaceName = privateIDTuple.get(j);
-							
+						
+				//Only one of the two clients that receive the same server ID, should create the space/repository.
+				//This is assured with the boolean array below: true means create the space, false to simply connect.
 				if (j >= i) {
 					peerConInfo.shouldCreateSpace = true;
 					peerConInfo.ipaddressOfSpaceCreator = clientInfos[i].ipaddress;
@@ -98,10 +82,7 @@ public class PeerServerConnector extends SuperServerConnector {
 			
 			//The i corresponds to the connection id.
 			sharedSpace.put(i, peerConInfos);
-			
 		}
-		
-		System.out.println("All id tuples have been placed in the shared space.");
 		
 		//Sending a random seed
 		sharedSpace.put("Random seed", (int)(Math.random() * 100000));
@@ -113,11 +94,12 @@ public class PeerServerConnector extends SuperServerConnector {
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<String>[] createPrivateIDs(int numClients) throws NoSuchAlgorithmException, NoSuchProviderException {
-		//A complete graph is made:
-		ArrayList<String>[] graphOfRandomStrings = (ArrayList<String>[]) new ArrayList[numClients];
+		final HashSet<String> randomStrings = new HashSet<String>();
+		final ArrayList<String>[] graphOfRandomStrings = (ArrayList<String>[]) new ArrayList[numClients];
 		for (int i = 0; i < graphOfRandomStrings.length; i++) {
 			graphOfRandomStrings[i] = new ArrayList<String>();
 		}
+		
 		//The random strings linked to the edges.
 		for (int i = 0; i < numClients; i++) {
 			for (int j = i + 1; j < numClients; j++) {
@@ -126,7 +108,8 @@ public class PeerServerConnector extends SuperServerConnector {
 					randomString = Crypto.getRandomString(RANDOM_STRING_LENGTH);
 					//The random string must be unique. The chance this happens continuesly is exponentially decreasing, 
 					//so on average this step will take constant time.
-				} while (privateIDs.contains(randomString));
+				} while (randomStrings.contains(randomString));
+				randomStrings.add(randomString);
 				
 				graphOfRandomStrings[i].add(randomString);
 				graphOfRandomStrings[j].add(randomString);
@@ -157,9 +140,6 @@ public class PeerServerConnector extends SuperServerConnector {
 	@Override
 	public void closeConnections() {
 		repository.remove(UPDATE_SPACE_NAME);
-		for (int i = 0; i < clientSpaces.length; i++) {
-			repository.remove(INITIAL_CLIENT_SPACE_NAME + i);
-		}
 		repository.closeGates();
 	}
 }
