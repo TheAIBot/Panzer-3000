@@ -191,7 +191,7 @@ public class Tank extends DeSerializer {
 	}
 	
 	public Bullet shoot() {
-		if (this.userName == "Derp") {
+		if (this.userName.equals("Derp")) {
 			timeBeforeShoot = 2;
 		}
 		else {
