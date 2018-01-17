@@ -108,7 +108,6 @@ public class GraphicsPanel extends JPanel {
 		for(Powerup powerup : powerups){
 			drawPowerup(powerup, g);
 		}
-		
 	}
 	
 	private void drawPowerup(Powerup powerup, Graphics g) {
@@ -180,22 +179,22 @@ public class GraphicsPanel extends JPanel {
 	
 	public synchronized void setTanks(ArrayList<Tank> tanks)
 	{
-		this.tanks = tanks;
+		this.tanks = new ArrayList<Tank>(tanks);
 	}
 	
 	public synchronized void setBullets(ArrayList<Bullet> bullets)
 	{
-		this.bullets = bullets;
+		this.bullets = new ArrayList<Bullet>(bullets);
 	}
 
 	public synchronized void setPowerups(ArrayList<Powerup> powerups) {
-		this.powerups = powerups;
+		this.powerups = new ArrayList<Powerup>(powerups);
 		
 	}
 	
 	public synchronized void setWalls(ArrayList<Wall> walls)
 	{
-		this.walls = walls;
+		this.walls = new ArrayList<Wall>(walls);
 	}
 
 	public void setPlayerHasWon() {
