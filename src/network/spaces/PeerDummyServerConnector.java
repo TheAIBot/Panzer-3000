@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.jspace.SequentialSpace;
 
-import engine.GameEngine;
 import engine.Input;
 import engine.entities.Bullet;
 import engine.entities.Powerup;

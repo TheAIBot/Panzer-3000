@@ -73,16 +73,15 @@ public final class Crypto {
 		return decryptedData;
 	}
 	
-	public static String getSaltString(int length) {
-        StringBuilder salt = new StringBuilder();
-        Random rnd = new Random();
-        while (salt.length() < length) { // length of the random string.
-            int index = (int) rnd.nextInt(SALTCHARS.length());
-            salt.append(SALTCHARS.charAt(index));
-        }
-        String saltStr = salt.toString();
-        return saltStr;
-
+	public static String getRandomString(int length) throws NoSuchAlgorithmException, NoSuchProviderException {
+        final SecureRandom random = SecureRandom.getInstance("SHA1PRNG", RAND_PROVIDER);
+        final StringBuilder randomString = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+        	final int index = random.nextInt(SALTCHARS.length());
+        	randomString.append(SALTCHARS.charAt(index));
+		}
+        
+        return randomString.toString();
     }
 	
 	public static PublicKey unencode(byte[] publicKey) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {

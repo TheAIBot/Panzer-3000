@@ -17,7 +17,7 @@ public abstract class SuperServerConnector {
 	 
 	public abstract void initializeServerConnection(int port, ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws Exception;
 	
-	public abstract void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException;
+	public abstract void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws Exception;
 
 	public abstract void sendWalls(ArrayList<Wall> walls) throws Exception;
 	

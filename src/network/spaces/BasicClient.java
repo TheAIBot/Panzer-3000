@@ -41,7 +41,7 @@ public class BasicClient {
 	public void joinGame(ServerInfo info, String username, final GUIControl guiControl) throws Exception {
 		this.serverInfo = info;
 		this.clientInfo.username = username;
-		this.clientInfo.salt =  Crypto.getSaltString(18);
+		this.clientInfo.salt =  Crypto.getRandomString(18);
 		this.clientInfo.ipaddress = NetworkTools.getIpAddress();
 		
 		final URI serverConnectionURI    = NetworkTools.createURI(NetworkProtocol.TCP, info.ipAddress, info.port, BasicServer.CLIENT_CONNECT_SPACE_NAME, "conn");

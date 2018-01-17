@@ -27,7 +27,6 @@ public class GraphicsPanel extends JPanel {
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
 	}
-	
 
 	@Override
 	protected synchronized void paintComponent(Graphics g) {
@@ -189,7 +188,6 @@ public class GraphicsPanel extends JPanel {
 
 	public synchronized void setPowerups(ArrayList<Powerup> powerups) {
 		this.powerups = new ArrayList<Powerup>(powerups);
-		
 	}
 	
 	public synchronized void setWalls(ArrayList<Wall> walls)

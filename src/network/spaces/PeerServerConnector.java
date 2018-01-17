@@ -2,7 +2,10 @@ package network.spaces;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -18,6 +21,7 @@ import engine.entities.Tank;
 import engine.entities.Wall;
 import network.NetworkProtocol;
 import network.NetworkTools;
+import security.Crypto;
 
 
 public class PeerServerConnector extends SuperServerConnector {
@@ -56,10 +60,10 @@ public class PeerServerConnector extends SuperServerConnector {
 	}
 
 	@Override
-	public void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws InterruptedException {
+	public void initilizePrivateConnections(ClientInfo[] clientInfos, SequentialSpace startServerSpace) throws Exception {
 		//It creates the different tuples with private id's (every client should take exactly one):
-		ArrayList<String>[] privateIDTuples = createPrivateIDs(clientInfos.length);
-		TreeMap<String, String> ipOfSpaceCreator = new TreeMap<String, String>();
+		final ArrayList<String>[] privateIDTuples = createPrivateIDs(clientInfos.length);
+		final HashMap<String, String> ipOfSpaceCreator = new HashMap<String, String>();
 		
 		for (int i = 0; i < privateIDTuples.length; i++) { //Client i gets tuple i.
 			
@@ -99,17 +103,16 @@ public class PeerServerConnector extends SuperServerConnector {
 		
 		System.out.println("All id tuples have been placed in the shared space.");
 		
-		//Sending a random seed:
+		//Sending a random seed
+		sharedSpace.put("Random seed", (int)(Math.random() * 100000));
 		
-		sharedSpace.put("Random seed", 9001); //Its over 9000!
-		
-
 		for (int i = 0; i < clientInfos.length; i++) {
 			startServerSpace.put(BasicServer.START_GAME_ACCEPTED, 1);
 		}
 	}
 
-	public ArrayList<String>[] createPrivateIDs(int numClients) {
+	@SuppressWarnings("unchecked")
+	public ArrayList<String>[] createPrivateIDs(int numClients) throws NoSuchAlgorithmException, NoSuchProviderException {
 		//A complete graph is made:
 		ArrayList<String>[] graphOfRandomStrings = (ArrayList<String>[]) new ArrayList[numClients];
 		for (int i = 0; i < graphOfRandomStrings.length; i++) {
@@ -118,27 +121,18 @@ public class PeerServerConnector extends SuperServerConnector {
 		//The random strings linked to the edges.
 		for (int i = 0; i < numClients; i++) {
 			for (int j = i + 1; j < numClients; j++) {
-				String randomString = getRandomString();				
-				while (privateIDs.contains(randomString)) { 
+				String randomString = null;	
+				do {
+					randomString = Crypto.getRandomString(RANDOM_STRING_LENGTH);
 					//The random string must be unique. The chance this happens continuesly is exponentially decreasing, 
 					//so on average this step will take constant time.
-					randomString = getRandomString();
-				}
+				} while (privateIDs.contains(randomString));
+				
 				graphOfRandomStrings[i].add(randomString);
 				graphOfRandomStrings[j].add(randomString);
 			}
 		}
 		return graphOfRandomStrings;
-	}
-	
-	public static String getRandomString() {
-		StringBuilder salt = new StringBuilder();
-        Random rnd = new Random();
-        while (salt.length() < RANDOM_STRING_LENGTH) { // length of the random string.
-            int index = rnd.nextInt(SALTCHARS.length());
-            salt.append(SALTCHARS.charAt(index));
-        }
-        return salt.toString();
 	}
 
 	@Override
