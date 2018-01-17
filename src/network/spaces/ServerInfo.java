@@ -64,7 +64,7 @@ public class ServerInfo {
 	
 	@Override
 	public String toString() {
-		return name;
+		return comType.toString() + " - " + name;
 	}
 	
 	@Override

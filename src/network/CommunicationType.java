@@ -1,8 +1,18 @@
 package network;
 
 public enum CommunicationType {
-	SERVER_CLIENT(0),
-	P2P(1);
+	SERVER_CLIENT(0) {
+		@Override
+		public String toString() {
+			return "S-C";
+		}
+	},
+	P2P(1) {
+		@Override
+		public String toString() {
+			return "P2P";
+		}
+	};
 	
 	private final int type;
 	

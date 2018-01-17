@@ -80,7 +80,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		add(lblPlayerCount);
 		
 		
-		btnStartGame.setBounds(219, 64, 264, 63);
+		btnStartGame.setBounds(219, 64, 286, 63);
 		add(btnStartGame);
 		btnStartGame.addActionListener(new ActionListener() {
 			@Override
@@ -95,7 +95,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 			}
 		});
 		
-		btnCreateServer.setBounds(354, 184, 109 + 20, 63);
+		btnCreateServer.setBounds(364, 184, 141, 63);
 		add(btnCreateServer);
 		btnCreateServer.addActionListener(new ActionListener() {
 			@Override
@@ -112,7 +112,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 			}
 		});
 		
-		btnCreateP2PServer.setBounds(219, 184, 109 + 20, 63);
+		btnCreateP2PServer.setBounds(219, 184, 141, 63);
 		add(btnCreateP2PServer);
 		btnCreateP2PServer.addActionListener(new ActionListener() {
 			@Override
@@ -130,16 +130,16 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		});
 		
 		JLabel lblServerName_1 = new JLabel("Server name: ");
-		lblServerName_1.setBounds(219, 158, 68, 15);
+		lblServerName_1.setBounds(219, 158, 87, 15);
 		add(lblServerName_1);
 		
 		textFieldServerName = new JTextField();
-		textFieldServerName.setBounds(297, 155, 187, 19);
+		textFieldServerName.setBounds(313, 155, 192, 19);
 		add(textFieldServerName);
 		textFieldServerName.setColumns(10);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(219, 138, 264, 9);
+		separator.setBounds(219, 138, 286, 9);
 		add(separator);
 
 	}
