@@ -34,7 +34,7 @@ public class Tank extends DeSerializer {
 	public static final double 	GUN_HEIGHT 			= 0.005;
 	public static final int 	TANK_HEALTH 		= 100;
 	public static final double	SCALAR 				= 10000;
-	public static final int 	TIME_BETWEEN_SHOTS 	= 70;
+	public static final int 	TIME_BETWEEN_SHOTS 	= 55;
 	public static final double 	TURNING_ANGLE 		= 1.15;
 	
 	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew, String username) {
