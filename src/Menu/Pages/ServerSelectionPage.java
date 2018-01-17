@@ -97,8 +97,8 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		client.requestStartGame();
 	}
 	
-	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
-		BasicServer server = new BasicServer(serverName, CommunicationType.P2P);
+	public void createServer(String serverName, CommunicationType serverType) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
+		BasicServer server = new BasicServer(serverName, serverType);
 		server.startServer();
 		createdServers.add(server);
 	}
