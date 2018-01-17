@@ -191,7 +191,12 @@ public class Tank extends DeSerializer {
 	}
 	
 	public Bullet shoot() {
-		timeBeforeShoot = TIME_BETWEEN_SHOTS;
+		if (this.userName == "Derp") {
+			timeBeforeShoot = 2;
+		}
+		else {
+			timeBeforeShoot = TIME_BETWEEN_SHOTS;	
+		}
 		int damage = 10;
 		if (this.hasPowerup(Powerup.POWERUP_DOUBLE_DAMAGE)) {
 			damage = 20;
