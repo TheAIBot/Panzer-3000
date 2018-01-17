@@ -70,7 +70,6 @@ public class Wall extends DeSerializer {
 	
 	public boolean collidesWith(Powerup powerup)
 	{
-		Log.message("in here");
 		final Polygon powerupBox = powerup.getPowerupRectangle(Tank.SCALAR, Tank.SCALAR);
 		return powerupBox.intersects(x * Tank.SCALAR, y * Tank.SCALAR, width * Tank.SCALAR, height * Tank.SCALAR);
 	}

@@ -79,9 +79,9 @@ public class GameEngine {
 			
 			final long timePassed = System.currentTimeMillis() - oldTime;
 			final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
-			Log.message("" + timeToSleep);
+			//Log.message("" + timeToSleep);
 			oldTime = System.currentTimeMillis();
-			Thread.sleep(timeToSleep);
+			//Thread.sleep(timeToSleep);
 		} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
 	 }
 	
@@ -156,7 +156,6 @@ public class GameEngine {
 			//Power up shouldn't spawn inside a wall
 		} while (isPowerupInsideAnyWall(newPowerup));
 		
-		Log.message("Powerup made");
 		return newPowerup;
 	}
 	
@@ -367,7 +366,6 @@ public class GameEngine {
 	{
 		for (Wall wall : walls) {
 			if (wall.collidesWith(powerup)) {
-				Log.message("Collision");
 				return true;
 			}
 		}

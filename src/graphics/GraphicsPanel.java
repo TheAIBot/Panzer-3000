@@ -29,15 +29,18 @@ public class GraphicsPanel extends JPanel {
 	}
 
 	@Override
-	protected synchronized void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 		   				  RenderingHints.VALUE_ANTIALIAS_ON);
+
 		super.paintComponent(g);
-		drawTanks(g);
-		drawBullets(g);
-		drawPowerups(g);
-		drawWalls(g);
-		drawWinnerMessage(g);
+		synchronized (this) {
+			drawTanks(g);
+			drawBullets(g);
+			drawPowerups(g);
+			drawWalls(g);
+			drawWinnerMessage(g);
+		}
 	}
 	
 	@Override
