@@ -73,7 +73,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	@Override
 	public void foundServer(ServerInfo info) {
 		if (serverListPage != null) {
-			serverListPage.addServer(info);
+			serverListPage.addServer(info);	
 		}
 	}
 	

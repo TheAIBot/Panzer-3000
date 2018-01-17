@@ -129,7 +129,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		if (!listData.contains(info)) {
 			listData.addElement(info);
 		}
-
 	}
 	
 	public synchronized void clearServerList()
@@ -155,9 +154,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 				if (selectedInfo == null || !selectedInfo.equals(info)) {
 					serverPage.joinGame(info, textFieldUsername.getText());
 					updateServerInfo(info);
-					//data about the server may have changed in the server list
-					//so repaint to show the changes
-					list.repaint();
 				}
 			} catch (Exception e) {
 				Log.exception(e);
@@ -172,6 +168,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	{
 		if (selectedInfo != null) {
 			updateServerInfo(selectedInfo);	
+			list.repaint();
 		}
 	}
 	

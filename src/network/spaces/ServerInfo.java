@@ -64,7 +64,7 @@ public class ServerInfo {
 	
 	@Override
 	public String toString() {
-		return name + ": " + clientsConnected;
+		return name;
 	}
 	
 	@Override
