@@ -62,6 +62,7 @@ public class Client {
 					
 					Thread.sleep(2000);
 					guiControl.gameEnded();
+					panel.resetGraphics();
 					return;
 				}
 				
