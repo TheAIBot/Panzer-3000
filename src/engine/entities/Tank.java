@@ -27,15 +27,15 @@ public class Tank extends DeSerializer {
 	public ArrayList<Powerup> powerups;
 	public String userName;
 
-	public static final double TANK_MOVEMENT_DISTANCE = 0.005;
+	public static final double TANK_MOVEMENT_DISTANCE = 0.0025;
 	public static final double 	TANK_WIDTH 			= 0.05;
 	public static final double 	TANK_HEIGHT 		= 0.05;
 	public static final double 	GUN_WIDTH 			= 0.07;
 	public static final double 	GUN_HEIGHT 			= 0.005;
 	public static final int 	TANK_HEALTH 		= 100;
 	public static final double	SCALAR 				= 10000;
-	public static final int 	TIME_BETWEEN_SHOTS 	= 35;
-	public static final double 	TURNING_ANGLE 		= 2.3;
+	public static final int 	TIME_BETWEEN_SHOTS 	= 70;
+	public static final double 	TURNING_ANGLE 		= 1.15;
 	
 	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew, String username) {
 		this.x = xNew;

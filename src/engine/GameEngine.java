@@ -28,8 +28,9 @@ public class GameEngine {
 	protected ArrayList<Wall> walls 		= new ArrayList<Wall>();
 	protected ArrayList<Powerup> powerups 	= new ArrayList<Powerup>();
 	public boolean gameHasBeenWon 			= false;
+	private long oldTime = System.currentTimeMillis();
 	
-	public static final int FPS 				= 70;
+	public static final int FPS 				= 60;
 	public static final double BOARD_MAX_X 		= 1;
 	public static final double BOARD_MAX_Y 		= 1;
 	public static final boolean LOAD_LEVEL 		= true;
@@ -69,17 +70,17 @@ public class GameEngine {
 		Log.message("Sent first update");
 	}
 	
-	 public void runGameLoop(int playerCount, SuperServerConnector connection, boolean runOnce) throws Exception {
-			do {
-				final long startTime = System.currentTimeMillis();
-				
-				update(connection.receiveUserInputs());
-				connection.sendUpdate(tanks, bullets, powerups);
-				
-				final long timePassed = System.currentTimeMillis() - startTime;
-				final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
-				Thread.sleep(timeToSleep);
-			} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
+	public void runGameLoop(int playerCount, SuperServerConnector connection, boolean runOnce) throws Exception {
+		do {			
+			update(connection.receiveUserInputs());
+			connection.sendUpdate(tanks, bullets, powerups);
+			
+			final long timePassed = System.currentTimeMillis() - oldTime;
+			final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
+			Log.message("" + timeToSleep);
+			oldTime = System.currentTimeMillis();
+			Thread.sleep(timeToSleep);
+		} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
 	 }
 	
 	public static boolean hasTankWonGame(ArrayList<Tank> tanks, int numberOfClients) {
