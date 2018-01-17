@@ -198,6 +198,10 @@ public class GraphicsPanel extends JPanel {
 	public void setPlayerHasWon() {
 		playerHasWon = true;
 	}
+	
+	public void resetGraphics() {
+		playerHasWon = false;
+	}
 
 	
 }

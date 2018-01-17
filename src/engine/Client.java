@@ -72,5 +72,6 @@ public class Client {
 			Log.exception(e);
 			guiControl.gameEnded();
 		}
+		panel.resetGraphics();
 	}
 }

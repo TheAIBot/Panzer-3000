@@ -15,7 +15,7 @@ public class Powerup extends DeSerializer {
 	public int type;
 	public static final double POWERUP_WIDTH = 0.05;
 	public static final double POWERUP_HEIGHT = 0.05;
-	public static final int POWERUP_TIME_ALIVE = 500;
+	public static final int POWERUP_TIME_ALIVE = 900;
 	
 	public static final int LUCKY_POWERUP_NUMBER = 1;
 	public static final int NUM_POWERUPS = 2;

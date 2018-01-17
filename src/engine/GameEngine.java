@@ -166,6 +166,7 @@ public class GameEngine {
 			// Check if tank has collected the power up
 			if (isPowerupCollected(powerup)) {
 				powerupIterator.remove();
+				continue;
 			}
 			
 			// If a tank hasn't taken a power up, decrease its time alive
