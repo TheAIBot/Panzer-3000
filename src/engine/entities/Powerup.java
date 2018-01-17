@@ -1,4 +1,4 @@
-package engine;
+package engine.entities;
 
 import java.awt.Point;
 import java.awt.Polygon;
@@ -6,6 +6,9 @@ import java.awt.geom.Ellipse2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Random;
+
+import engine.DeSerializer;
 
 import logger.Log;
 
@@ -16,7 +19,7 @@ public class Powerup extends DeSerializer {
 	public int type;
 	public static final double POWERUP_WIDTH = 0.05;
 	public static final double POWERUP_HEIGHT = 0.05;
-	public static final int POWERUP_TIME_ALIVE = 500;
+	public static final int POWERUP_TIME_ALIVE = 900;
 	
 	public static final int LUCKY_POWERUP_NUMBER = 1;
 	public static final int NUM_POWERUPS = 2;
@@ -59,21 +62,21 @@ public class Powerup extends DeSerializer {
 	}
 
 	@Override
-	protected void toBytes(DataOutputStream out) throws IOException {
+	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeFloat((float) x);
 		out.writeFloat((float) y);
 		
 	}
 
 	@Override
-	protected void fromBytes(DataInputStream in) throws IOException {
+	public void fromBytes(DataInputStream in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		
 	}
 
-	public static int randomizeType() {
-		return(int) Math.ceil(Math.random() * NUM_POWERUPS);
+	public static int randomizeType(Random random) {
+		return(int) Math.ceil(random.nextDouble() * NUM_POWERUPS);
 	}
 
 }

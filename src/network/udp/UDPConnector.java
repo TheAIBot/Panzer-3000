@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,8 +45,10 @@ public class UDPConnector {
 		isListening.add(listenPort);
 		new Thread(() ->
 		{
-			try (DatagramSocket socket = new DatagramSocket(listenPort))
+			try (DatagramSocket socket = new DatagramSocket(null))
 			{
+				socket.setReuseAddress(true);
+				socket.bind(new InetSocketAddress(listenPort));
 				while (true) {
 					byte[] receiveData = new byte[1024];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -56,7 +59,7 @@ public class UDPConnector {
 						synchronized (listenersByPort) {
 							for (UDPPacketListener listener : listenersByPort.get(listenPort)) {
 								listener.packetReceived(receivePacket.getData());
-							}	
+							}
 						}	
 					}
 				}

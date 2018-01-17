@@ -3,63 +3,76 @@ package engine;
 import java.util.ArrayList;
 
 import graphics.GraphicsPanel;
-import graphics.Menu.MenuController;
+import Menu.GUIControl;
+import Menu.InputHandler;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 import logger.Log;
+import network.CommunicationType;
 import network.spaces.ClientConnector;
+import network.spaces.ClientInfo;
+import network.spaces.PeerClientConnector;
+import network.spaces.ServerInfo;
+import network.spaces.SuperClientConnector;
 
 public class Client {
 	boolean hasPlayerWon = false;
+	int numberOfClients = -1;
 
-	public void startGame(String ipaddress, int port, String username, String salt, MenuController menu, GraphicsPanel panel) {
+	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, CommunicationType comType) {
 		try {
+			final SuperClientConnector connection = (comType == CommunicationType.P2P) ? new PeerClientConnector() : new ClientConnector();
+			
 			Log.message("Starting client");
-			ClientConnector connection = new ClientConnector();
-			connection.connectToServer(ipaddress, port, username, salt);
+			connection.connect(serverInfo, clientInfo);
+			connection.initilizePrivateConnections(serverInfo.ipAddress, serverInfo.port);
+			guiControl.gameStarted();
 			Log.message("Client connected");
 			
 			
-			Object[] wallObjects = connection.receiveWalls();
-			ArrayList<Wall> walls = DeSerializer.toList((byte[])wallObjects[1], Wall.class);
+			ArrayList<Wall> walls  = connection.receiveWalls();
 			panel.setWalls(walls);
 			
-			while (!hasPlayerWon) {
+			boolean firstUpdate = true;
+			int clientCount = 0;
+			while (true) {
+				final Object[] updatedObjects = connection.recieveUpdates();
+				final ArrayList<Tank>    tanks		= (ArrayList<Tank>)updatedObjects[0];
+				final ArrayList<Bullet>  bullets 	= (ArrayList<Bullet>)updatedObjects[1];
+				final ArrayList<Powerup> powerups   = (ArrayList<Powerup>)updatedObjects[2];
 				
-				//The call is blocking, so it won't continue before the update is given
-				Object[] updatedObjects 	= connection.recieveUpdates(); 
-				ArrayList<Tank>   tanks		= DeSerializer.toList((byte[])updatedObjects[1], Tank.class);
-				ArrayList<Bullet> bullets 	= DeSerializer.toList((byte[])updatedObjects[2], Bullet.class);
-				ArrayList<Powerup> powerups = DeSerializer.toList((byte[])updatedObjects[3], Powerup.class);
-				
-				/*
-				if (GameEngine.hasTankWonGame(tanks, connection.numberOfClients)) {
-					System.out.println("The game has been won!!!");
-					hasPlayerWon = true;
-					panel.setPlayerHasWon();
+				if (firstUpdate) {
+					clientCount = tanks.size();
+					firstUpdate = false;
 				}
-				*/
-				//Log.message("Received tanks and bullet updates");
 				
 				//Here the graphics needs to render the things seen above
+				
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
 				panel.setPowerups(powerups);
 				panel.repaint();
-
-				//Create a new Input
-				Input userInput = menu.getInput();
-				//Log.message(userInput.toString());
+				
+				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
+					hasPlayerWon = true;
+					panel.setPlayerHasWon();
+					panel.repaint();
+					
+					Thread.sleep(2000);
+					guiControl.gameEnded();
+					panel.resetGraphics();
+					return;
+				}
 				
 				//finally send the inputs to the server.			
-				connection.sendUserInput(userInput);
-				//Log.message("Sent user input");
+				connection.sendUserInput(inputHandler.getInput().copy());
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
+			guiControl.gameEnded();
 		}
-		
-	}
-
-	private boolean hasTankWonGame(ArrayList<Tank> tanks) {
-		return tanks.size() <= 1;
+		panel.resetGraphics();
 	}
 }

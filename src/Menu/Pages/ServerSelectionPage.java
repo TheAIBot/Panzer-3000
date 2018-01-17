@@ -1,8 +1,6 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
@@ -11,16 +9,16 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import graphics.Menu.MenuController;
+import Menu.MenuController;
 import logger.Log;
+import network.CommunicationType;
 import network.spaces.BasicClient;
 import network.spaces.BasicServer;
-import network.spaces.ServerFoundListener;
 import network.spaces.ServerInfo;
 import network.udp.ServerFinder;
+import network.udp.ServerFoundListener;
 
 public class ServerSelectionPage extends SuperPage implements ServerFoundListener {
-	GamePage gamePage = new GamePage(controller, controller);
 	BasicClient client = new BasicClient(controller);
 	ServerFinder serverFinder = new ServerFinder();
 	ArrayList<BasicServer> createdServers = new ArrayList<BasicServer>();
@@ -45,7 +43,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 		try {
 			//Log.message("Starting to search for servers");
 			serverFinder.searchForServers();
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			Log.exception(e1);
 		}
 		
@@ -57,9 +55,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 					serverFinder.searchForServers();
 					
 					serverListPage.updateServerInfo();
-				} catch (Exception e) {
-					Log.exception(e);
-				}
+				} catch (Exception e) {	}
 			}
 		}, 0, 1000);
 	}
@@ -78,7 +74,7 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 	@Override
 	public void foundServer(ServerInfo info) {
 		if (serverListPage != null) {
-			serverListPage.addServer(info);
+			serverListPage.addServer(info);	
 		}
 	}
 	
@@ -92,22 +88,18 @@ public class ServerSelectionPage extends SuperPage implements ServerFoundListene
 			client.leaveGame();
 			serverListPage.updateServerInfo();
 		}
-		client.joinGame(info, username, this);
+		client.joinGame(info, username, controller);
 	}
 	
-	public void requestStartGame()
+	public void requestStartGame() throws InterruptedException
 	{
 		serverUpdateTimer.cancel();
 		serverFinder.stopListeningForServers();
 		client.requestStartGame();
 	}
 	
-	public void gameStarted() {
-		switchPage(gamePage);
-	}
-	
-	public void createServer(String serverName) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
-		BasicServer server = new BasicServer(serverName);
+	public void createServer(String serverName, CommunicationType serverType) throws IOException, NoSuchAlgorithmException, NoSuchProviderException {
+		BasicServer server = new BasicServer(serverName, serverType);
 		server.startServer();
 		createdServers.add(server);
 	}

@@ -1,4 +1,4 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.awt.Dimension;
 
@@ -12,6 +12,8 @@ public interface PageRequestsListener {
 	public void canResize(boolean canResize);
 	
 	public void setFullScreen();
+	
+	public void exitFullScreen();
 	
 	public void hideScreen();
 	

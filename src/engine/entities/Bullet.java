@@ -1,10 +1,12 @@
-package engine;
+package engine.entities;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import engine.DeSerializer;
 
 public class Bullet extends DeSerializer {
 	public double x;
@@ -16,9 +18,9 @@ public class Bullet extends DeSerializer {
 	public int timeAlive;
 	public int bulletDamage;
 	
-	public static final double BULLET_SIZE = 0.01;
-	public static final double BULLET_MOVEMENT_DISTANCE = 0.01;
-	public static final int BULLET_TIME_ALIVE = 170;
+	public static final double 	BULLET_SIZE = 0.01;
+	public static final double 	BULLET_MOVEMENT_DISTANCE = 0.004;
+	public static final int 	BULLET_TIME_ALIVE = 600;
 	
 	public Bullet(double xNew, double yNew, double sizeNew, double angleNew, int damage) {
 		x = xNew;
@@ -36,7 +38,7 @@ public class Bullet extends DeSerializer {
 	}
 	
 	@Override
-	protected void toBytes(DataOutputStream out) throws IOException {
+	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeFloat((float) x);
 		out.writeFloat((float) y);
 		//out.writeFloat((float) oldX);
@@ -53,7 +55,7 @@ public class Bullet extends DeSerializer {
 	}
 
 	@Override
-	protected void fromBytes(DataInputStream in) throws IOException {
+	public void fromBytes(DataInputStream in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		//oldX = in.readFloat();

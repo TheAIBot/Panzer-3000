@@ -1,4 +1,4 @@
-package engine;
+package engine.entities;
 
 import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import engine.DeSerializer;
 import logger.Log;
 
 public class Wall extends DeSerializer {
@@ -36,7 +37,7 @@ public class Wall extends DeSerializer {
 	}
 
 	@Override
-	protected void toBytes(DataOutputStream out) throws IOException {
+	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeFloat((float) x);
 		out.writeFloat((float) y);
 		out.writeFloat((float) width);
@@ -44,7 +45,7 @@ public class Wall extends DeSerializer {
 	}
 
 	@Override
-	protected void fromBytes(DataInputStream in) throws IOException {
+	public void fromBytes(DataInputStream in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		width = in.readFloat();

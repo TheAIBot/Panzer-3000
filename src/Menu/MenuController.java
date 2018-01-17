@@ -1,4 +1,4 @@
-package graphics.Menu;
+package Menu;
 
 
 import java.awt.Dimension;
@@ -14,21 +14,21 @@ import java.util.Stack;
 import javax.swing.JFrame;
 
 import engine.Input;
-import graphics.Menu.Pages.GamePage;
-import graphics.Menu.Pages.PageRequestsListener;
-import graphics.Menu.Pages.ServerSelectionPage;
-import graphics.Menu.Pages.SuperPage;
+import Menu.Pages.GamePage;
+import Menu.Pages.PageRequestsListener;
+import Menu.Pages.ServerSelectionPage;
+import Menu.Pages.SuperPage;
 import logger.Log;
 
-public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener {
+public class MenuController implements PageRequestsListener, KeyListener, MouseListener, MouseMotionListener, InputHandler, GUIControl {
 	private final JFrame mainMenu;
 	private final ServerSelectionPage MAIN_PAGE = new ServerSelectionPage(this, this);
+	private final GamePage gamePage = new GamePage(this, this);
 	private SuperPage currentPage;
 	private final Stack<SuperPage> previousPages = new Stack<SuperPage>();
 	private final Input input = new Input();
 	
-	public MenuController(String windowName, int startWidth, int startHeight)
-	{
+	public MenuController(String windowName, int startWidth, int startHeight) {
 		mainMenu = new JFrame(windowName);
 		mainMenu.setSize(startWidth, startHeight);
 		mainMenu.setLocationRelativeTo(null);
@@ -45,7 +45,6 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 		mainMenu.addKeyListener(this);
 		mainMenu.addMouseListener(this);
 		mainMenu.addMouseMotionListener(this);
-		
 	}
 	
 	public void showWindow()
@@ -104,7 +103,12 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 
 	@Override
 	public void setFullScreen() {
-		mainMenu.setExtendedState(JFrame.MAXIMIZED_BOTH); 		
+		mainMenu.setExtendedState(JFrame.MAXIMIZED_BOTH); 	
+	}
+	
+	@Override
+	public void exitFullScreen() {
+		mainMenu.setExtendedState(JFrame.NORMAL);
 	}
 
 	@Override
@@ -215,5 +219,15 @@ public class MenuController implements PageRequestsListener, KeyListener, MouseL
 			input.x = x;
 			input.y = y;
 		}
+	}
+
+	@Override
+	public void gameStarted() {
+		switchPage(gamePage, false);
+	}
+
+	@Override
+	public void gameEnded() {
+		switchPage(MAIN_PAGE, false);
 	}
 }

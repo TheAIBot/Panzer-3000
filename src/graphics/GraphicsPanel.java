@@ -12,26 +12,24 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import engine.Bullet;
-import engine.Powerup;
-import engine.Tank;
-import engine.Wall;
+import engine.entities.Bullet;
+import engine.entities.Powerup;
+import engine.entities.Tank;
+import engine.entities.Wall;
 
 public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank>   tanks 	= new ArrayList<Tank>();
 	private ArrayList<Bullet> bullets 	= new ArrayList<Bullet>();
 	private ArrayList<Powerup>powerups 	= new ArrayList<Powerup>();
 	private ArrayList<Wall>   walls 	= new ArrayList<Wall>();
-	boolean playerHasWon 				= false;
+	public boolean playerHasWon = false;
 	
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
-		
 	}
-	
 
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected synchronized void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 		   				  RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
@@ -42,32 +40,42 @@ public class GraphicsPanel extends JPanel {
 		drawWinnerMessage(g);
 	}
 	
-
-
 	@Override
 	public Dimension getPreferredSize() {
-		int min = Math.min(this.getParent().getWidth(), this.getParent().getHeight());
+		final int min = Math.min(this.getParent().getWidth(), this.getParent().getHeight());
 	    return new Dimension(min, min);
 	}
+
 	
 	private void drawWinnerMessage(Graphics g) {
-		int fontSize;
 		if (playerHasWon) {
 			String message;
 			if (tanks.size() == 0) { //Initially zero
 				message = "切腹";
-				fontSize = 200;
 			} else if (tanks.size() == 1) {
 				message = "Player " + tanks.get(0).userName + " has won.";
-				fontSize = 100;
 			} else {
 				throw new Error("The game has ended with a number of tanks alive, different from 0 or 1");
 			}
+			
+			//find a font size that allows the whole sring to be shown
+			Font sizedFont;
+			FontMetrics metrics;
+			int fontSize = 210;
+			final String fontName = g.getFont().getFontName();
+			do {
+				fontSize -= 10;
+				sizedFont = new Font(fontName, Font.PLAIN, fontSize);
+				metrics = g.getFontMetrics(sizedFont);
+			} while (metrics.stringWidth(message) > this.getWidth() && fontSize > 10);
+			
+			//start position of the string
+			final int xCoordinate = (this.getWidth() / 2) - metrics.stringWidth(message) / 2;
+			final int yCoordinate = (this.getHeight() / 2);
+			
+			//draw string
+			g.setFont(sizedFont); 
 			g.setColor(Color.BLACK);
-			g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, fontSize)); 
-		    FontMetrics metrics = g.getFontMetrics(g.getFont());
-			int xCoordinate = this.getWidth()/2 - metrics.stringWidth(message)/2;
-			int yCoordinate = this.getHeight()/2;
 			g.drawString(message, xCoordinate, yCoordinate);
 			
 		}		
@@ -89,22 +97,17 @@ public class GraphicsPanel extends JPanel {
 			drawTankGun(tank, g);
 		}
 		
-		g.setColor(Color.BLACK);
 		for (Tank tank : tanks) {
 			drawUserName(tank, g);
 		}
 	}
-
-
 
 	private void drawPowerups(Graphics g) {
 		g.setColor(Color.CYAN);
 		for(Powerup powerup : powerups){
 			drawPowerup(powerup, g);
 		}
-		
 	}
-
 	
 	private void drawPowerup(Powerup powerup, Graphics g) {
 		final int x = (int)((powerup.x - Powerup.POWERUP_WIDTH / 2) * this.getWidth());
@@ -116,30 +119,25 @@ public class GraphicsPanel extends JPanel {
 		
 	}
 
-
 	private void drawTankHealth(Tank tank, Graphics g) {
-		Polygon healthBar = tank.getHealthBar(this.getWidth(), this.getHeight());
-		g.fillPolygon(healthBar);
+		g.fillPolygon(tank.getHealthBar(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawUserName(Tank tank, Graphics g) {
-	    FontMetrics metrics = g.getFontMetrics(g.getFont());
-		int xCoordinate = (int) (tank.x * this.getWidth() - metrics.stringWidth(tank.userName)/2);
-		int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
+	    final FontMetrics metrics = g.getFontMetrics(g.getFont());
+		final int xCoordinate = (int) (tank.x * this.getWidth() - metrics.stringWidth(tank.userName)/2);
+		final int yCoordinate = (int) ((tank.y - 0.7*tank.bodyHeight) * this.getHeight());
 		g.drawString(tank.userName, xCoordinate, yCoordinate);
 	}
 
-
 	private void drawTankBody(Tank tank, Graphics g)
 	{
-		Polygon tankBody = tank.getTankRectangle(this.getWidth(), this.getHeight());
-		g.fillPolygon(tankBody);
+		g.fillPolygon(tank.getTankRectangle(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawTankGun(Tank tank, Graphics g)
 	{
-		Polygon gunBody = tank.getGunRectangle(this.getWidth(), this.getHeight());
-		g.fillPolygon(gunBody);
+		g.fillPolygon(tank.getGunRectangle(this.getWidth(), this.getHeight()));
 	}
 	
 	private void drawBullets(Graphics g)
@@ -172,35 +170,37 @@ public class GraphicsPanel extends JPanel {
 	{
 		final int x = (int)((wall.x) * this.getWidth());
 		final int y = (int)((wall.y) * this.getHeight());
-		final int width = (int)(wall.width * this.getWidth());
-		final int height = (int)(wall.height * this.getHeight());
+		final int width = (int)Math.ceil(wall.width * this.getWidth());
+		final int height = (int)Math.ceil(wall.height * this.getHeight());
 		
-		g.fillRect(x, y, width + 1, height + 1);
+		g.fillRect(x, y, width, height);
 	}
 	
-	public void setTanks(ArrayList<Tank> tanks)
+	public synchronized void setTanks(ArrayList<Tank> tanks)
 	{
-		this.tanks = tanks;
+		this.tanks = new ArrayList<Tank>(tanks);
 	}
 	
-	public void setBullets(ArrayList<Bullet> bullets)
+	public synchronized void setBullets(ArrayList<Bullet> bullets)
 	{
-		this.bullets = bullets;
+		this.bullets = new ArrayList<Bullet>(bullets);
 	}
 
-	public void setPowerups(ArrayList<Powerup> powerups) {
-		this.powerups = powerups;
-		
+	public synchronized void setPowerups(ArrayList<Powerup> powerups) {
+		this.powerups = new ArrayList<Powerup>(powerups);
 	}
 	
-	public void setWalls(ArrayList<Wall> walls)
+	public synchronized void setWalls(ArrayList<Wall> walls)
 	{
-		this.walls = walls;
+		this.walls = new ArrayList<Wall>(walls);
 	}
-
 
 	public void setPlayerHasWon() {
 		playerHasWon = true;
+	}
+	
+	public void resetGraphics() {
+		playerHasWon = false;
 	}
 
 	

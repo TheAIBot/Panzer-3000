@@ -1,4 +1,4 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import javax.swing.JPanel;
 import javax.swing.JList;
@@ -18,12 +18,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import logger.Log;
+import network.CommunicationType;
 import network.spaces.ServerInfo;
 
 import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JSeparator;
 
 public class ServerList extends JPanel implements ListSelectionListener {
 	private final ServerSelectionPage serverPage;
@@ -40,6 +42,7 @@ public class ServerList extends JPanel implements ListSelectionListener {
 	
 	private final JButton btnStartGame = new JButton("Start game");
 	private final JButton btnCreateServer = new JButton("Create server");
+	private final JButton btnCreateP2PServer = new JButton("Create p2p server");
 
 	/**
 	 * Create the panel.
@@ -49,50 +52,50 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		
 		setLayout(null);
 		
-		list.setBounds(12, 12, 199, 485);
+		list.setBounds(10, 11, 199, 209);
 		add(list);
 		list.addListSelectionListener(this);
 		
 		JLabel lbl1 = new JLabel("Server:");
-		lbl1.setBounds(223, 13, 99, 15);
+		lbl1.setBounds(219, 11, 99, 15);
 		add(lbl1);
 		
 		JLabel lbl2 = new JLabel("Player count:");
-		lbl2.setBounds(223, 40, 99, 15);
+		lbl2.setBounds(219, 38, 99, 15);
 		add(lbl2);
 		
 		JLabel lblUsername = new JLabel("Username: ");
-		lblUsername.setBounds(12, 509, 87, 15);
+		lblUsername.setBounds(10, 232, 87, 15);
 		add(lblUsername);
 		
 		textFieldUsername = new JTextField();
-		textFieldUsername.setBounds(97, 507, 114, 19);
+		textFieldUsername.setBounds(95, 230, 114, 19);
 		add(textFieldUsername);
 		textFieldUsername.setColumns(10);
-		
-		Component horizontalStrut = Box.createHorizontalStrut(20);
-		horizontalStrut.setBounds(223, 267, 456, 15);
-		add(horizontalStrut);
 
-		lblServerName.setBounds(334, 13, 123, 15);
+		lblServerName.setBounds(330, 11, 123, 15);
 		add(lblServerName);
 		
-		lblPlayerCount.setBounds(334, 40, 123, 15);
+		lblPlayerCount.setBounds(330, 38, 123, 15);
 		add(lblPlayerCount);
 		
 		
-		btnStartGame.setBounds(457, 192, 222, 63);
+		btnStartGame.setBounds(219, 64, 286, 63);
 		add(btnStartGame);
 		btnStartGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (selectedInfo != null) {
-					serverPage.requestStartGame();
+					try {
+						serverPage.requestStartGame();
+					} catch (InterruptedException e1) {
+						Log.exception(e1);
+					}
 				}
 			}
 		});
 		
-		btnCreateServer.setBounds(457, 461, 222, 63);
+		btnCreateServer.setBounds(364, 184, 141, 63);
 		add(btnCreateServer);
 		btnCreateServer.addActionListener(new ActionListener() {
 			@Override
@@ -101,7 +104,24 @@ public class ServerList extends JPanel implements ListSelectionListener {
 				//don't create a server with an empty name
 				if (!serverName.trim().isEmpty()) {
 					try {
-						serverPage.createServer(serverName);
+						serverPage.createServer(serverName, CommunicationType.SERVER_CLIENT);
+					} catch (Exception e1) {
+						Log.exception(e1);
+					}
+				}
+			}
+		});
+		
+		btnCreateP2PServer.setBounds(219, 184, 141, 63);
+		add(btnCreateP2PServer);
+		btnCreateP2PServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final String serverName = textFieldServerName.getText();
+				//don't create a server with an empty name
+				if (!serverName.trim().isEmpty()) {
+					try {
+						serverPage.createServer(serverName, CommunicationType.P2P);
 					} catch (Exception e1) {
 						Log.exception(e1);
 					}
@@ -110,13 +130,17 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		});
 		
 		JLabel lblServerName_1 = new JLabel("Server name: ");
-		lblServerName_1.setBounds(457, 432, 99, 15);
+		lblServerName_1.setBounds(219, 158, 87, 15);
 		add(lblServerName_1);
 		
 		textFieldServerName = new JTextField();
-		textFieldServerName.setBounds(556, 430, 123, 19);
+		textFieldServerName.setBounds(313, 155, 192, 19);
 		add(textFieldServerName);
 		textFieldServerName.setColumns(10);
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(219, 138, 286, 9);
+		add(separator);
 
 	}
 
@@ -125,7 +149,6 @@ public class ServerList extends JPanel implements ListSelectionListener {
 		if (!listData.contains(info)) {
 			listData.addElement(info);
 		}
-
 	}
 	
 	public synchronized void clearServerList()
@@ -145,24 +168,27 @@ public class ServerList extends JPanel implements ListSelectionListener {
 
 	@Override
 	public synchronized void valueChanged(ListSelectionEvent arg0) {
-		try {
-			final ServerInfo info = listData.get(list.getSelectedIndex());
-			if (selectedInfo == null || !selectedInfo.equals(info)) {
-				serverPage.joinGame(info, textFieldUsername.getText());
-				updateServerInfo(info);
-				//data about the server may have changed in the server list
-				//so repaint to show the changes
-				list.repaint();
-			}
-		} catch (Exception e) {
-			Log.exception(e);
-		}		
+		if (!textFieldUsername.getText().isEmpty()) {
+			try {
+				final ServerInfo info = listData.get(list.getSelectedIndex());
+				if (selectedInfo == null || !selectedInfo.equals(info)) {
+					serverPage.joinGame(info, textFieldUsername.getText());
+					updateServerInfo(info);
+				}
+			} catch (Exception e) {
+				Log.exception(e);
+			}		
+		}	
+		else {
+			list.clearSelection();
+		}
 	}
 	
 	public void updateServerInfo() throws Exception
 	{
 		if (selectedInfo != null) {
 			updateServerInfo(selectedInfo);	
+			list.repaint();
 		}
 	}
 	

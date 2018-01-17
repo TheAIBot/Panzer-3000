@@ -1,10 +1,10 @@
-package graphics.Menu.Pages;
+package Menu.Pages;
 
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import graphics.Menu.MenuController;
+import Menu.MenuController;
 import logger.Log;
 
 public abstract class SuperPage {
@@ -65,6 +65,11 @@ public abstract class SuperPage {
 	protected void setFullScreen()
 	{
 		listener.setFullScreen();
+	}
+	
+	protected void exitFullScreen()
+	{
+		listener.exitFullScreen();
 	}
 	
 	protected void setResizeable(boolean canResize)

@@ -1,10 +1,13 @@
-package engine;
+package engine.entities;
 
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import engine.DeSerializer;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -24,27 +27,27 @@ public class Tank extends DeSerializer {
 	public ArrayList<Powerup> powerups;
 	public String userName;
 
-	public static final double TANK_MOVEMENT_DISTANCE = 0.004;
-	public static final double 	DEGREE 				= 2*Math.PI/360;
+	public static final double 	TANK_MOVEMENT_DISTANCE = 0.0025;
 	public static final double 	TANK_WIDTH 			= 0.05;
 	public static final double 	TANK_HEIGHT 		= 0.05;
 	public static final double 	GUN_WIDTH 			= 0.07;
 	public static final double 	GUN_HEIGHT 			= 0.005;
 	public static final int 	TANK_HEALTH 		= 100;
 	public static final double	SCALAR 				= 10000;
-	public static final int 	TIME_BETWEEN_SHOTS 	= 25;
-	public static final double 	TURNING_ANGLE 		= 1.5;
+	public static final int 	TIME_BETWEEN_SHOTS 	= 45;
+	public static final double 	TURNING_ANGLE 		= 1.15;
 	
-	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew) {
-		x = xNew;
-		y = yNew;
-		bodyWidth = TANK_WIDTH;
-		bodyHeight = TANK_HEIGHT;
-		bodyAngle = bodyAngleNew;
-		gunAngle = gunAngleNew;
-		id = idNew;
-		health = TANK_HEALTH;
-		powerups = new ArrayList<Powerup>();
+	public Tank(double xNew, double yNew, double bodyAngleNew, double gunAngleNew, int idNew, String username) {
+		this.x = xNew;
+		this.y = yNew;
+		this.bodyWidth = TANK_WIDTH;
+		this.bodyHeight = TANK_HEIGHT;
+		this.bodyAngle = bodyAngleNew;
+		this.gunAngle = gunAngleNew;
+		this.id = idNew;
+		this.health = TANK_HEALTH;
+		this.powerups = new ArrayList<Powerup>();
+		this.userName  = username;
 	}
 	
 	public void updatePowerups() {
@@ -73,7 +76,7 @@ public class Tank extends DeSerializer {
 	}
 	
 	@Override
-	protected void toBytes(DataOutputStream out) throws IOException {
+	public void toBytes(DataOutputStream out) throws IOException {
 		out.writeFloat((float) x);
 		out.writeFloat((float) y);
 		out.writeFloat((float) bodyWidth);
@@ -87,7 +90,7 @@ public class Tank extends DeSerializer {
 	}
 
 	@Override
-	protected void fromBytes(DataInputStream in) throws IOException {
+	public void fromBytes(DataInputStream in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		bodyWidth = in.readFloat();
@@ -135,10 +138,10 @@ public class Tank extends DeSerializer {
 	
 		
 		//create health bar corners
-		final Point topLeft     = rotateMoveScale( leftCoordinate ,  bodyHeight / 4, bodyAngle - 90 * DEGREE, xScalar, yScalar);
-		final Point topRight    = rotateMoveScale( rightCoordinate,  bodyHeight / 4, bodyAngle - 90 * DEGREE, xScalar, yScalar);
-		final Point bottomLeft  = rotateMoveScale( leftCoordinate ,  bodyHeight / 2, bodyAngle - 90 * DEGREE, xScalar, yScalar);
-		final Point bottomRight = rotateMoveScale( rightCoordinate,  bodyHeight / 2, bodyAngle - 90 * DEGREE, xScalar, yScalar);
+		final Point topLeft     = rotateMoveScale( leftCoordinate ,  bodyHeight / 4, bodyAngle - Math.toRadians(90), xScalar, yScalar);
+		final Point topRight    = rotateMoveScale( rightCoordinate,  bodyHeight / 4, bodyAngle - Math.toRadians(90), xScalar, yScalar);
+		final Point bottomLeft  = rotateMoveScale( leftCoordinate ,  bodyHeight / 2, bodyAngle - Math.toRadians(90), xScalar, yScalar);
+		final Point bottomRight = rotateMoveScale( rightCoordinate,  bodyHeight / 2, bodyAngle - Math.toRadians(90), xScalar, yScalar);
 		
 		//put corners into a polygon
 		int[] xPoints =  {topLeft.x, topRight.x, bottomRight.x, bottomLeft.x};

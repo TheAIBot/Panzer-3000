@@ -1,10 +1,7 @@
 package network.udp;
 
-import java.io.IOException;
-
+import engine.DeSerializer;
 import logger.Log;
-import network.NetworkTools;
-import network.spaces.ServerFoundListener;
 import network.spaces.ServerInfo;
 
 public class ServerFinder implements UDPPacketListener {	
@@ -14,8 +11,8 @@ public class ServerFinder implements UDPPacketListener {
 	
 	private ServerFoundListener listener;
 	
-	public void searchForServers() throws IOException {
-		final byte[] data = NetworkTools.stringToBytes(BROADCAST_MESSAGE);
+	public void searchForServers() throws Exception {
+		final byte[] data = DeSerializer.encodeObjects(BROADCAST_MESSAGE);
 		UDPConnector.broadcastData(data, UDP_PORT_ASK);
 	}
 	
