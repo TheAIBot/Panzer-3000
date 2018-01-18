@@ -38,7 +38,8 @@ public class PeerClientConnector extends SuperClientConnector {
 	private PeerDummyServerConnector dummyServer = new PeerDummyServerConnector();
 	private Input currentInput;
 	private CompletableFuture<Void>[] runningTasks;
-	boolean firstTick = true;
+	private boolean firstTick = true;
+	private boolean isGameEngineBlocking = false;
 	
 	public PeerClientConnector() {
 		
@@ -52,6 +53,8 @@ public class PeerClientConnector extends SuperClientConnector {
 		sharedSpace		= new RemoteSpace(sharedSpaceURI);
 		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
 		connectionId   	= (int) tuple[0];
+		isGameEngineBlocking = connectionId == 0;
+		Log.message("" + isGameEngineBlocking);
 	}
 
 	@Override
@@ -156,7 +159,7 @@ public class PeerClientConnector extends SuperClientConnector {
 				playerInputs[i].id = i;
 			}
 			dummyServer.setInputs(playerInputs);
-			engine.runGameLoop(playerInputs.length, dummyServer, true);
+			engine.runGameLoop(playerInputs.length, dummyServer, true, isGameEngineBlocking);
 			return dummyServer.getUpdate();
 		} else {
 			try {
@@ -190,7 +193,7 @@ public class PeerClientConnector extends SuperClientConnector {
 				Log.exception(e);
 			}			
 			dummyServer.setInputs(playerInputs);
-			engine.runGameLoop(playerInputs.length, dummyServer, true);
+			engine.runGameLoop(playerInputs.length, dummyServer, true, isGameEngineBlocking);
 			return dummyServer.getUpdate();
 		}	
 	}

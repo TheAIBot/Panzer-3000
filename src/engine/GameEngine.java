@@ -50,7 +50,7 @@ public class GameEngine {
 			prepareGame(port, usernames, clientInfos, connection, startServerSpace);
 
 			// Then the main loop can begin:
-			runGameLoop(clientInfos.length, connection, false);
+			runGameLoop(clientInfos.length, connection, false, true);
 		} catch (Exception e) {
 			Log.exception(e);
 		}
@@ -72,7 +72,7 @@ public class GameEngine {
 		Log.message("Sent first update");
 	}
 	
-	public void runGameLoop(int playerCount, SuperServerConnector connection, boolean runOnce) throws Exception {
+	public void runGameLoop(int playerCount, SuperServerConnector connection, boolean runOnce, boolean allowedToSleep) throws Exception {
 		do {			
 			update(connection.receiveUserInputs());
 			connection.sendUpdate(tanks, bullets, powerups);
@@ -81,7 +81,7 @@ public class GameEngine {
 			final long timeToSleep = (1000 / FPS) - timePassed;
 			//Log.message("" + timeToSleep);
 			oldTime = System.currentTimeMillis();
-			if (timeToSleep > 0) {
+			if (timeToSleep > 0 && allowedToSleep) {
 				Thread.sleep(timeToSleep);
 			}
 		} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
