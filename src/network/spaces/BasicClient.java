@@ -59,12 +59,10 @@ public class BasicClient {
 		listenForGameStart = new Thread(() -> {
 			try {
 				serverStartAcceptedSpace.get(new ActualField(BasicServer.START_GAME_ACCEPTED), new ActualField(1));
+				new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel(), info.comType);
 			} catch (InterruptedException e) {
 				Log.exception(e);
-				return;
 			}
-			
-			new Client().startGame(serverInfo, clientInfo, inputHandler, guiControl, GamePage.GetGraphicsPanel(), info.comType);
 		});
 		listenForGameStart.start();
 	}
