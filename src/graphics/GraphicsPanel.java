@@ -12,10 +12,12 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import engine.GameEngine;
 import engine.entities.Bullet;
 import engine.entities.Powerup;
 import engine.entities.Tank;
 import engine.entities.Wall;
+import logger.Log;
 
 public class GraphicsPanel extends JPanel {
 	private ArrayList<Tank>   tanks 	= new ArrayList<Tank>();
@@ -24,6 +26,9 @@ public class GraphicsPanel extends JPanel {
 	private ArrayList<Wall>   walls 	= new ArrayList<Wall>();
 	public boolean playerHasWon = false;
 	
+	private boolean keepRendering = false;
+	private Thread updateGraphicsThread;
+	
 	public GraphicsPanel() {
 		setBackground(Color.WHITE);
 	}
@@ -31,7 +36,13 @@ public class GraphicsPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                		   				  RenderingHints.VALUE_ANTIALIAS_ON);
+                		   				  RenderingHints.VALUE_ANTIALIAS_OFF);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+ 				  						  RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
+ 				  						  RenderingHints.VALUE_RENDER_SPEED);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+				  						  RenderingHints.VALUE_COLOR_RENDER_SPEED);
 
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
                 		   				  RenderingHints.VALUE_RENDER_SPEED);
@@ -51,6 +62,28 @@ public class GraphicsPanel extends JPanel {
 	    return new Dimension(min, min);
 	}
 
+	public void startRendering() {
+		keepRendering = true;
+		updateGraphicsThread = new Thread(() -> updateGraphics());
+		updateGraphicsThread.start();
+	}
+	
+	public void stopRendering() throws InterruptedException {
+		keepRendering = false;
+		updateGraphicsThread.join();
+	}
+	
+	private void updateGraphics() {
+		while (keepRendering) {
+			try {
+				repaint();
+				Thread.sleep(1000 / GameEngine.FPS);
+			} catch (InterruptedException e) {
+				Log.exception(e);
+			}	
+		}
+	}
+	
 	
 	private void drawWinnerMessage(Graphics g) {
 		if (playerHasWon) {
@@ -60,7 +93,7 @@ public class GraphicsPanel extends JPanel {
 			} else if (tanks.size() == 1) {
 				message = "Player " + tanks.get(0).userName + " has won.";
 			} else {
-				throw new Error("The game has ended with a number of tanks alive, different from 0 or 1");
+				message = "";
 			}
 			
 			//find a font size that allows the whole sring to be shown
