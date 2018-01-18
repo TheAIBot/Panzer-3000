@@ -18,10 +18,8 @@ import network.spaces.ServerInfo;
 import network.spaces.SuperClientConnector;
 
 public class Client {
-	boolean hasPlayerWon = false;
-	int numberOfClients = -1;
-
-	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, CommunicationType comType) {
+	@SuppressWarnings("unchecked")
+	public void startGame(ServerInfo serverInfo, ClientInfo clientInfo, InputHandler inputHandler, GUIControl guiControl, GraphicsPanel panel, CommunicationType comType) throws InterruptedException {
 		try {
 			final SuperClientConnector connection = (comType == CommunicationType.P2P) ? new PeerClientConnector() : new ClientConnector();
 			
@@ -35,20 +33,7 @@ public class Client {
 			ArrayList<Wall> walls  = connection.receiveWalls();
 			panel.setWalls(walls);
 			
-			final Object locker = new Object();
-			new Thread(() -> {
-				while (true) {
-					synchronized (locker) {
-						try {
-							locker.wait();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
-					}
-					panel.repaint();	
-				}
-			}).start();
+			panel.startRendering();
 			
 			boolean firstUpdate = true;
 			int clientCount = 0;
@@ -68,19 +53,11 @@ public class Client {
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
 				panel.setPowerups(powerups);
-				synchronized (locker) {
-					locker.notify();
-				}
 				
 				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
-					hasPlayerWon = true;
 					panel.setPlayerHasWon();
-					panel.repaint();
-					
-					Thread.sleep(2000);
-					guiControl.gameEnded();
-					panel.resetGraphics();
-					return;
+					Thread.sleep(3000);
+					break;
 				}
 				
 				//finally send the inputs to the server.			
@@ -88,8 +65,10 @@ public class Client {
 			}	
 		} catch (Exception e) {
 			Log.exception(e);
-			guiControl.gameEnded();
 		}
+		
+		panel.stopRendering();
 		panel.resetGraphics();
+		guiControl.gameEnded();
 	}
 }
