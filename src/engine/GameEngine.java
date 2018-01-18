@@ -81,7 +81,7 @@ public class GameEngine {
 			final long timeToSleep = Math.max(0, (1000 / FPS) - timePassed);
 			//Log.message("" + timeToSleep);
 			oldTime = System.currentTimeMillis();
-			//Thread.sleep(timeToSleep);
+			Thread.sleep(timeToSleep);
 		} while (!hasTankWonGame(tanks, playerCount) && !runOnce);
 	 }
 	

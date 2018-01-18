@@ -33,6 +33,8 @@ public class GraphicsPanel extends JPanel {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 		   				  RenderingHints.VALUE_ANTIALIAS_ON);
 
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
+                		   				  RenderingHints.VALUE_RENDER_SPEED);
 		super.paintComponent(g);
 		synchronized (this) {
 			drawTanks(g);
