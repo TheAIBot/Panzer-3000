@@ -34,6 +34,7 @@ public class PeerClientConnector extends SuperClientConnector {
 	public  SpaceRepository privateRepositories[];
 	public  Space privateClientConnections[];
 	public 	String[] associatedUserNames;
+	public  String[] usernames;
 	private GameEngine engine = new GameEngine();
 	private PeerDummyServerConnector dummyServer = new PeerDummyServerConnector();
 	private Input currentInput;
@@ -51,8 +52,9 @@ public class PeerClientConnector extends SuperClientConnector {
 		
 		final URI sharedSpaceURI = NetworkTools.createURI(NetworkProtocol.TCP, serverInfo.ipAddress, serverInfo.port, PeerServerConnector.UPDATE_SPACE_NAME, "keep");
 		sharedSpace		= new RemoteSpace(sharedSpaceURI);
-		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username));
+		Object[] tuple 	= sharedSpace.get(new FormalField(Integer.class), new ActualField(clientInfo.username), new FormalField(String[].class));
 		connectionId   	= (int) tuple[0];
+		usernames		= (String[]) tuple[2];
 		isGameEngineBlocking = connectionId == 0;
 		Log.message("" + isGameEngineBlocking);
 	}
@@ -124,12 +126,6 @@ public class PeerClientConnector extends SuperClientConnector {
 		Object[] randomSeedTuple = sharedSpace.query(new ActualField("Random seed"), new FormalField(Integer.class));
 		int randomSeed = (int) randomSeedTuple[1];
 		engine.setRandomSeed(randomSeed);
-		String[] usernames = new String[associatedUserNames.length + 1];
-		for (int i = 0; i < associatedUserNames.length; i++) {
-			usernames[i] = associatedUserNames[i];
-		}
-		usernames[usernames.length - 1] = clientInfo.username;
-		Arrays.sort(usernames); //Ensures a deterministic ordering of the usernames
 		engine.prepareGame(-1, usernames, new ClientInfo[usernames.length], dummyServer, null);
 	}
 
