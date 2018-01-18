@@ -35,6 +35,21 @@ public class Client {
 			ArrayList<Wall> walls  = connection.receiveWalls();
 			panel.setWalls(walls);
 			
+			final Object locker = new Object();
+			new Thread(() -> {
+				while (true) {
+					synchronized (locker) {
+						try {
+							locker.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
+					}
+					panel.repaint();	
+				}
+			}).start();
+			
 			boolean firstUpdate = true;
 			int clientCount = 0;
 			while (true) {
@@ -53,7 +68,9 @@ public class Client {
 				panel.setTanks(tanks);
 				panel.setBullets(bullets);
 				panel.setPowerups(powerups);
-				panel.repaint();
+				synchronized (locker) {
+					locker.notify();
+				}
 				
 				if (GameEngine.hasTankWonGame(tanks, clientCount)) {
 					hasPlayerWon = true;

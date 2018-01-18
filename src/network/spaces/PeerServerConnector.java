@@ -5,6 +5,7 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -41,9 +42,19 @@ public class PeerServerConnector extends SuperServerConnector {
 		repository.addGate(gateURI);
 		repository.add(UPDATE_SPACE_NAME, sharedSpace);
 		
+		//The client id's that must be delegated, must be done in a determenistic fashion.
+		//Doing it based on the sorted usernames, is one such method:
+		String[] usernames = new String[clientInfos.length];	
+		
+		for (int i = 0; i < clientInfos.length; i++) {
+			usernames[i] = clientInfos[i].username;
+		}
+		
+		Arrays.sort(usernames);
+		
 		//The server delegates the id's
 		for (int id = 0; id < clientInfos.length; id++) {
-			sharedSpace.put(id, clientInfos[id].username);
+			sharedSpace.put(id, usernames[id]);
 		}	
 	}
 
